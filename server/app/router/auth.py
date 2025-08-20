@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from app.config.db import get_db
-from app.schemas.auth import UserCreate, UserLogin, UserResponse
+from app.schemas.auth import UserCreate, UserLogin, UserResponse, UserOut
 from app.models.auth import User
 from app.utils.utils import hash_password, verify_password, create_access_token
+from app.dependencies.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -38,7 +39,7 @@ def register(response: Response, user: UserCreate, db: Session = Depends(get_db)
         httponly=True,
         max_age=60*60*24*15,  # 15 days
         secure=True,
-        samesite="lax"
+        samesite="none"
     )
     print("Registered user:",db_user)
     return db_user
@@ -62,7 +63,18 @@ def login(response: Response, user: UserLogin, db: Session = Depends(get_db)):
         httponly=True,
         max_age=60*60*24*15,
         secure=True,
-        samesite="lax"
+        samesite="none"
     )
 
     return {"message": "User logged in successfully"}
+
+
+@router.get("/me", response_model=UserResponse)
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.post("/logout", response_model=UserOut)
+def logout(response: Response, current_user: User = Depends(get_current_user)):
+    response.delete_cookie("access_token")
+    return current_user
