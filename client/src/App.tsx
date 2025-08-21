@@ -1,7 +1,13 @@
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
+import Home from "./page/Home";
+
 export default function App() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold">Welcome to ClassBuddy</h1>
-    </div>
+    <>
+      <Navbar />
+      <Home />
+      <Footer />
+    </>
   );
 }
