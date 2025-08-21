@@ -32,7 +32,7 @@ export default function HeroComponent() {
           <Button
             size="lg"
             variant="outline"
-            className="border-gray-500 text-white hover:bg-gray-800 px-8 py-6 text-lg"
+            className="border-gray-500 bg-gray-800 hover:text-white hover:bg-gray-800 px-8 py-6 text-lg"
           >
             Learn More
           </Button>

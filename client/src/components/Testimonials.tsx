@@ -23,7 +23,7 @@ export default function Testimonials() {
               "The career guidance feature showed me the exact skills to focus on.",
           },
         ].map((t, i) => (
-          <Card key={i} className="bg-[#111b30] border-gray-700">
+          <Card key={i} className="bg-[#111b30] border-gray-700 hover:border-2">
             <CardContent className="p-6 text-center">
               <p className="text-gray-300 italic mb-4">“{t.quote}”</p>
               <h4 className="font-semibold text-yellow-400">- {t.name}</h4>
