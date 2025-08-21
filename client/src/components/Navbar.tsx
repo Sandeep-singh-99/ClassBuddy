@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,16 +11,16 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         
         {/* Logo */}
-        <div className="text-2xl font-bold text-yellow-400 tracking-tight">
+        <Link to={"/"} className="text-2xl font-bold text-yellow-400 tracking-tight">
           ClassBuddy
-        </div>
+        </Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8 text-gray-300">
           <a href="#home" className="hover:text-yellow-400 transition">Home</a>
           <a href="#features" className="hover:text-yellow-400 transition">Features</a>
           <a href="#testimonials" className="hover:text-yellow-400 transition">Testimonials</a>
-          <a href="#contact" className="hover:text-yellow-400 transition">Contact</a>
+          <Link to={"/contact"} className="hover:text-yellow-400 transition">Contact</Link>
           <Button className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6">
             Get Started
           </Button>
@@ -40,7 +41,7 @@ export default function Navbar() {
           <a href="#home" className="text-gray-300 hover:text-yellow-400 transition">Home</a>
           <a href="#features" className="text-gray-300 hover:text-yellow-400 transition">Features</a>
           <a href="#testimonials" className="text-gray-300 hover:text-yellow-400 transition">Testimonials</a>
-          <a href="#contact" className="text-gray-300 hover:text-yellow-400 transition">Contact</a>
+          <Link to={"/contact"} className="text-gray-300 hover:text-yellow-400 transition">Contact</Link>
           <Button className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6">
             Get Started
           </Button>
