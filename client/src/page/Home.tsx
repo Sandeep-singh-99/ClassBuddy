@@ -1,6 +1,7 @@
 import FeaturesComponents from "@/components/FeaturesComponents";
 import HeroComponent from "@/components/HeroComponent";
 import Testimonials from "@/components/Testimonials";
+import ContactPage from "./ContactPage";
 
 export default function Home() {
   return (
@@ -11,6 +12,8 @@ export default function Home() {
       <FeaturesComponents />
 
       <Testimonials />
+
+      <ContactPage />
       </div>
   );
 }
