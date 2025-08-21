@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import AuthComponent from "./AuthComponent";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,9 +21,10 @@ export default function Navbar() {
           <a href="#features" className="hover:text-yellow-400 transition">Features</a>
           <a href="#testimonials" className="hover:text-yellow-400 transition">Testimonials</a>
           <Link to={"/contact"} className="hover:text-yellow-400 transition">Contact</Link>
-          <Button className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6">
+          {/* <Button className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6">
             Get Started
-          </Button>
+          </Button> */}
+          <AuthComponent />
         </div>
 
         {/* Mobile Menu Button */}
@@ -42,9 +43,10 @@ export default function Navbar() {
           <a href="#features" className="text-gray-300 hover:text-yellow-400 transition">Features</a>
           <a href="#testimonials" className="text-gray-300 hover:text-yellow-400 transition">Testimonials</a>
           <Link to={"/contact"} className="text-gray-300 hover:text-yellow-400 transition">Contact</Link>
-          <Button className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6">
+          {/* <Button className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6">
             Get Started
-          </Button>
+          </Button> */}
+          <AuthComponent />
         </div>
       )}
     </nav>
