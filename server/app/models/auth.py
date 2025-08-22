@@ -1,6 +1,11 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Enum, Integer, String
 from app.config.db import Base
 import uuid
+import enum
+
+class userRole(str, enum.Enum):
+    STUDENT = "student"
+    TEACHER = "teacher"
 
 class User(Base):
     __tablename__ = "users"
@@ -8,4 +13,7 @@ class User(Base):
     id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     full_name = Column(String, index=True)
     email = Column(String, unique=True, index=True)
+    image_url = Column(String, nullable=True)
+    image_url_id = Column(String, nullable=True)
+    role = Column(Enum(userRole), default=userRole.STUDENT, nullable=False)
     hashed_password = Column(String)
