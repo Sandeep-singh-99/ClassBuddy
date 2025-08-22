@@ -1,11 +1,12 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
+from fastapi import UploadFile
 from app.models.auth import userRole
 
 class UserCreate(BaseModel):
     full_name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
-    image_url: str
+    image_url: UploadFile
     role: Optional[userRole] = userRole.STUDENT
     password: str = Field(..., min_length=6)
 
@@ -19,6 +20,7 @@ class UserResponse(BaseModel):
     id: str
     full_name: str
     email: EmailStr
+    role: userRole
     image_url: str | None = None
 
 
