@@ -8,7 +8,7 @@ from langgraph.graph import StateGraph, MessagesState
 from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # --- Load env ---
@@ -19,7 +19,7 @@ GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
 router = APIRouter()
 
 # --- LLM + Embeddings ---
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=GOOGLE_API_KEY, streaming=True)
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", model_kwargs={"streaming": True})
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=GOOGLE_API_KEY)
 
 # --- LangGraph State Node ---
