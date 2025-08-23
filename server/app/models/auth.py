@@ -1,7 +1,8 @@
-from sqlalchemy import Boolean, Column, Enum, Integer, String
+from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime
 from app.config.db import Base
 import uuid
 import enum
+from datetime import datetime
 
 class userRole(str, enum.Enum):
     STUDENT = "student"
@@ -17,3 +18,5 @@ class User(Base):
     image_url_id = Column(String, nullable=True)
     role = Column(Enum(userRole), default=userRole.STUDENT, nullable=False)
     hashed_password = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
