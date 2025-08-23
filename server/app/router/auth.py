@@ -106,24 +106,48 @@ async def register(
     return db_user
 
 # Login
-@router.post("/login")
-def login(response: Response, user: UserLogin, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
+# @router.post("/login")
+# def login(response: Response, user: UserLogin, db: Session = Depends(get_db)):
+#     db_user = db.query(User).filter(User.email == user.email).first()
 
-    if not db_user or not verify_password(user.password, db_user.hashed_password):
+#     if not db_user or not verify_password(user.password, db_user.hashed_password):
+#         raise HTTPException(status_code=400, detail="Invalid credentials")
+
+#     # Generate JWT
+#     access_token = create_access_token({"sub": db_user.email})
+
+#     # Set HttpOnly cookie
+#     response.set_cookie(
+#         key="access_token",
+#         value=access_token,
+#         httponly=True,
+#         max_age=60*60*24*15,
+#         secure=True,
+#         samesite="none"
+#     )
+
+#     return {"message": "User logged in successfully"}
+
+@router.post("/login")
+def login(
+    response: Response,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    db_user = db.query(User).filter(User.email == email).first()
+    if not db_user or not verify_password(password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
-    # Generate JWT
     access_token = create_access_token({"sub": db_user.email})
 
-    # Set HttpOnly cookie
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         max_age=60*60*24*15,
-        secure=True,
-        samesite="none"
+        secure=False,  # dev
+        samesite="lax"
     )
 
     return {"message": "User logged in successfully"}

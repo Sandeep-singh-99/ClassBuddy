@@ -4,13 +4,14 @@ from app.router.auth import router as auth_router
 # from app.router.chat_with_pdf import router
 from app.router.group import router as group_router
 from app.config.db import Base, engine
+from app.models import auth, group
 
 app = FastAPI()
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["http://localhost:5173"],  # Update this to your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
