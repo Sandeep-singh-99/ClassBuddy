@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.router.auth import router
+from app.router.chat_with_pdf import router
 from app.config.db import Base, engine
 
 app = FastAPI()
@@ -17,6 +18,7 @@ app.add_middleware(
 
 Base.metadata.create_all(bind=engine)
 app.include_router(router, prefix="/auth", tags=["auth"])
+app.include_router(router, prefix="/pdf", tags=["PDF Chat"])
 
 @app.get("/")
 def read_root():
