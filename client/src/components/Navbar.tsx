@@ -22,7 +22,9 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-4 text-gray-300">
+       {
+        user ? (
+           <div className="hidden md:flex items-center gap-4 text-gray-300">
           <Link to={"/contact"} className="hover:text-yellow-400 transition">
             <Button variant={"outline"}>
               <Contact />
@@ -38,19 +40,14 @@ export default function Navbar() {
             </Button>
           </Link>
 
-          {
-            user ? (
-              <div>
-                <img src={user.image_url} alt={user.full_name} className="w-8 h-8 rounded-full" />
-              </div>
-            ) : (
-              <div>
-                <AuthComponent />
-              </div>
-            )
-          }
-          {/* <AuthComponent /> */}
+          <Link to={"/profile"} className="hover:text-yellow-400 transition">
+            <img src={user.image_url} alt={user.full_name} className="w-8 h-8 rounded-full" />
+          </Link>
         </div>
+        ) : (
+          <AuthComponent />
+        )
+       }
 
         {/* Mobile Menu Button */}
         <button
