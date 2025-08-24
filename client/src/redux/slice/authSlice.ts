@@ -68,9 +68,6 @@ export const logout = createAsyncThunk("auth/logout", async (_, thunkApi) => {
       `${API_BASE_URL}/auth/logout`,
       {},
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
         withCredentials: true,
       }
     );
