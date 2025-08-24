@@ -146,8 +146,8 @@ def login(
         value=access_token,
         httponly=True,
         max_age=60*60*24*15,
-        secure=False,  # dev
-        samesite="lax"
+        secure=True,  # dev
+        samesite="none"
     )
 
     return {"message": "User logged in successfully"}

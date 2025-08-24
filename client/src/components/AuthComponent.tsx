@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -12,8 +13,72 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Mail, Lock, User } from "lucide-react";
+import { AxiosError } from "axios";
+import { useAppDispatch } from "@/hooks/hooks";
+import { login } from "@/redux/slice/authSlice";
 
 export default function AuthComponent() {
+  const [email, setEmail] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
+  const [loading, setLoading] = useState(false)
+  const [uploadImage, setUploadImage] = useState<File | null>(null)
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    imageUrl: ""
+  })
+
+  const dispatch = useAppDispatch();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files[0]) {
+      const file = files[0];
+      try {
+        const imageUrl = URL.createObjectURL(file);
+        setFormData((prevData) => ({
+          ...prevData,
+          imageUrl,
+        }));
+        setUploadImage(file);
+        e.target.value = "";
+      } catch (error) {
+        console.error("Error creating object URL:", error);
+      }
+    }
+  };
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      return;
+    }
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    try {
+      const response = await dispatch(login(formData)).unwrap();
+      console.log("Login successful:", response);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error("Login error:", error.message);
+      } else {
+        console.error("Unknown login error:", error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
   return (
     <Dialog>
       {/* Trigger */}
@@ -53,31 +118,35 @@ export default function AuthComponent() {
 
           {/* LOGIN */}
           <TabsContent value="login">
-            <form className="space-y-4 mt-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="flex items-center gap-2 bg-[#111b30] px-3 rounded-lg border border-gray-700">
-                  <Mail className="text-yellow-400" />
+            <form className="space-y-4 mt-6" onSubmit={handleLoginSubmit}>
+              <div className="grid gap-2 w-full">
+                <Label htmlFor="email">Email ID</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400" />
                   <Input
                     id="email"
+                    placeholder="Enter your Email ID"
                     name="email"
-                    placeholder="Enter your email"
-                    className="bg-transparent border-0 focus-visible:ring-0 text-white"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
                     required
                   />
                 </div>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-2 w-full">
                 <Label htmlFor="password">Password</Label>
-                <div className="flex items-center gap-2 bg-[#111b30] px-3 rounded-lg border border-gray-700">
-                  <Lock className="text-yellow-400" />
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400" />
                   <Input
                     id="password"
                     type="password"
                     name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="bg-transparent border-0 focus-visible:ring-0 text-white"
+                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
                     required
                   />
                 </div>
@@ -91,9 +160,10 @@ export default function AuthComponent() {
                 </DialogClose>
                 <Button
                   type="submit"
+                  disabled={loading}
                   className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6"
                 >
-                  Log In
+                  {loading ? "Loading..." : "Log In"}
                 </Button>
               </DialogFooter>
             </form>
