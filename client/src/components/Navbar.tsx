@@ -3,9 +3,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import AuthComponent from "./AuthComponent";
 import { Button } from "./ui/button";
+import { useAppSelector } from "@/hooks/hooks";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { user } = useAppSelector((state) => state.auth);
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-[#0c1729]/80 backdrop-blur-md border-b border-gray-800">
@@ -34,7 +37,19 @@ export default function Navbar() {
               Dashboard
             </Button>
           </Link>
-          <AuthComponent />
+
+          {
+            user ? (
+              <div>
+                <img src={user.image_url} alt={user.full_name} className="w-8 h-8 rounded-full" />
+              </div>
+            ) : (
+              <div>
+                <AuthComponent />
+              </div>
+            )
+          }
+          {/* <AuthComponent /> */}
         </div>
 
         {/* Mobile Menu Button */}

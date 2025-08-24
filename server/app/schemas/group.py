@@ -10,7 +10,7 @@ class UserOut(BaseModel):
     role: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # ========== Group Base ==========
@@ -34,7 +34,6 @@ class GroupUpdate(BaseModel):
 class GroupResponse(GroupBase):
     id: str
     group_name: str
-    description: str
     created_by: str
     created_at: datetime
     updated_at: datetime
@@ -43,4 +42,4 @@ class GroupResponse(GroupBase):
     members: List[UserOut] = []
 
     class Config:
-        orm_mode = True
+       from_attributes= True
