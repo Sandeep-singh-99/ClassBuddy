@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.router.auth import router as auth_router
-# from app.router.chat_with_pdf import router
+from app.router.chat_with_pdf import router as chat_with_pdf
 from app.router.group import router as group_router
 from app.config.db import Base, engine
 from app.models import auth, group
@@ -23,7 +23,7 @@ app.add_middleware(
 
 Base.metadata.create_all(bind=engine)
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
-# app.include_router(router, prefix="/pdf", tags=["PDF Chat"])
+app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
 app.include_router(group_router, prefix="/groups", tags=["groups"])
 
 @app.get("/")
