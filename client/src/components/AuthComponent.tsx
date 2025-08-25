@@ -27,7 +27,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Mail, Lock, User, UserCog } from "lucide-react";
 import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
-import { login, register } from "@/redux/slice/authSlice";
+import { checkAuth, login, register } from "@/redux/slice/authSlice";
+import { toast } from "react-toastify";
 
 
 interface IFormData {
@@ -88,12 +89,13 @@ export default function AuthComponent() {
     formData.append("password", password);
     try {
       const response = await dispatch(login(formData)).unwrap();
-      console.log("Login successful:", response);
+      toast.success(response.message);
+      dispatch(checkAuth());
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        console.error("Login error:", error.message);
+        toast.error("Login error:", error.response?.data.message || error.message);
       } else {
-        console.error("Unknown login error:", error);
+        toast.error("Unknown login error");
       }
     } finally {
       setLoading(false);
@@ -125,12 +127,12 @@ export default function AuthComponent() {
     formDataToSend.append("image", uploadImage);
 
     try {
-      const response = await dispatch(register(formDataToSend)).unwrap();
-      console.log("Registration successful:", response);
+      await dispatch(register(formDataToSend)).unwrap();
+      toast.success("Registration successful");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         setLoading(false);
-        console.error("Registration error:", error.message);
+        toast.error("Registration error:", error.response?.data.message || error.message);
       }
     }
   }
