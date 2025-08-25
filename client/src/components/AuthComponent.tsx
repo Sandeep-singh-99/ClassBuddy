@@ -27,17 +27,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Mail, Lock, User, UserCog } from "lucide-react";
 import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
-import { login } from "@/redux/slice/authSlice";
+import { login, register } from "@/redux/slice/authSlice";
+
+
+interface IFormData {
+  fullName: string;
+  email: string;
+  password: string;
+  role: string;
+  imageUrl: string;
+}
 
 export default function AuthComponent() {
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [loading, setLoading] = useState(false)
   const [uploadImage, setUploadImage] = useState<File | null>(null)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<IFormData>({
     fullName: "",
     email: "",
     password: "",
+    role: "",
     imageUrl: ""
   })
 
@@ -87,6 +97,41 @@ export default function AuthComponent() {
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  const handleSignUpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!uploadImage) {
+      setLoading(false);
+      console.error("No image uploaded");
+      return;
+    }
+
+    if (!formData.fullName || !formData.email || !formData.password || !formData.role) {
+      setLoading(false);
+      console.error("Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("full_name", formData.fullName);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("password", formData.password);
+    formDataToSend.append("role", formData.role);
+    formDataToSend.append("image", uploadImage);
+
+    try {
+      const response = await dispatch(register(formDataToSend)).unwrap();
+      console.log("Registration successful:", response);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        setLoading(false);
+        console.error("Registration error:", error.message);
+      }
     }
   }
 
@@ -183,23 +228,36 @@ export default function AuthComponent() {
 
           {/* SIGNUP */}
           <TabsContent value="signup">
-            <form className="space-y-4 mt-6">
+            <form className="space-y-4 mt-6" onSubmit={handleSignUpSubmit}>
               {/* Avatar Upload */}
-              <div className="flex justify-center">
-                <label
-                  htmlFor="fileInput"
-                  className="cursor-pointer w-24 h-24 rounded-full border-2 border-dashed border-gray-500 flex items-center justify-center transition hover:bg-[#111b30]"
-                >
-                  <User className="text-gray-400 w-10 h-10" />
-                </label>
-                <input
-                  type="file"
-                  id="fileInput"
-                  name="imageUrl"
-                  className="hidden"
-                  accept="image/*"
-                />
-              </div>
+
+               <div className="flex justify-center">
+                  <input
+                    type="file"
+                    id="fileInput"
+                    name="imageUrl"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <label
+                    htmlFor="fileInput"
+                    className="cursor-pointer w-24 h-24 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center transition duration-300 ease-in-out hover:bg-gray-100"
+                    aria-label="Upload Image"
+                  >
+                    {uploadImage ? (
+                      <img
+                        src={formData.imageUrl}
+                        alt="Uploaded"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <span className="text-gray-400 text-center">
+                        Upload Image
+                      </span>
+                    )}
+                  </label>
+                </div>
 
               <div className="grid gap-2 w-full">
                 <Label htmlFor="fullName">FullName</Label>
@@ -208,6 +266,9 @@ export default function AuthComponent() {
                   <Input
                     id="fullName"
                     placeholder="Enter your Full Name"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
                     className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
                     required
                   />
@@ -222,9 +283,12 @@ export default function AuthComponent() {
                   <Input
                     id="email"
                     type="email"
+                    name="email"
                     placeholder="Enter your email"
                     className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
                     required
+                    value={formData.email}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -233,7 +297,7 @@ export default function AuthComponent() {
                 <Label htmlFor="role">Role</Label>
                 <div className="relative">
                   <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-400 w-5 h-5" />
-                  <Select>
+                  <Select value={formData.role} onValueChange={(e) => setFormData((prev) => ({ ...prev, role: e }))}>
                     <SelectTrigger className="w-full pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white">
                       <SelectValue placeholder="Select a Role" />
                     </SelectTrigger>
@@ -256,6 +320,9 @@ export default function AuthComponent() {
                   <Input
                     id="password"
                     type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
                     placeholder="Enter your password"
                     className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
                     required
@@ -271,9 +338,10 @@ export default function AuthComponent() {
                 </DialogClose>
                 <Button
                   type="submit"
+                  disabled={loading}
                   className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6"
                 >
-                  Sign Up
+                  {loading ? "Loading..." : "Sign Up"}
                 </Button>
               </DialogFooter>
             </form>
