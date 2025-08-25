@@ -3,7 +3,6 @@ import os, shutil, tempfile
 from dotenv import load_dotenv
 from app.models.auth import User
 from app.dependencies.dependencies import get_current_user
-from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain_community.document_loaders import PyMuPDFLoader
@@ -83,40 +82,3 @@ async def chat_with_pdf(file: UploadFile = File(...), userPrompt: str = Form(...
                     yield chunk.text
 
     return StreamingResponse(event_stream(), media_type="text/plain")
-
-
-
-
-# @router.post("/chat-with-pdf")
-# def chat_with_pdf(file: UploadFile = File(...), userPrompt: str = File(...), current_user: User = Depends(get_current_user)):
-#     if not file:
-#         raise HTTPException(status_code=400, detail="No file uploaded")
-
-#     if not current_user:
-#         raise HTTPException(status_code=401, detail="Unauthorized")
-
-#     # Save the uploaded file to a temporary location
-#     current_dir = os.path.dirname(os.path.abspath(__file__))
-#     temp_file_path = os.path.join(file.filename)
-#     persistent_directory = os.path.join(current_dir, "db", "chroma_db")
-
-#     if not os.path.exists(persistent_directory):
-#         raise HTTPException(status_code=404, detail="Persistent does not exists. Please Create it first")
-
-
-#     loader = TextLoader(temp_file_path)
-#     documents = loader.load()
-
-#     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=20)
-#     docs = text_splitter.split_documents(documents)
-
-#     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-
-#     db = Chroma.from_documents(docs, embeddings, persistent_directory=persistent_directory)
-
-#     retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
-
-#     relevant_docs = retriever.invoke(userPrompt)
-
-#     for i, doc in enumerate(relevant_docs):
-#         return doc.page_content
