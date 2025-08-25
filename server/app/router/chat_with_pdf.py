@@ -1,82 +1,122 @@
-import os
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from fastapi.responses import StreamingResponse
-from pypdf import PdfReader
+from fastapi import APIRouter, Response, HTTPException, Request, UploadFile, File, Depends, Form
+import os, shutil, tempfile
 from dotenv import load_dotenv
-
-from langgraph.graph import StateGraph, MessagesState
-from langgraph.checkpoint.memory import MemorySaver
-
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain_community.vectorstores import FAISS
+from app.models.auth import User
+from app.dependencies.dependencies import get_current_user
+from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain_community.document_loaders import PyMuPDFLoader
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langgraph.graph import StateGraph, END
+from typing import TypedDict, List
 
-# --- Load env ---
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
+from fastapi.responses import StreamingResponse
 
-# --- FastAPI App ---
 router = APIRouter()
 
-# --- LLM + Embeddings ---
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", model_kwargs={"streaming": True})
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=GOOGLE_API_KEY)
+load_dotenv()
 
-# --- LangGraph State Node ---
-def chat_node(state: MessagesState):
-    query = state["messages"][-1]["content"]
-    retriever = state.get("retriever")
-
-    docs = retriever.get_relevant_documents(query)
-    context = "\n\n".join([d.page_content for d in docs])
-
-    prompt = f"Context from PDF:\n{context}\n\nUser Query: {query}"
-
-    response = llm.stream(prompt)  # streaming response
-    return {"response": response}
-
-builder = StateGraph(MessagesState)
-builder.add_node("chat", chat_node)
-builder.set_entry_point("chat")
-memory = MemorySaver()
-graph = builder.compile(checkpointer=memory)
+class GraphState(TypedDict):
+    question: str
+    context: List[str]
+    answer: str
 
 
-# --- Utility: Extract + Index PDF ---
-def build_retriever(file: UploadFile):
-    try:
-        pdf = PdfReader(file.file)
-        text = ""
-        for page in pdf.pages:
-            text += page.extract_text() or ""
+def create_graph(db: Chroma):
+    retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", streaming=True)
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        docs = splitter.create_documents([text])
+    def retrieve(State: GraphState):
+        docs = retriever.invoke(State["question"])
+        return {"context": [doc.page_content for doc in docs]}
+    
+    def generate(state: GraphState):
+        context = "\n".join(state["context"])
+        prompt = f"Answer the question based on the context.\n\nContext:\n{context}\n\nQuestion: {state['question']}"
+        response = llm.stream(prompt)
+        return {"answer": response}
+    
+    workflow = StateGraph(StateGraph)
+    workflow.add_node("retrieve", retrieve)
+    workflow.add_node("generate", generate)
+    workflow.set_entry_point("retrieve")
+    workflow.add_edge("retrieve", "generate")
+    workflow.add_edge("generate", END)
 
-        vectorstore = FAISS.from_documents(docs, embeddings)
-        return vectorstore.as_retriever()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"PDF processing failed: {str(e)}")
+    return workflow.compile()
 
 
-# --- Chat Route with Streaming ---
-@router.post("/chat-pdf")
-async def chat_with_pdf(file: UploadFile = File(...), query: str = ""):
-    if not file or not query:
-        raise HTTPException(status_code=400, detail="File and query required")
+@router.post("/chat-with-pdf")
+async def chat_with_pdf(file: UploadFile = File(...), userPrompt: str = Form(...), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    if not file:
+        raise HTTPException(status_code=400, detail="No file uploaded")
+    
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        shutil.copyfileobj(file.file, tmp)
+        temp_file_path = tmp.name
 
-    retriever = build_retriever(file)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    persistent_directory = os.path.join(current_dir, "db", "chroma_db")
+    os.makedirs(persistent_directory, exist_ok=True)
 
+    loader = PyMuPDFLoader(temp_file_path)
+    documents = loader.load()
+
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=20)
+    docs = text_splitter.split_documents(documents)
+
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    db = Chroma.from_documents(docs, embeddings, persistent_directory=persistent_directory)
+
+    app = create_graph(db)
+
+    # Stream Response
     async def event_stream():
-        inputs = {
-            "messages": [{"role": "user", "content": query}],
-            "retriever": retriever
-        }
-        thread = {"configurable": {"thread_id": "user-session"}}
-
-        for event in graph.stream(inputs, thread):
-            if "response" in event:
-                for chunk in event["response"]:
-                    yield chunk.content
+        state = {"question": userPrompt, "context": [], "answer": ""}
+        for output in app.run(state):
+            if "generate" in output:
+                for chunk in output["generate"]["answer"]:
+                    yield chunk.text
 
     return StreamingResponse(event_stream(), media_type="text/plain")
+
+
+
+
+# @router.post("/chat-with-pdf")
+# def chat_with_pdf(file: UploadFile = File(...), userPrompt: str = File(...), current_user: User = Depends(get_current_user)):
+#     if not file:
+#         raise HTTPException(status_code=400, detail="No file uploaded")
+
+#     if not current_user:
+#         raise HTTPException(status_code=401, detail="Unauthorized")
+
+#     # Save the uploaded file to a temporary location
+#     current_dir = os.path.dirname(os.path.abspath(__file__))
+#     temp_file_path = os.path.join(file.filename)
+#     persistent_directory = os.path.join(current_dir, "db", "chroma_db")
+
+#     if not os.path.exists(persistent_directory):
+#         raise HTTPException(status_code=404, detail="Persistent does not exists. Please Create it first")
+
+
+#     loader = TextLoader(temp_file_path)
+#     documents = loader.load()
+
+#     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=20)
+#     docs = text_splitter.split_documents(documents)
+
+#     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+
+#     db = Chroma.from_documents(docs, embeddings, persistent_directory=persistent_directory)
+
+#     retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+
+#     relevant_docs = retriever.invoke(userPrompt)
+
+#     for i, doc in enumerate(relevant_docs):
+#         return doc.page_content
