@@ -6,9 +6,9 @@ const API_BASE_URL = "http://127.0.0.1:8000";
 
 export const register = createAsyncThunk(
   "auth/register",
-  async (data, thunkApi) => {
+  async (formData: FormData, thunkApi) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, data, {
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
