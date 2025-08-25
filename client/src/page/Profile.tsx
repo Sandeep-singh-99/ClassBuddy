@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { useAppDispatch } from "@/hooks/hooks";
 import { logout } from "@/redux/slice/authSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Profile() {
   const user = {
@@ -17,7 +18,9 @@ export default function Profile() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logout()).then(() => {
+      toast.success("Logged out successfully");
+    })
     navigate("/");
   };
 
