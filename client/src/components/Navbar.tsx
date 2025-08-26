@@ -1,4 +1,4 @@
-import { LayoutDashboard, LogOutIcon } from "lucide-react";
+import { ChartPieIcon, LayoutDashboard, LogOutIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import AuthComponent from "./AuthComponent";
 import { useAppSelector } from "@/hooks/hooks";
@@ -57,9 +57,15 @@ export default function Navbar() {
                 <DropdownMenuContent className="" align="end" sideOffset={5}>
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
-                      <Link to={"/dashboard"} className="transition flex gap-2">
+                      <Link to={"/dashboard-panel/home"} className="transition flex gap-2">
                         <LayoutDashboard />
                         <p className="hidden md:inline">Dashboard</p>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to={"/dashboard-panel/chat"} className="transition flex gap-2">
+                        <ChartPieIcon />
+                        <p className="hidden md:inline">Chat</p>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
