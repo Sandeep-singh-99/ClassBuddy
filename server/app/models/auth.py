@@ -19,8 +19,5 @@ class User(Base):
     image_url_id = Column(String, nullable=True)
     role = Column(Enum(userRole), default=userRole.STUDENT, nullable=False)
     hashed_password = Column(String)
-    notes = relationship("Note", back_populates="owner")
-    comments = relationship("Comment", back_populates="owner")
-    # likes = relationship("Like", back_populates="user")
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
