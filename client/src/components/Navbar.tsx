@@ -55,24 +55,41 @@ export default function Navbar() {
                   <img src={user.image_url} alt={user.full_name} className="w-8 h-8 rounded-full object-cover" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="" align="end" sideOffset={5}>
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <Link to={"/dashboard-panel/home"} className="transition flex gap-2">
-                        <LayoutDashboard />
-                        <p className="hidden md:inline">Dashboard</p>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link to={"/dashboard-panel/chat"} className="transition flex gap-2">
-                        <ChartPieIcon />
-                        <p className="hidden md:inline">Chat</p>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
-                      <LogOutIcon />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
+                  {
+                    user.role === "teacher" ? (
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                          <Link to={"/t-dashboard/home"} className="transition flex gap-2">
+                            <LayoutDashboard />
+                            <p className="hidden md:inline">Dashboard</p>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                          <LogOutIcon />
+                          Logout
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    ) : (
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                          <Link to={"/dashboard-panel/home"} className="transition flex gap-2">
+                            <LayoutDashboard />
+                            <p className="hidden md:inline">Dashboard</p>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link to={"/dashboard-panel/chat"} className="transition flex gap-2">
+                            <ChartPieIcon />
+                            <p className="hidden md:inline">Chat</p>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                          <LogOutIcon />
+                          Logout
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    )
+                  }
                 </DropdownMenuContent>
               </DropdownMenu>
 

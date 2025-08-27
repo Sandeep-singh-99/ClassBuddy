@@ -6,6 +6,8 @@ import Home from "@/page/Home";
 import Profile from "@/page/Profile";
 import { createBrowserRouter } from "react-router-dom";
 import DashboardHome from "@/page/Dashboard/DashboardHome";
+import THome from "@/page/Teacher/THome";
+import TDashboard from "@/page/Teacher/TDashboard";
 
 export const router = createBrowserRouter([
     {
@@ -40,5 +42,16 @@ export const router = createBrowserRouter([
                 element: <ChatPage />
             }
         ]
-    }
+    },
+
+    {
+        path: "t-dashboard",
+        element: <TDashboard />,
+        children: [
+            {
+                path: "home",
+                element: <THome />
+            }
+        ]
+    },
 ])
