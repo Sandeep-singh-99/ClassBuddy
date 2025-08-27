@@ -6,11 +6,6 @@ from datetime import datetime
 import enum
 
 
-class NoteType(str, enum.Enum):
-    PDF = "pdf"
-    RICH_TEXT = "rich_text"
-
-
 class Note(Base):
     __tablename__ = "notes"
 
@@ -24,7 +19,6 @@ class Note(Base):
     pdf_url = Column(String, nullable=True)
     pdf_url_id = Column(String, nullable=True)
 
-    type = Column(Enum(NoteType), nullable=False)  # pdf or rich_text
 
     # Relation with User (only teachers can create notes)
     owner_id = Column(String, ForeignKey("users.id"), nullable=False)
