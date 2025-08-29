@@ -8,6 +8,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-gradient-to-br from-[#0c1729] via-[#13233f] to-[#0c1729] text-white flex items-center justify-center px-6 py-20">
       <div className="max-w-3xl w-full bg-[#111b30]/80 border border-gray-700 rounded-2xl shadow-xl p-10">
         
+        
         {/* Header */}
         <h1 className="text-4xl font-bold text-center mb-4 text-yellow-400">
           Contact Us
