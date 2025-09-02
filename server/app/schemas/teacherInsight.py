@@ -1,0 +1,29 @@
+from pydantic import BaseModel, Field
+from typing import List
+from datetime import datetime
+from app.schemas.auth import UserResponse
+
+
+class TeacherInsightBase(BaseModel):
+    group_name: str = Field(..., example="Math Group")
+    group_des: str = Field(..., example="A group for math enthusiasts")
+
+
+class TeacherInsightCreate(TeacherInsightBase):
+    pass
+
+class TeacherInsightResponse(TeacherInsightBase):
+    id: str
+    created_at: datetime
+    updated_at: datetime
+
+    owner: UserResponse
+    members: List[UserResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class JoinGroupRequest(BaseModel):
+    user_id: str  # student who is joining
+    group_id: str  # group to join

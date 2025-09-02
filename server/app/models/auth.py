@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime, Table, ForeignKey
 from sqlalchemy.orm import relationship
 from ..config.db import Base
 import uuid
@@ -8,6 +8,13 @@ from datetime import datetime
 class userRole(str, enum.Enum):
     STUDENT = "student"
     TEACHER = "teacher"
+
+group_members = Table(
+    "group_members",
+    Base.metadata,
+    Column("group_id", String, ForeignKey("teacher_insights.id"), primary_key=True),
+    Column("user_id", String, ForeignKey("users.id"), primary_key=True),
+)
 
 class User(Base):
     __tablename__ = "users"
@@ -21,3 +28,6 @@ class User(Base):
     hashed_password = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    teacher_sub = relationship("TeacherInsight", back_populates="owner")
+    groups = relationship("TeacherInsight", secondary=group_members, back_populates="members")
