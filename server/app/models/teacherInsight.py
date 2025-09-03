@@ -13,6 +13,8 @@ class TeacherInsight(Base):
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     group_name = Column(String, nullable=False)
     group_des = Column(String, nullable=False)
+    image_url = Column(String, nullable=True)
+    image_url_id = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 

@@ -8,6 +8,8 @@ import { createBrowserRouter } from "react-router-dom";
 import DashboardHome from "@/page/Dashboard/DashboardHome";
 import THome from "@/page/Teacher/THome";
 import TDashboard from "@/page/Teacher/TDashboard";
+import TInsight from "@/page/Teacher/Insight/TInsight";
+import InsightHome from "@/page/Teacher/Insight/InsightHome";
 
 export const router = createBrowserRouter([
     {
@@ -51,7 +53,18 @@ export const router = createBrowserRouter([
             {
                 path: "home",
                 element: <THome />
-            }
+            },
         ]
     },
+
+    {
+        path: "t-insights",
+        element: <InsightHome />,
+        children: [
+            {
+                path: "",
+                element: <TInsight />
+            }
+        ]
+    }
 ])
