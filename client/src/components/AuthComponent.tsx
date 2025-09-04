@@ -29,6 +29,7 @@ import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
 import { checkAuth, login, register } from "@/redux/slice/authSlice";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 
 interface IFormData {
@@ -53,6 +54,7 @@ export default function AuthComponent() {
   })
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -129,6 +131,7 @@ export default function AuthComponent() {
     try {
       await dispatch(register(formDataToSend)).unwrap();
       toast.success("Registration successful");
+      navigate("/t-insights");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         setLoading(false);
