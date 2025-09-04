@@ -28,6 +28,7 @@ export default function TInsight() {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
+  // 🔹 Handle text input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -38,67 +39,87 @@ export default function TInsight() {
     }));
   };
 
+  // 🔹 Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
       try {
-        const imageUrl = URL.createObjectURL(file);
+        const imageUrl = URL.createObjectURL(file); // Preview URL
         setFormData((prevData) => ({
           ...prevData,
-          imageUrl: imageUrl,
+          imageUrl,
         }));
         setUploadImage(file);
-        e.target.value = "";
       } catch (error) {
-        console.error("Error uploading image:", error);
+        console.error("Error handling image file:", error);
+        toast.error("Failed to process the image. Please try again.");
       }
     }
   };
 
+  // 🔹 Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.groupName || !formData.groupDescription) {
-      alert("Please fill in all fields and upload an image.");
+
+    // Validation
+    if (!formData.groupName.trim() || !formData.groupDescription.trim()) {
+      toast.error("Please fill in all fields.");
       return;
     }
+    if (!uploadImage) {
+      toast.error("Please upload a group image.");
+      return;
+    }
+
     const formDataToSend = new FormData();
     formDataToSend.append("group_name", formData.groupName);
     formDataToSend.append("group_des", formData.groupDescription);
-    if (uploadImage) formDataToSend.append("image", uploadImage);
+    formDataToSend.append("image", uploadImage);
+
     try {
       const response = await axiosClient.post(
         "/insights/create-teacher-insights",
-        formDataToSend
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      toast.success(response.data.message);
+
+      toast.success(response.data.message || "Group created successfully!");
+
       if (response.status === 200) {
-        navigate("/");
+        // Reset form after success
         setFormData({
           groupName: "",
           groupDescription: "",
           imageUrl: "",
         });
         setUploadImage(null);
+        navigate("/");
       }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data.message || error.message);
+        toast.error(error.response?.data?.message || error.message);
       } else {
-        toast.error("An unexpected error occurred");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     }
   };
 
+  // 🔹 Redirect non-teachers away
   useEffect(() => {
     if (!user || user.role !== "teacher") {
       navigate("/");
     }
   }, [user, navigate]);
+
   return (
     <div className="flex text-white pt-36 pb-8">
-      <div className="flex  justify-center w-full">
-        <Card className="w-[600px] mx-auto ">
+      <div className="flex justify-center w-full">
+        <Card className="w-[600px] mx-auto">
           <CardHeader>
             <CardTitle>
               <h1>Create a New Group</h1>
@@ -109,45 +130,61 @@ export default function TInsight() {
           </CardHeader>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <CardContent className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label>Group Name</Label>
-              <Input
-                value={formData.groupName}
-                onChange={handleInputChange}
-                name="groupName"
-                placeholder="Enter group name"
-              />
-            </div>
+            <CardContent className="flex flex-col gap-6">
+              {/* Group Name */}
+              <div className="grid gap-2">
+                <Label htmlFor="groupName">Group Name</Label>
+                <Input
+                  id="groupName"
+                  value={formData.groupName}
+                  onChange={handleInputChange}
+                  name="groupName"
+                  placeholder="Enter group name"
+                  required
+                />
+              </div>
 
-            <div className="grid gap-2">
-              <Label>Group Description</Label>
-              <Textarea
-                value={formData.groupDescription}
-                onChange={handleInputChange}
-                name="groupDescription"
-                rows={2}
-                maxLength={200}
-                placeholder="Enter group description"
-              />
-            </div>
+              {/* Group Description */}
+              <div className="grid gap-2">
+                <Label htmlFor="groupDescription">Group Description</Label>
+                <Textarea
+                  id="groupDescription"
+                  value={formData.groupDescription}
+                  onChange={handleInputChange}
+                  name="groupDescription"
+                  rows={2}
+                  maxLength={200}
+                  placeholder="Enter group description"
+                  required
+                />
+              </div>
 
-            <div className="grid gap-2">
-              <Label>Group Image</Label>
-              <Input
-                type="file"
-                accept="image/*"
-                name="imageUrl"
-                onChange={handleFileChange}
-              />
-            </div>
-          </CardContent>
+              {/* Group Image */}
+              <div className="grid gap-2">
+                <Label htmlFor="groupImage">Group Image</Label>
+                <Input
+                  id="fileInput"
+                  type="file"
+                  accept="image/*"
+                  name="imageUrl"
+                  onChange={handleFileChange}
+                  required
+                />
+                {formData.imageUrl && (
+                  <img
+                    src={formData.imageUrl}
+                    alt="Preview"
+                    className="mt-2 w-32 h-32 object-cover rounded-lg border border-gray-300"
+                  />
+                )}
+              </div>
+            </CardContent>
 
-           <CardFooter className="flex-col gap-2">
-            <Button type="submit" className="w-full">
-              Create Group
-            </Button>
-          </CardFooter>
+            <CardFooter className="flex-col gap-2">
+              <Button type="submit" className="w-full">
+                Create Group
+              </Button>
+            </CardFooter>
           </form>
         </Card>
       </div>
