@@ -1,5 +1,5 @@
 
-import TSideBar from "@/components/TSidebar";
+import TSideBar from "@/page/Teacher/components/TSidebar";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 

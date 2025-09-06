@@ -5,11 +5,10 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Button } from "./ui/button";
-// import FeedbackFormComponents from "./FeedbackFormComponents";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
-const TSideBar = () => {
+const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -32,7 +31,7 @@ const TSideBar = () => {
   );
 };
 
-export default TSideBar;
+export default SideBar;
 
 function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
   return (
