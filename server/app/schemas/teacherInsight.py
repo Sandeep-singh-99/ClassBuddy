@@ -7,6 +7,7 @@ from app.schemas.auth import UserResponse
 class TeacherInsightBase(BaseModel):
     group_name: str = Field(..., example="Math Group")
     group_des: str = Field(..., example="A group for math enthusiasts")
+    image_url: str = Field(..., example="http://example.com/image.png")
 
 
 class TeacherInsightCreate(TeacherInsightBase):
