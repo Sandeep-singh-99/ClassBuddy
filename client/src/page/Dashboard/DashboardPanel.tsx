@@ -7,7 +7,7 @@ function DashboardPanel() {
      <div className="min-h-screen w-full">
       <div className="flex">
         <SideBar />
-        <div className="flex-1">
+        <div className="flex-1 bg-gradient-to-br from-[#0c1729] via-[#13233f] to-[#0c1729]">
           <ToastContainer
             position="bottom-right"
             autoClose={5000}

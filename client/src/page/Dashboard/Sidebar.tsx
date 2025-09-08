@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
-  Hash,
   LayoutDashboard,
   Sparkles,
+  User2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
@@ -64,7 +64,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
             className="w-full justify-start"
             onClick={closeSheet}
           >
-            <Hash className="mr-2 h-4 w-4" />
+            <User2 className="mr-2 h-4 w-4" />
             All Teachers
           </Button>
         </Link>
