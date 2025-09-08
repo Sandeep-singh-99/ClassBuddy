@@ -14,11 +14,24 @@ export const viewAllTeacher = createAsyncThunk("teacher/viewAll", async (_ , thu
     }
 })
 
+interface IOwner {
+    id: string;
+    full_name: string;
+    email: string;
+    role: string;
+    image_url: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
 interface TViewAllState {
     id: string;
     group_name: string;
     group_des: string;
     image_url: string;
+    owner: IOwner;
+    created_at?: string;
+    updated_at?: string;
 }
 
 interface TState {

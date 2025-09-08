@@ -46,7 +46,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
         
 
         {/* Article Link */}
-        <Link to={"/t-dashboard/home"}>
+        <Link to={"/dashboard-panel/home"}>
           <Button
             variant="ghost"
             className="w-full justify-start"
@@ -58,14 +58,14 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
         </Link>
 
         {/* Blog Link */}
-        <Link to={"/home/blog"}>
+        <Link to={"/dashboard-panel/view-teachers"}>
           <Button
             variant="ghost"
             className="w-full justify-start"
             onClick={closeSheet}
           >
             <Hash className="mr-2 h-4 w-4" />
-            Blog Titles
+            All Teachers
           </Button>
         </Link>
 

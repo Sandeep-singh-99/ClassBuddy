@@ -10,6 +10,7 @@ import THome from "@/page/Teacher/THome";
 import TDashboard from "@/page/Teacher/TDashboard";
 import TInsight from "@/page/Teacher/Insight/TInsight";
 import InsightHome from "@/page/Teacher/Insight/InsightHome";
+import ViewAllTeacher from "@/page/Dashboard/ViewAllTeacher";
 
 export const router = createBrowserRouter([
     {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
             {
                 path: "chat",
                 element: <ChatPage />
+            },
+            {
+                path: "view-teachers",
+                element: <ViewAllTeacher />
             }
         ]
     },
