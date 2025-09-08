@@ -37,7 +37,8 @@ def create_teacher_insight(db: Session = Depends(get_db), current_user: User = D
 def get_teacher_insights(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Authentication required")
-    
+
     insights = db.query(TeacherInsight).all()
+    insights.sort(key=lambda x: x.created_at, reverse=True)
 
     return insights
