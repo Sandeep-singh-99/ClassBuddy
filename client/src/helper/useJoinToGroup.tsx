@@ -1,6 +1,5 @@
 import { useAppDispatch } from "@/hooks/hooks";
 import { joinTeacherGroup } from "@/redux/slice/tSlice";
-import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 export const useJoinToGroup = () => {
@@ -9,13 +8,15 @@ export const useJoinToGroup = () => {
   const joinGroup = async (groupId: string) => {
     try {
       const response = await dispatch(joinTeacherGroup(groupId)).unwrap();
-      toast.success("Successfully joined the group!");
+      toast.success(response.message || "Successfully joined the group!");
       return response;
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(
-          error.response?.data?.detail || "An error occurred. Please try again."
-        );
+    } catch (error: any) {
+      if (error?.detail) {
+        toast.error(error.detail);
+      } else if (error?.message) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
       }
     }
   };
