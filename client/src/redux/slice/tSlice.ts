@@ -14,6 +14,21 @@ export const viewAllTeacher = createAsyncThunk("teacher/viewAll", async (_ , thu
     }
 })
 
+export const joinTeacherGroup = createAsyncThunk("teacher/join", async (groupId: string, thunkApi) => {
+    try {
+        const response = await axiosClient.post("/groups/join", { group_id: groupId }, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        return response.data;
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            return thunkApi.rejectWithValue(error.response?.data || "Joining teacher group failed");
+        }
+    }
+})
+
 interface IOwner {
     id: string;
     full_name: string;

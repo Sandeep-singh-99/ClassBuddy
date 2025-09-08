@@ -1,16 +1,18 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { viewAllTeacher } from "@/redux/slice/tSlice";
 import { useEffect } from "react";
-import { User, JoystickIcon } from "lucide-react";
+import { User, JoystickIcon, Loader2 } from "lucide-react";
+import { useJoinToGroup } from "@/helper/useJoinToGroup";
+
 
 export default function ViewAllTeacher() {
   const dispatch = useAppDispatch();
-  const { teachers, loading, error } = useAppSelector((state) => state.teachers);
+  const { joinGroup } = useJoinToGroup();
+
+  const { teachers, loading, error } = useAppSelector(
+    (state) => state.teachers
+  );
 
   useEffect(() => {
     dispatch(viewAllTeacher());
@@ -18,8 +20,17 @@ export default function ViewAllTeacher() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-[60vh] text-lg font-semibold text-gray-600 dark:text-gray-300">
-        Loading teachers...
+      <div className="flex flex-col justify-center items-center h-[60vh] space-y-4">
+        {/* Loader Icon */}
+        <Loader2
+          className="animate-spin text-gray-800 dark:text-gray-100"
+          size={42}
+        />
+
+        {/* Loading Text */}
+        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+          Fetching teachers, please wait...
+        </p>
       </div>
     );
   }
@@ -35,7 +46,7 @@ export default function ViewAllTeacher() {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100 tracking-tight">
-        Teachers Directory
+        View All Teachers
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -51,11 +62,13 @@ export default function ViewAllTeacher() {
               <img
                 src={teacher.image_url}
                 alt={teacher.group_name}
-                className="w-full h-44 object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-44 object-fill transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 
+              <div
+                className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 
                 text-gray-800 dark:text-gray-100 
-                px-3 py-1 text-xs font-semibold rounded-full shadow">
+                px-3 py-1 text-xs font-semibold rounded-full shadow"
+              >
                 {teacher.group_name}
               </div>
             </CardHeader>
@@ -70,10 +83,15 @@ export default function ViewAllTeacher() {
                     className="w-14 h-14 rounded-full border-2 border-gray-200 dark:border-gray-700 shadow-sm object-cover"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-full border-2 border-gray-200 dark:border-gray-700 
+                  <div
+                    className="w-14 h-14 rounded-full border-2 border-gray-200 dark:border-gray-700 
                     flex items-center justify-center 
-                    bg-gray-100 dark:bg-gray-800">
-                    <User className="text-gray-500 dark:text-gray-400" size={28} />
+                    bg-gray-100 dark:bg-gray-800"
+                  >
+                    <User
+                      className="text-gray-500 dark:text-gray-400"
+                      size={28}
+                    />
                   </div>
                 )}
 
@@ -102,6 +120,10 @@ export default function ViewAllTeacher() {
                   text-sm py-2 px-4 rounded-xl 
                   hover:bg-gray-700 dark:hover:bg-gray-200 
                   transition-colors duration-300"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    joinGroup(teacher?.id);
+                  }}
                 >
                   <JoystickIcon size={16} />
                   Join Group

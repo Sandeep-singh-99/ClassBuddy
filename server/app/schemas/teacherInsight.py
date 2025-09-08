@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List
 from datetime import datetime
+from typing import Optional
 from app.schemas.auth import UserResponse
 
 
@@ -26,5 +27,5 @@ class TeacherInsightResponse(TeacherInsightBase):
 
 
 class JoinGroupRequest(BaseModel):
-    user_id: str  # student who is joining
+    # user_id: Optional[str]  # student who is joining
     group_id: str  # group to join
