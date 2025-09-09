@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { viewAllTeacher } from "@/redux/slice/tSlice";
+import { JoinedCheckStatus, viewAllTeacher } from "@/redux/slice/tSlice";
 import { useEffect } from "react";
 import { User, JoystickIcon, Loader2 } from "lucide-react";
 import { useJoinToGroup } from "@/helper/useJoinToGroup";
@@ -9,15 +9,21 @@ export default function ViewAllTeacher() {
   const dispatch = useAppDispatch();
   const { joinGroup } = useJoinToGroup();
 
-  const { teachers, loading, error } = useAppSelector(
+  const { teachers, joinedStatus, loading, error } = useAppSelector(
     (state) => state.teachers
   );
-
-  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(viewAllTeacher());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (teachers.length > 0) {
+      teachers.forEach((teacher) => {
+        dispatch(JoinedCheckStatus(teacher.id));
+      });
+    }
+  }, [dispatch, teachers]);
 
   if (loading) {
     return (
@@ -105,29 +111,25 @@ export default function ViewAllTeacher() {
                   </p>
                 </div>
               </div>
-
-              {/* <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                About Group
-              </CardTitle> */}
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
                 {teacher.group_des}
               </p>
 
               <div className="mt-5">
                 <button
-                  className="w-full flex items-center justify-center gap-2
-                  bg-gray-900 dark:bg-gray-100
-                  text-white dark:text-gray-900
-                  text-sm py-2 px-4 rounded-xl
-                  hover:bg-gray-700 dark:hover:bg-gray-200
-                  transition-colors duration-300"
+                  className={`w-full flex items-center justify-center gap-2 text-sm py-2 px-4 rounded-xl transition-colors duration-300 ${
+                    joinedStatus[teacher.id]
+                      ? "bg-green-600 text-white cursor-not-allowed"
+                      : "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200"
+                  }`}
+                  disabled={joinedStatus[teacher.id]} 
                   onClick={(e) => {
                     e.preventDefault();
                     joinGroup(teacher?.id);
                   }}
                 >
                   <JoystickIcon size={16} />
-                 Join Group
+                  {joinedStatus[teacher.id] ? "Joined" : "Join Group"}
                 </button>
               </div>
             </CardContent>
