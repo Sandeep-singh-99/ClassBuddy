@@ -23,6 +23,9 @@ class UserResponse(BaseModel):
     role: userRole
     image_url: str | None = None
 
+    class Config:
+        from_attributes = True
+
 
 class UserOut(BaseModel):
     id: str

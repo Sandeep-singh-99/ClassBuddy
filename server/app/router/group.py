@@ -5,6 +5,7 @@ from app.models.auth import User, userRole
 from app.dependencies.dependencies import get_current_user
 from app.models.teacherInsight import TeacherInsight
 from app.schemas.teacherInsight import TeacherInsightCreate, TeacherInsightResponse, TeacherInsightBase, JoinGroupRequest
+from app.schemas.auth import UserResponse
 
 router = APIRouter()
 
@@ -77,3 +78,85 @@ def check_if_user_joined_group(
     is_member = current_user in group.members
 
     return {"group_id": group_id, "joined": is_member}
+
+
+# @router.get("/view-students", response_model=list[TeacherInsightResponse])
+# def view_students_in_groups(
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     # Ensure the user is authenticated
+#     if not current_user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Authentication required."
+#         )
+    
+#     if current_user.role != userRole.TEACHER:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Only teachers can view students in groups."
+#         )
+    
+#     # Fetch groups created by the current teacher
+#     groups = db.query(TeacherInsight).all()
+
+#     return groups
+
+
+
+@router.get("/view-students", response_model=list[TeacherInsightResponse])
+def view_students_in_teacher_groups(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Ensure the user is authenticated
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required."
+        )
+
+    # Only teachers can view students in their groups
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can view students in their groups."
+        )
+
+    #  Fetch only groups owned by this teacher
+    groups = (
+        db.query(TeacherInsight)
+        .filter(TeacherInsight.user_id == current_user.id)
+        .all()
+    )
+
+    if not groups:
+        return []  
+
+    result = []
+    for group in groups:
+        # Convert owner (teacher) ORM object to Pydantic
+        owner_data = UserResponse.from_orm(group.owner)
+
+        # Only include students (filter members by role)
+        student_members = [
+            UserResponse.from_orm(member)
+            for member in group.members
+            if member.role == userRole.STUDENT
+        ]
+
+        group_data = TeacherInsightResponse(
+            id=str(group.id),
+            group_name=group.group_name,
+            group_des=group.group_des,
+            image_url=group.image_url,
+            created_at=group.created_at,
+            updated_at=group.updated_at,
+            owner=owner_data,
+            members=student_members,
+            students_count=len(student_members)  
+        )
+        result.append(group_data)
+
+    return result
