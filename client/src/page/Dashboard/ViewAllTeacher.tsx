@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { User, JoystickIcon, Loader2 } from "lucide-react";
 import { useJoinToGroup } from "@/helper/useJoinToGroup";
 
-
 export default function ViewAllTeacher() {
   const dispatch = useAppDispatch();
   const { joinGroup } = useJoinToGroup();
@@ -13,6 +12,8 @@ export default function ViewAllTeacher() {
   const { teachers, loading, error } = useAppSelector(
     (state) => state.teachers
   );
+
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(viewAllTeacher());
@@ -53,8 +54,8 @@ export default function ViewAllTeacher() {
         {teachers.map((teacher) => (
           <Card
             key={teacher.id}
-            className="border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl 
-            rounded-3xl overflow-hidden transition-all duration-300 
+            className="border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl
+            rounded-3xl overflow-hidden transition-all duration-300
             bg-white dark:bg-gray-900 group"
           >
             {/* Group Cover Image */}
@@ -65,8 +66,8 @@ export default function ViewAllTeacher() {
                 className="w-full h-44 object-fill transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 
-                text-gray-800 dark:text-gray-100 
+                className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90
+                text-gray-800 dark:text-gray-100
                 px-3 py-1 text-xs font-semibold rounded-full shadow"
               >
                 {teacher.group_name}
@@ -84,8 +85,8 @@ export default function ViewAllTeacher() {
                   />
                 ) : (
                   <div
-                    className="w-14 h-14 rounded-full border-2 border-gray-200 dark:border-gray-700 
-                    flex items-center justify-center 
+                    className="w-14 h-14 rounded-full border-2 border-gray-200 dark:border-gray-700
+                    flex items-center justify-center
                     bg-gray-100 dark:bg-gray-800"
                   >
                     <User
@@ -114,11 +115,11 @@ export default function ViewAllTeacher() {
 
               <div className="mt-5">
                 <button
-                  className="w-full flex items-center justify-center gap-2 
-                  bg-gray-900 dark:bg-gray-100 
-                  text-white dark:text-gray-900 
-                  text-sm py-2 px-4 rounded-xl 
-                  hover:bg-gray-700 dark:hover:bg-gray-200 
+                  className="w-full flex items-center justify-center gap-2
+                  bg-gray-900 dark:bg-gray-100
+                  text-white dark:text-gray-900
+                  text-sm py-2 px-4 rounded-xl
+                  hover:bg-gray-700 dark:hover:bg-gray-200
                   transition-colors duration-300"
                   onClick={(e) => {
                     e.preventDefault();
@@ -126,7 +127,7 @@ export default function ViewAllTeacher() {
                   }}
                 >
                   <JoystickIcon size={16} />
-                  Join Group
+                 Join Group
                 </button>
               </div>
             </CardContent>
