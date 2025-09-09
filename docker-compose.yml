@@ -1,0 +1,10 @@
+version: '1.0'
+
+services:
+  server:
+    build: ./server
+    container_name: classbuddy_server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app
