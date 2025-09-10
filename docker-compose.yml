@@ -1,14 +1,19 @@
-version: '1.0'
+version: '3.9'
 
 services:
-  server:
-    build: ./server
-    container_name: classbuddy_server
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./server:/app
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+  # server:
+  #   build: ./server
+  #   container_name: classbuddy_server
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./server:/app
+  #     - /app/__pycache__
+  #   environment:
+  #     - PYTHONUNBUFFERED=1
+  #     - WATCHFILES_FORCE_POLLING=true
+  #   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+  #   restart: unless-stopped
 
   client:
     build: ./client
@@ -18,6 +23,4 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules 
-    depends_on:
-      - server
     command: npm run dev
