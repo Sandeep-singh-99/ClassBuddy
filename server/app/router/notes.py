@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Form
 from app.dependencies.dependencies import get_current_user
 from app.models.auth import User, userRole
 from app.config.db import get_db
+from typing import TypedDict, Annotated, Optional
+from dotenv import load_dotenv
 
 router = APIRouter()
 
