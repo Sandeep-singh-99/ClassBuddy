@@ -75,6 +75,23 @@ export const GroupJoinStudents = createAsyncThunk("teacher/group-join-students",
   }
 });
 
+export const generateNotes = createAsyncThunk("teacher/generate-notes", async (title: string, thunkApi) => {
+  try {
+    const response = await axiosClient.post("/notes/notes-generates", { title: title }, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      }
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Generating notes failed"
+      );
+    }
+  }
+})
+
 interface IOwner {
   id: string;
   full_name: string;
@@ -112,6 +129,7 @@ interface TState {
   joinedStatus: Record<string, boolean>;
   loading: boolean;
   error: string | null;
+  generatedNotes?: string | null;
 }
 
 const initialState: TState = {
@@ -119,6 +137,7 @@ const initialState: TState = {
   joinedStatus: {},
   loading: false,
   error: null,
+  generatedNotes: null,
 };
 
 const tSlice = createSlice({
@@ -175,6 +194,24 @@ const tSlice = createSlice({
     builder.addCase(GroupJoinStudents.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+    });
+
+    builder.addCase(generateNotes.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.generatedNotes = null;
+    });
+
+    builder.addCase(generateNotes.fulfilled, (state, action) => {
+      state.loading = false;
+      state.error = null;
+      state.generatedNotes = action.payload.generated_notes; // Assuming the API returns { notes: "generated notes content" }
+    });
+
+    builder.addCase(generateNotes.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+      state.generatedNotes = null;
     });
   },
 });

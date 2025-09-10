@@ -1,53 +1,56 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { generateNotes } from "@/redux/slice/tSlice";
+import React, { useState } from "react";
+import MDEditor from '@uiw/react-md-editor';
 
 
 export default function TNotes() {
-    const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState("");
+
+  const dispatch = useAppDispatch();
+
+  const { generatedNotes } = useAppSelector((state) => state.teachers);
+
+  const handleGenerateNotes = (e: React.FormEvent) => {
+    e.preventDefault();
+    setVisible(true);
+
+    dispatch(generateNotes(title));
+  };
   return (
     <div className="max-w-4xl mx-auto p-6">
-        <Card>
-            <CardHeader>
-                <CardTitle>Create New Notes</CardTitle>
-            </CardHeader>
+      <Card>
+        <CardHeader>
+          <CardTitle>Create New Notes</CardTitle>
+        </CardHeader>
 
+        <CardContent>
+          <form onSubmit={handleGenerateNotes}>
+            <Textarea
+              placeholder="Provide a title or topic, and our AI will create detailed notes."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <Button type="submit" className="mt-4">
+              Create Notes
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {visible && (
+        <div className="mt-6">
+          <Card>
             <CardContent>
-                <form>
-                    <Textarea placeholder="Provide a title or topic, and our AI will create detailed notes." />
-                    <Button type="submit" className="mt-4">
-                     Create Notes
-                    </Button>
-                </form>
+               <MDEditor.Markdown source={generatedNotes ?? ""} className="p-2 rounded-md" />
             </CardContent>
-        </Card>
-
-        {
-            visible && (
-                <div className="mt-6">
-                    <Card>
-                        <CardContent>
-                            <form>
-                                <div>
-                                    <Label>
-                                        Title
-                                    </Label>
-
-                                    <Input placeholder="Set the title of the notes..." className="mt-2 mb-4" />
-                                </div>
-
-                                <Button>
-                                    Save Notes
-                                </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </div>
-            )
-        }
+          </Card>
+        </div>
+      )}
     </div>
-  )
+  );
 }
