@@ -5,7 +5,7 @@ from app.router.chat_with_pdf import router as chat_with_pdf
 from app.router.teacherInsight import router as teacher_insight_router
 from app.router.group import router as group_router
 from app.config.db import Base, engine
-from app.models import auth
+from app.models import auth, notes, teacherInsight
 
 app = FastAPI()
 
@@ -22,9 +22,15 @@ app.add_middleware(
 )
 
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
+
+@app.on_event("startup")
+def on_startup():
+    print("Creating database tables (if not exist)...")
+    Base.metadata.create_all(bind=engine)
+
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
-# app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
+app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
 app.include_router(teacher_insight_router, prefix="/insights", tags=["Teacher Insights"])
 app.include_router(group_router, prefix="/groups", tags=["Groups"])
 

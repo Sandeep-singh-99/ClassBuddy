@@ -1,19 +1,19 @@
 version: '3.9'
 
 services:
-  # server:
-  #   build: ./server
-  #   container_name: classbuddy_server
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - ./server:/app
-  #     - /app/__pycache__
-  #   environment:
-  #     - PYTHONUNBUFFERED=1
-  #     - WATCHFILES_FORCE_POLLING=true
-  #   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-  #   restart: unless-stopped
+  server:
+    build: ./server
+    container_name: classbuddy_server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app
+      - /app/__pycache__ 
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+      - WATCHFILES_POLL_INTERVAL=0.5
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/app
 
   client:
     build: ./client
