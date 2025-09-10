@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  Hash,
   LayoutDashboard,
+  NotebookTabs,
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -58,14 +58,14 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
         </Link>
 
         {/* Blog Link */}
-        <Link to={"/home/blog"}>
+        <Link to={"/t-dashboard/create-notes"}>
           <Button
             variant="ghost"
             className="w-full justify-start"
             onClick={closeSheet}
           >
-            <Hash className="mr-2 h-4 w-4" />
-            Blog Titles
+            <NotebookTabs className="mr-2 h-4 w-4" />
+            Create Notes
           </Button>
         </Link>
 
