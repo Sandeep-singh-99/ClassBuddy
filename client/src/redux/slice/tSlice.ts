@@ -61,6 +61,20 @@ export const JoinedCheckStatus = createAsyncThunk(
   }
 );
 
+
+export const GroupJoinStudents = createAsyncThunk("teacher/group-join-students", async (_ , thunkApi) => {
+  try {
+    const response = await axiosClient.get("/groups/view-students");
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Fetching group joined students failed"
+      );
+    }
+  }
+});
+
 interface IOwner {
   id: string;
   full_name: string;
@@ -88,6 +102,7 @@ interface TViewAllState {
   image_url: string;
   owner: IOwner;
   members: IMember[];
+  students_count: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -141,6 +156,23 @@ const tSlice = createSlice({
     });
 
     builder.addCase(JoinedCheckStatus.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    builder.addCase(GroupJoinStudents.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    builder.addCase(GroupJoinStudents.fulfilled, (state, action) => {
+      state.loading = false;
+      state.error = null;
+      // Assuming action.payload contains the list of students
+      state.teachers = action.payload;
+    });
+
+    builder.addCase(GroupJoinStudents.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
