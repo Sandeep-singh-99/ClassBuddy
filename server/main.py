@@ -24,7 +24,7 @@ app.add_middleware(
 
 Base.metadata.create_all(bind=engine)
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
+# app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
 app.include_router(teacher_insight_router, prefix="/insights", tags=["Teacher Insights"])
 app.include_router(group_router, prefix="/groups", tags=["Groups"])
 
