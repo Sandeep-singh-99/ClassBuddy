@@ -16,4 +16,4 @@ class Note(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     owner_id = Column(String, ForeignKey("users.id"))
 
-    owner = relationship("User", back_populates="note_sub")
+    owner = relationship("User", back_populates="notess")
