@@ -4,6 +4,7 @@ from app.router.auth import router as auth_router
 from app.router.chat_with_pdf import router as chat_with_pdf
 from app.router.teacherInsight import router as teacher_insight_router
 from app.router.group import router as group_router
+from app.router.generate_notes import router as generate_notes_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 
@@ -33,6 +34,7 @@ app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
 app.include_router(teacher_insight_router, prefix="/insights", tags=["Teacher Insights"])
 app.include_router(group_router, prefix="/groups", tags=["Groups"])
+app.include_router(generate_notes_router, prefix="/notes", tags=["Generate Notes"])
 
 @app.get("/")
 def read_root():
