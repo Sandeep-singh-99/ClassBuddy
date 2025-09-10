@@ -31,3 +31,4 @@ class User(Base):
 
     teacher_sub = relationship("TeacherInsight", back_populates="owner")
     groups = relationship("TeacherInsight", secondary=group_members, back_populates="members")
+    note_sub = relationship("Note", back_populates="owner")
