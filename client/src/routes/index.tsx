@@ -12,6 +12,8 @@ import TInsight from "@/page/Teacher/Insight/TInsight";
 import InsightHome from "@/page/Teacher/Insight/InsightHome";
 import ViewAllTeacher from "@/page/Dashboard/ViewAllTeacher";
 import TNotes from "@/page/Teacher/TNotes";
+import ViewNotes from "@/page/Teacher/ViewNotes";
+import ViewNoteById from "@/page/Teacher/ViewNoteById";
 
 export const router = createBrowserRouter([
     {
@@ -63,6 +65,14 @@ export const router = createBrowserRouter([
             {
                 path: "create-notes",
                 element: <TNotes /> 
+            },
+            {
+                path: "view-notes",
+                element: <ViewNotes />
+            },
+            {
+                path: "view-notes/:noteId",
+                element: <ViewNoteById />
             }
         ]
     },
