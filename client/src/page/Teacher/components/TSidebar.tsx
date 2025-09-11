@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard,
   NotebookTabs,
+  NotepadTextDashed,
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -66,6 +67,18 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
           >
             <NotebookTabs className="mr-2 h-4 w-4" />
             Create Notes
+          </Button>
+        </Link>
+
+
+        <Link to={"/t-dashboard/view-notes"}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={closeSheet}
+          >
+            <NotepadTextDashed className="mr-2 h-4 w-4" />
+            View Notes
           </Button>
         </Link>
 

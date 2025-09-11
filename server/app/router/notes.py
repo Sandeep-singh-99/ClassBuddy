@@ -42,7 +42,7 @@ def get_teacher_notes(db: Session = Depends(get_db), current_user: User = Depend
     ]
 
 
-@router.get("/notes/{note_id}", response_model=NotesResponse)
+@router.get("/{note_id}", response_model=NotesResponse)
 def get_note_by_id(note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
