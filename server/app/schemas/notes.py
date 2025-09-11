@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+from datetime import datetime
 
 class NotesCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=100)
@@ -10,8 +11,8 @@ class NotesResponse(BaseModel):
     id: str
     title: str
     content: str
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
     owner_id: str
 
     class Config:
