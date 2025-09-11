@@ -6,14 +6,18 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { GroupJoinStudents } from "@/redux/slice/tSlice";
 import StudentsList from "./components/StudentsList";
+import { teacherNotes } from "@/redux/slice/noteSlice";
 
 export default function THome() {
   const dispatch = useAppDispatch();
 
   const { teachers } = useAppSelector((state) => state.teachers);
 
+  const { count } = useAppSelector((state) => state.notes);
+
   useEffect(() => {
     dispatch(GroupJoinStudents());
+    dispatch(teacherNotes());
   }, [dispatch]);
 
   return (
@@ -41,7 +45,7 @@ export default function THome() {
             <FileText className="w-4 h-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">10</div>
+            <div className="text-2xl font-bold">{count}</div>
             <p className="text-xs text-muted-foreground mt-1">
               +5 from last month
             </p>
