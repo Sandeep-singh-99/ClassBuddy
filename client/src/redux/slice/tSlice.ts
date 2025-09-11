@@ -92,6 +92,24 @@ export const generateNotes = createAsyncThunk("teacher/generate-notes", async (t
   }
 })
 
+export const saveNotes = createAsyncThunk("teacher/save-notes", async (formData: FormData, thunkApi) => {
+  try {
+    const response = await axiosClient.post("/notes/create-note", formData, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      }
+    })
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Saving notes failed"
+      );
+    }
+  }
+})
+
 interface IOwner {
   id: string;
   full_name: string;
