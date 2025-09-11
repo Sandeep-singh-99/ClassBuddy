@@ -16,6 +16,13 @@ class NoteBaseResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class TeacherNotesResponse(BaseModel):
+    count: int
+    notes: list[NoteBaseResponse]
+
+    class Config:
+        from_attributes = True
+
 class NotesResponse(BaseModel):
     id: str
     title: str

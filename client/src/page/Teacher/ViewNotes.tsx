@@ -1,13 +1,14 @@
-import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { teacherNotes } from "@/redux/slice/noteSlice";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, AlertCircle, FileText, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { teacherNotes } from "@/redux/slice/noteSlice";
 
 export default function ViewNotes() {
-  const dispatch = useAppDispatch();
   const { notes, loading, error } = useAppSelector((state) => state.notes);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(teacherNotes());
@@ -59,7 +60,10 @@ export default function ViewNotes() {
                   : "Click on this card to view the full content of the note."}
               </p>
 
-              <Link to={`/t-dashboard/view-notes/${note.id}`} className="mt-2 text-xs text-blue-500 font-medium flex items-center gap-1">
+              <Link
+                to={`/t-dashboard/view-notes/${note.id}`}
+                className="mt-2 text-xs text-blue-500 font-medium flex items-center gap-1"
+              >
                 Click to view <ArrowRight className="w-4 h-4" />
               </Link>
             </CardContent>

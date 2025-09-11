@@ -47,6 +47,7 @@ interface NoteState {
 interface NoteSliceState {
   notes: NoteState[];
   currentNote: NoteState | null;
+  count?: number;
   loading: boolean;
   error: string | null;
 }
@@ -54,6 +55,7 @@ interface NoteSliceState {
 const initialState: NoteSliceState = {
   notes: [],
   currentNote: null,
+  count: 0,
   loading: false,
   error: null,
 };
@@ -69,8 +71,9 @@ const noteSlice = createSlice({
     });
     builder.addCase(
       teacherNotes.fulfilled,
-      (state, action: PayloadAction<NoteState[]>) => {
-        state.notes = action.payload;
+      (state, action:PayloadAction<{ count: number; notes: NoteState[] }>) => {
+        state.notes = action.payload.notes;
+        state.count = action.payload.count;
         state.loading = false;
         state.error = null;
       }
