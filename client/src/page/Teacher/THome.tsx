@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { GroupJoinStudents } from "@/redux/slice/tSlice";
 import StudentsList from "./components/StudentsList";
 import { teacherNotes } from "@/redux/slice/noteSlice";
+import NotesList from "./components/NotesList";
 
 export default function THome() {
   const dispatch = useAppDispatch();
@@ -28,7 +29,7 @@ export default function THome() {
           <p className="">Welcome to your ClassBuddy dashboard</p>
         </div>
 
-        <Link to={""}>
+        <Link to={"/t-dashboard/create-notes"}>
           <Button>
             <PlusCircle className="h-4 w-4" />
             Create Notes
@@ -73,7 +74,7 @@ export default function THome() {
             <RatioIcon className="w-4 h-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
+            <div className="text-2xl font-bold">Coming soon...</div>
             <p className="text-xs text-muted-foreground mt-1">
               +5 from last month
             </p>
@@ -84,6 +85,7 @@ export default function THome() {
       {/* Recent Articles */}
       {/* <RecentArticle articles={articles} /> */}
       <StudentsList />
+      <NotesList />
     </main>
   );
 }
