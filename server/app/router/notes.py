@@ -54,3 +54,19 @@ def get_note_by_id(note_id: str, db: Session = Depends(get_db), current_user: Us
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
     
     return note
+
+
+@router.delete("/delete-note/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_note(note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete notes")
+    
+    note = db.query(Note).filter(Note.id == note_id, Note.owner_id == current_user.id).first()
+
+    if not note:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found or not owned by user")
+    
+    db.delete(note)
+    db.commit()
+
+    return {"message": "Note deleted successfully"}

@@ -35,6 +35,19 @@ export const teachersGetNoteById = createAsyncThunk(
   }
 );
 
+export const deleteNoteById = createAsyncThunk("notes/delete-note-by-id", async (id: string, thunkApi) => {
+  try {
+    const response = await axiosClient.delete(`/notes/delete-note/${id}`);
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Deleting note by ID failed"
+      );
+    }
+  }
+})
+
 interface NoteState {
   id: string;
   title: string;
