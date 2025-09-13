@@ -10,6 +10,7 @@ class NotesCreate(BaseModel):
 class NoteBaseResponse(BaseModel):
     id: str
     title: str
+    content: str
     created_at: datetime
     updated_at: datetime
 
