@@ -1,9 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { teachersGetNoteById } from "@/redux/slice/noteSlice";
 import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
 
 export default function ViewNoteById() {
@@ -18,13 +18,7 @@ export default function ViewNoteById() {
   }, [dispatch, noteId]);
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <Link
-        to="/t-dashboard/view-notes"
-        className="flex items-center gap-2 text-blue-600 mb-4 hover:underline"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Notes
-      </Link>
+    <div className="max-w-6xl mx-auto py-20">
 
       {loading && (
         <div className="flex items-center gap-2 text-gray-500">

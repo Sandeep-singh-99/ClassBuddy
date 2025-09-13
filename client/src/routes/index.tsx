@@ -14,6 +14,7 @@ import ViewAllTeacher from "@/page/Dashboard/ViewAllTeacher";
 import TNotes from "@/page/Teacher/TNotes";
 import ViewNotes from "@/page/Teacher/ViewNotes";
 import ViewNoteById from "@/page/Teacher/ViewNoteById";
+import Notes from "@/page/Dashboard/Notes";
 
 export const router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
                 path: "profile",
                 element: <Profile />
             },
+            {
+                path: "view-notes/:noteId",
+                element: <ViewNoteById />
+            }
         ]
     },
 
@@ -50,6 +55,10 @@ export const router = createBrowserRouter([
             {
                 path: "view-teachers",
                 element: <ViewAllTeacher />
+            },
+            {
+                path: "notes",
+                element: <Notes />
             }
         ]
     },
@@ -70,10 +79,6 @@ export const router = createBrowserRouter([
                 path: "view-notes",
                 element: <ViewNotes />
             },
-            {
-                path: "view-notes/:noteId",
-                element: <ViewNoteById />
-            }
         ]
     },
 
