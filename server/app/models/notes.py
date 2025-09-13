@@ -16,4 +16,9 @@ class Note(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     owner_id = Column(String, ForeignKey("users.id"))
 
-    owner = relationship("User", back_populates="notess")
+    owner = relationship("User", back_populates="notes")
+
+    owner_id = Column(String, ForeignKey("users.id"), nullable=False)
+    group_id = Column(String, ForeignKey("teacher_insights.id"), nullable=False)
+
+    group = relationship("TeacherInsight", back_populates="notes")
