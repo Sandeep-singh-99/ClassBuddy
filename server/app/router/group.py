@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.config.db import get_db
 from app.models.auth import User, userRole
 from app.dependencies.dependencies import get_current_user
@@ -8,7 +8,6 @@ from app.schemas.teacherInsight import TeacherInsightCreate, TeacherInsightRespo
 from app.schemas.auth import UserResponse
 
 router = APIRouter()
-
 @router.post("/join", response_model=TeacherInsightResponse)
 def join_group(
     request: JoinGroupRequest,
@@ -22,24 +21,38 @@ def join_group(
             detail="Authentication required."
         )
 
+    # Fetch ORM user from DB to ensure it's attached to the active session
+    orm_user = db.query(User).filter(User.id == current_user.id).first()
+    if not orm_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found in database.")
+
     # Only students can join groups
-    if current_user.role != userRole.STUDENT:
+    if orm_user.role != userRole.STUDENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only students can join groups."
         )
 
     # Find the group
-    group = db.query(TeacherInsight).filter(TeacherInsight.id == request.group_id).first()
+    group = (
+        db.query(TeacherInsight)
+        .options(joinedload(TeacherInsight.members))  # Load members to avoid lazy loading later
+        .filter(TeacherInsight.id == request.group_id)
+        .first()
+    )
     if not group:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found.")
 
     # Check if already a member
-    if current_user in group.members:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already in group.")
+    if any(member.id == orm_user.id for member in group.members):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User already in group."
+        )
 
     # Add user to group
-    group.members.append(current_user)
+    group.members.append(orm_user)
+    db.add(group)  # Explicitly add to session
     db.commit()
     db.refresh(group)
 
