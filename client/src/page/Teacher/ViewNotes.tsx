@@ -55,13 +55,11 @@ export default function ViewNotes() {
               </div>
               {/* Content Preview / Click Hint */}
               <p className="text-gray-600 text-sm line-clamp-3">
-                {note.content
-                  ? note.content
-                  : "Click on this card to view the full content of the note."}
+                Click on this card to view the full content of the note.
               </p>
 
               <Link
-                to={`/t-dashboard/view-notes/${note.id}`}
+                to={`/view-notes/${note.id}`}
                 className="mt-2 text-xs text-blue-500 font-medium flex items-center gap-1"
               >
                 Click to view <ArrowRight className="w-4 h-4" />

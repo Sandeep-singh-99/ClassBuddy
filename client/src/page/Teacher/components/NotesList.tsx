@@ -42,7 +42,7 @@ export default function NotesList() {
                   </TableCell>
                    <TableCell>
                     <div className="flex items-center gap-2">
-                      <Link to={`/t-dashboard/view-notes/${note.id}`}>
+                      <Link to={`/view-notes/${note.id}`}>
                         <Button variant={"ghost"} size={"sm"}>
                           View
                         </Button>
