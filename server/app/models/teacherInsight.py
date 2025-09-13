@@ -21,5 +21,8 @@ class TeacherInsight(Base):
     owner = relationship("User", back_populates="teacher_sub")
     members = relationship("User", secondary=group_members, back_populates="groups") 
 
+    notes = relationship("Note", back_populates="group", cascade="all, delete-orphan")
+
+
 
 

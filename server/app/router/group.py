@@ -136,7 +136,3 @@ def view_students_in_teacher_groups(
 
     return result
 
-
-@router.get("/hello")
-def hello_world():
-    return {"message": "Hello, World!"}
