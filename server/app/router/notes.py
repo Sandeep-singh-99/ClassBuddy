@@ -100,5 +100,3 @@ def delete_note(note_id: str, db: Session = Depends(get_db), current_user: User 
     db.commit()
 
     return {"message": "Note deleted successfully"}
-
-
