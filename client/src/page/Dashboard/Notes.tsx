@@ -55,7 +55,7 @@ export default function Notes() {
               </div>
               {/* Content Preview / Click Hint */}
               <p className="text-gray-600 text-sm line-clamp-3">
-                   "Click on this card to view the full content of the note."
+                Click on this card to view the full content of the note.
               </p>
 
               <Link
