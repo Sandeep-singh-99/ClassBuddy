@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, File, Form
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, File, Form, status
+from sqlalchemy.orm import Session, joinedload
 from app.config.db import get_db
-from app.schemas.auth import UserCreate, UserLogin, UserResponse, UserOut
+from app.schemas.auth import UserCreate, UserLogin, UserResponse, UserOut, userRole
 from app.models.auth import User
+from app.models.notes import Note
+from app.models.teacherInsight import TeacherInsight
+from app.schemas.notes import NotesResponse, NoteBaseResponse
+from app.schemas.teacherInsight import TeacherInsightResponse, TeacherInsightBase
 from app.utils.utils import hash_password, verify_password, create_access_token
 from app.dependencies.dependencies import get_current_user
 from app.utils.cloudinary import upload_image, delete_image
@@ -101,3 +105,33 @@ def logout(response: Response, current_user: User = Depends(get_current_user)):
            samesite="none"   
     )
     return current_user
+
+
+@router.get("/my-group-notes", response_model=TeacherInsightResponse)
+def get_all_group_notes_for_student(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Return all notes from every group the current student has joined.
+    """
+    # Fetch ORM user and groups to avoid relying on possibly detached current_user
+    orm_user = db.query(User).options(joinedload(User.groups)).filter(User.id == current_user.id).first()
+    if not orm_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+
+    if orm_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this endpoint")
+
+    group_ids = [g.id for g in orm_user.groups]
+    if not group_ids:
+        return {"count": 0, "notes": []}
+
+    notes = (
+        db.query(Note)
+        .filter(Note.group_id.in_(group_ids))
+        .order_by(Note.created_at.desc())
+        .all()
+    )
+
+    return {"count": len(notes), "notes": notes}
