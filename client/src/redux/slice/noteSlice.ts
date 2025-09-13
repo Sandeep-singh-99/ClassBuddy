@@ -48,6 +48,19 @@ export const deleteNoteById = createAsyncThunk("notes/delete-note-by-id", async 
   }
 })
 
+export const studentJoinGroupNote = createAsyncThunk("notes/student-join-group-note", async (_ , thunkApi) => {
+  try {
+    const response = await axiosClient.get("/auth/student/notes")
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Joining group note failed"
+      );
+    }  
+  }
+})
+
 interface NoteState {
   id: string;
   title: string;
@@ -106,6 +119,22 @@ const noteSlice = createSlice({
       state.error = null;
     });
     builder.addCase(teachersGetNoteById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    builder.addCase(studentJoinGroupNote.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(studentJoinGroupNote.fulfilled, (state, action) => {
+      state.notes = action.payload.notes;
+      state.count = action.payload.count;
+      state.loading = false;
+      state.error = null;
+    });
+
+    builder.addCase(studentJoinGroupNote.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

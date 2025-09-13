@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   LayoutDashboard,
+  NotebookTabsIcon,
   Sparkles,
   User2,
 } from "lucide-react";
@@ -66,6 +67,17 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
           >
             <User2 className="mr-2 h-4 w-4" />
             All Teachers
+          </Button>
+        </Link>
+
+        <Link to={"/dashboard-panel/notes"}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={closeSheet}
+          >
+            <NotebookTabsIcon className="mr-2 h-4 w-4" />
+            Notes
           </Button>
         </Link>
 
