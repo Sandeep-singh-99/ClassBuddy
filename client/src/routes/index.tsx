@@ -15,6 +15,7 @@ import TNotes from "@/page/Teacher/TNotes";
 import ViewNotes from "@/page/Teacher/ViewNotes";
 import ViewNoteById from "@/page/Teacher/ViewNoteById";
 import Notes from "@/page/Dashboard/Notes";
+import UpdatedNote from "@/page/Teacher/UpdatedNote";
 
 export const router = createBrowserRouter([
     {
@@ -79,6 +80,10 @@ export const router = createBrowserRouter([
                 path: "view-notes",
                 element: <ViewNotes />
             },
+            {
+                path: "update-note/:noteId",
+                element: <UpdatedNote />
+            }
         ]
     },
 

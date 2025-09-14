@@ -47,6 +47,11 @@ export default function NotesList() {
                           View
                         </Button>
                       </Link>
+                      <Link to={`/t-dashboard/update-note/${note.id}`}>
+                        <Button variant={"secondary"} size={"sm"}>
+                          Update
+                        </Button>
+                      </Link>
                       <DeleteBtn noteId={note.id} />
                     </div>
                   </TableCell>
