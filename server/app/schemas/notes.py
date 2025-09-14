@@ -36,5 +36,10 @@ class NotesResponse(BaseModel):
         from_attributes = True
 
 class EditNotes(BaseModel):
+    id: str
     title: Optional[str] = Field(None, min_length=1, max_length=100)
     content: Optional[str] = Field(None, min_length=1)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        from_attributes = True
