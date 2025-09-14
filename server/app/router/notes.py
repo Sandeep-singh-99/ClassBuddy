@@ -44,7 +44,7 @@ def create_note(
         title=title,
         content=content,
         owner_id=current_user.id,
-        group_id=teacher_group.id  # Automatically assigned
+        group_id=teacher_group.id  
     )
     db.add(new_note)
     db.commit()
