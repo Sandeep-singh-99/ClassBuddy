@@ -9,6 +9,7 @@ from app.dependencies.dependencies import get_current_user
 from app.schemas.notes import NotesCreate, NotesResponse, EditNotes, NoteBaseResponse, TeacherNotesResponse
 from app.models.notes import Note
 from app.models.teacherInsight import TeacherInsight
+from datetime import datetime
 
 
 router = APIRouter()
@@ -100,3 +101,33 @@ def delete_note(note_id: str, db: Session = Depends(get_db), current_user: User 
     db.commit()
 
     return {"message": "Note deleted successfully"}
+
+
+@router.put("/edit-note/{note_id}", response_model=NotesResponse)
+def edit_note(
+    note_id: str,
+    note_data: EditNotes,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Only TEACHER can edit notes
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=403, detail="Not authorized to edit notes")
+
+    # Find the note
+    note = db.query(Note).filter(Note.id == note_id, Note.owner_id == current_user.id).first()
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found or not owned by user")
+
+    update_data = note_data.dict(exclude_unset=True)  
+
+    
+    for key, value in update_data.items():
+        setattr(note, key, value)
+
+    note.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(note)
+
+    return note
