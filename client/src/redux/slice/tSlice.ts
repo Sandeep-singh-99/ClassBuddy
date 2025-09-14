@@ -110,6 +110,27 @@ export const saveNotes = createAsyncThunk("teacher/save-notes", async (formData:
   }
 })
 
+
+export const updateNotes = createAsyncThunk("teacher/update-notes", async (data: { noteId: string; title?: string; content?: string }, thunkApi) => {
+  try {
+    const response = await axiosClient.put(`/notes/edit-note/${data.noteId}`,{
+      title: data.title,
+      content: data.content
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Updating notes failed"
+      );
+    }
+  }
+})
+
 interface IOwner {
   id: string;
   full_name: string;
@@ -205,7 +226,6 @@ const tSlice = createSlice({
     builder.addCase(GroupJoinStudents.fulfilled, (state, action) => {
       state.loading = false;
       state.error = null;
-      // Assuming action.payload contains the list of students
       state.teachers = action.payload;
     });
 
@@ -223,7 +243,7 @@ const tSlice = createSlice({
     builder.addCase(generateNotes.fulfilled, (state, action) => {
       state.loading = false;
       state.error = null;
-      state.generatedNotes = action.payload.generated_notes; // Assuming the API returns { notes: "generated notes content" }
+      state.generatedNotes = action.payload.generated_notes; 
     });
 
     builder.addCase(generateNotes.rejected, (state, action) => {
