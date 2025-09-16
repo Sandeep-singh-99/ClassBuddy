@@ -16,8 +16,8 @@ import ViewNotes from "@/page/Teacher/ViewNotes";
 import ViewNoteById from "@/page/Teacher/ViewNoteById";
 import Notes from "@/page/Dashboard/Notes";
 import UpdatedNote from "@/page/Teacher/UpdatedNote";
-import QuizPerPage from "@/page/Dashboard/QuizPerPage";
-import Mock from "@/page/Dashboard/mock";
+import InterviewPerPage from "@/page/Dashboard/InterviewPerPage";
+import Mock from "@/page/Dashboard/Mock";
 
 export const router = createBrowserRouter([
     {
@@ -64,8 +64,8 @@ export const router = createBrowserRouter([
                 element: <Notes />
             },
             {
-                path: "quiz-per",
-                element: <QuizPerPage />
+                path: "interview-prep",
+                element: <InterviewPerPage />
             },
             {
                 path: "mock",

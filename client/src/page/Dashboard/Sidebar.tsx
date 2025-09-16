@@ -81,14 +81,14 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
           </Button>
         </Link>
 
-        <Link to={"/dashboard-panel/quiz-per"}>
+        <Link to={"/dashboard-panel/interview-prep"}>
           <Button
             variant="ghost"
             className="w-full justify-start"
             onClick={closeSheet}
           >
             <NotebookTabsIcon className="mr-2 h-4 w-4" />
-            Quiz Preparation 
+            Interview Preparation
           </Button>
         </Link>
 
