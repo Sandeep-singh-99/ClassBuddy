@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  GraduationCap,
   LayoutDashboard,
   NotebookTabsIcon,
   Sparkles,
@@ -87,7 +88,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
             className="w-full justify-start"
             onClick={closeSheet}
           >
-            <NotebookTabsIcon className="mr-2 h-4 w-4" />
+            <GraduationCap className="mr-2 h-4 w-4" />
             Interview Preparation
           </Button>
         </Link>
