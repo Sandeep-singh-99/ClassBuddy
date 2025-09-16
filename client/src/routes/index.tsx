@@ -16,6 +16,7 @@ import ViewNotes from "@/page/Teacher/ViewNotes";
 import ViewNoteById from "@/page/Teacher/ViewNoteById";
 import Notes from "@/page/Dashboard/Notes";
 import UpdatedNote from "@/page/Teacher/UpdatedNote";
+import QuizPerPage from "@/page/Dashboard/QuizPerPage";
 
 export const router = createBrowserRouter([
     {
@@ -60,6 +61,10 @@ export const router = createBrowserRouter([
             {
                 path: "notes",
                 element: <Notes />
+            },
+            {
+                path: "quiz-per",
+                element: <QuizPerPage />
             }
         ]
     },
