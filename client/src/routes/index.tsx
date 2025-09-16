@@ -17,6 +17,7 @@ import ViewNoteById from "@/page/Teacher/ViewNoteById";
 import Notes from "@/page/Dashboard/Notes";
 import UpdatedNote from "@/page/Teacher/UpdatedNote";
 import QuizPerPage from "@/page/Dashboard/QuizPerPage";
+import Mock from "@/page/Dashboard/mock";
 
 export const router = createBrowserRouter([
     {
@@ -65,6 +66,10 @@ export const router = createBrowserRouter([
             {
                 path: "quiz-per",
                 element: <QuizPerPage />
+            },
+            {
+                path: "mock",
+                element: <Mock />
             }
         ]
     },
