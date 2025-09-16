@@ -1,11 +1,11 @@
 import QuizList from "@/components/QuizList";
 
-export default function QuizPerPage() {
+export default function InterviewPerPage() {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-6xl font-bold gradient-title">
-          Quiz Preparation
+          Interview Preparation
         </h1>
       </div>
       <div className="space-y-6">
