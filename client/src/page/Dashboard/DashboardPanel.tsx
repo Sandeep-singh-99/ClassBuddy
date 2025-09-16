@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom"
-import SideBar from "./Sidebar"
+import SideBar from "../../components/Sidebar"
 import { ToastContainer } from "react-toastify"
 
 function DashboardPanel() {
