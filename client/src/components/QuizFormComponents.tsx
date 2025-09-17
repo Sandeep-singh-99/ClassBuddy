@@ -11,15 +11,23 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 export default function QuizFormComponents() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted");
+    navigate("/dashboard-panel/mock");
+  };
   return (
     <Dialog>
-      <form>
-        <DialogTrigger asChild>
-          <Button variant="secondary">Start New Quiz</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+      <DialogTrigger asChild>
+        <Button variant="secondary">Start New Quiz</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <DialogTitle>Quiz</DialogTitle>
             <DialogDescription>
@@ -50,8 +58,8 @@ export default function QuizFormComponents() {
             </DialogClose>
             <Button type="submit">Start Quiz</Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }
