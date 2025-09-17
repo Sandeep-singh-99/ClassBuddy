@@ -17,7 +17,6 @@ import ViewNoteById from "@/page/Teacher/ViewNoteById";
 import Notes from "@/page/Dashboard/Notes";
 import UpdatedNote from "@/page/Teacher/UpdatedNote";
 import InterviewPerPage from "@/page/Dashboard/InterviewPerPage";
-import Mock from "@/page/Dashboard/Mock";
 
 export const router = createBrowserRouter([
     {
@@ -66,10 +65,6 @@ export const router = createBrowserRouter([
             {
                 path: "interview-prep",
                 element: <InterviewPerPage />
-            },
-            {
-                path: "mock",
-                element: <Mock />
             }
         ]
     },
