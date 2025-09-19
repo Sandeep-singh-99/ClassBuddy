@@ -4,6 +4,15 @@ ClassBuddy is a full-stack web application designed to enhance classroom collabo
 
 ![screenshot](./screenshot/1756311638435.jpg)
 
+## ✨ Features
+
+### **1. AI-Powered Teacher Notes**
+- Teachers can **generate notes with the help of AI**.
+- Perform **CRUD operations** (Create, Read, Update, Delete) on their notes.
+- Students can **view these notes** if they **join the teacher’s group**.
+- Seamless **note sharing** and **collaboration** within the group.
+
+
 ## Tech Stack
 
 **Frontend:**
