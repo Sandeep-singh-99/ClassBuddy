@@ -77,12 +77,12 @@ export default function Navbar() {
                             <p className="hidden md:inline">Dashboard</p>
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        {/* <DropdownMenuItem>
                           <Link to={"/dashboard-panel/chat"} className="transition flex gap-2">
                             <ChartPieIcon />
                             <p className="hidden md:inline">Chat</p>
                           </Link>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
                           <LogOutIcon />
                           Logout
