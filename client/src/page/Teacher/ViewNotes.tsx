@@ -17,12 +17,12 @@ export default function ViewNotes() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
-        <FileText className="w-8 h-8 text-blue-600" /> Teacher Notes
+        <FileText className="w-8 h-8 text-blue-600" /> View Own Notes
       </h1>
 
       {/* Loading */}
       {loading && (
-        <div className="flex items-center gap-2 text-gray-500 mb-4">
+        <div className="flex items-center justify-center h-screen gap-2 text-gray-500 mb-4">
           <Loader2 className="w-5 h-5 animate-spin" /> Loading notes...
         </div>
       )}

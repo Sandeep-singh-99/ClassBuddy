@@ -22,7 +22,7 @@ export default function Notes() {
 
       {/* Loading */}
       {loading && (
-        <div className="flex items-center gap-2 text-gray-500 mb-4">
+        <div className="flex items-center justify-center h-screen gap-2 text-gray-500 mb-4">
           <Loader2 className="w-5 h-5 animate-spin" /> Loading notes...
         </div>
       )}
