@@ -67,6 +67,7 @@ def get_teacher_notes(
     
     # Fetch teacher's notes
     teacher_notes = db.query(Note).filter(Note.owner_id == current_user.id).all()
+    teacher_notes.sort(key=lambda x: x.created_at, reverse=True)
 
     return {
         "count": len(teacher_notes), 

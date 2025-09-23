@@ -83,7 +83,6 @@ export default function THome() {
       </div>
 
       {/* Recent Articles */}
-      {/* <RecentArticle articles={articles} /> */}
       <StudentsList />
       <NotesList />
     </main>
