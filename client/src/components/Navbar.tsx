@@ -1,4 +1,4 @@
-import { ChartPieIcon, LayoutDashboard, LogOutIcon } from "lucide-react";
+import { LayoutDashboard, LogOutIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import AuthComponent from "./AuthComponent";
 import { useAppSelector } from "@/hooks/hooks";
@@ -43,12 +43,6 @@ export default function Navbar() {
         {
           user ? (
             <div className="flex items-center gap-4 text-gray-300">
-              {/* <Link to={"/contact"} className="hover:text-yellow-400 transition">
-            <Button variant={"outline"}>
-              <Contact />
-              Contact
-            </Button>
-          </Link> */}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -61,7 +55,7 @@ export default function Navbar() {
                         <DropdownMenuItem>
                           <Link to={"/t-dashboard/home"} className="transition flex gap-2">
                             <LayoutDashboard />
-                            <p className="hidden md:inline">Dashboard</p>
+                            <p>Dashboard</p>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
@@ -74,18 +68,12 @@ export default function Navbar() {
                         <DropdownMenuItem>
                           <Link to={"/dashboard-panel/home"} className="transition flex gap-2">
                             <LayoutDashboard />
-                            <p className="hidden md:inline">Dashboard</p>
+                            <p>Dashboard</p>
                           </Link>
                         </DropdownMenuItem>
-                        {/* <DropdownMenuItem>
-                          <Link to={"/dashboard-panel/chat"} className="transition flex gap-2">
-                            <ChartPieIcon />
-                            <p className="hidden md:inline">Chat</p>
-                          </Link>
-                        </DropdownMenuItem> */}
                         <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
                           <LogOutIcon />
-                          Logout
+                          <p>Logout</p>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                     )

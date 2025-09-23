@@ -5,8 +5,6 @@ import { useAppSelector } from "@/hooks/hooks";
 import { Link } from "react-router-dom";
 import DeleteBtn from "./DeleteBtn";
 
-
-
 export default function NotesList() {
   const { notes } = useAppSelector((state) => state.notes);
   return (
