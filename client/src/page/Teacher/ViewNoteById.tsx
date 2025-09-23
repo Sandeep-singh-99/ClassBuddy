@@ -21,7 +21,7 @@ export default function ViewNoteById() {
     <div className="max-w-6xl mx-auto py-20">
 
       {loading && (
-        <div className="flex items-center gap-2 text-gray-500">
+        <div className="flex flex-col justify-center h-screen items-center gap-2 text-gray-500">
           <Loader2 className="w-5 h-5 animate-spin" /> Loading note...
         </div>
       )}
