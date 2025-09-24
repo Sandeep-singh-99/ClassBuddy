@@ -38,7 +38,7 @@ app.include_router(teacher_insight_router, prefix="/insights", tags=["Teacher In
 app.include_router(group_router, prefix="/groups", tags=["Groups"])
 app.include_router(generate_notes_router, prefix="/notes", tags=["Generate Notes"])
 app.include_router(notes_router, prefix="/notes", tags=["Notes"])
-app.include_router(interview_prep_router, prefix="/interview-prep", tags=["Interview Preparation"])
+# app.include_router(interview_prep_router, prefix="/interview-prep", tags=["Interview Preparation"])
 
 @app.get("/")
 def read_root():
