@@ -1,12 +1,13 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
-from fastapi import UploadFile
-
+from pydantic import BaseModel, Field
+from typing import Dict
 
 class InterviewPreparationCreate(BaseModel):
-    name: str = Field(..., examples="Technical Interview Prep")
-    description: str = Field(..., examples="Preparation for technical interviews")
-    questions: dict = Field(..., examples={"question1": "What is polymorphism?", "question2": "Explain OOP concepts."})
+    name: str = Field(..., examples=["Technical Interview Prep"])
+    description: str = Field(..., examples=["Preparation for technical interviews"])
+    # questions: Dict[str, str] = Field(
+    #     ..., 
+    #     examples=[{"question1": "What is polymorphism?", "question2": "Explain OOP concepts."}]
+    # )
     
 
 class InterviewPreparationResponse(BaseModel):

@@ -6,6 +6,7 @@ from app.router.teacherInsight import router as teacher_insight_router
 from app.router.group import router as group_router
 from app.router.generate_notes import router as generate_notes_router
 from app.router.notes import router as notes_router
+from app.router.interviewPerp import router as interview_prep_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 
@@ -37,6 +38,7 @@ app.include_router(teacher_insight_router, prefix="/insights", tags=["Teacher In
 app.include_router(group_router, prefix="/groups", tags=["Groups"])
 app.include_router(generate_notes_router, prefix="/notes", tags=["Generate Notes"])
 app.include_router(notes_router, prefix="/notes", tags=["Notes"])
+app.include_router(interview_prep_router, prefix="/interview-prep", tags=["Interview Preparation"])
 
 @app.get("/")
 def read_root():
