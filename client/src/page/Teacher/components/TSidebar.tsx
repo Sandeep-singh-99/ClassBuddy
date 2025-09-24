@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  BookOpenText,
   LayoutDashboard,
   NotebookTabs,
   NotepadTextDashed,
@@ -79,6 +80,17 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
           >
             <NotepadTextDashed className="mr-2 h-4 w-4" />
             View Notes
+          </Button>
+        </Link>
+
+        <Link to={"/t-dashboard/assignments"}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={closeSheet}
+          >
+            <BookOpenText className="mr-2 h-4 w-4" />
+            Assignments
           </Button>
         </Link>
 
