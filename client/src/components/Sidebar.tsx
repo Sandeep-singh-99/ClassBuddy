@@ -82,7 +82,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
           </Button>
         </Link>
 
-        <Link to={"/dashboard-panel/interview-prep"}>
+        {/* <Link to={"/dashboard-panel/interview-prep"}>
           <Button
             variant="ghost"
             className="w-full justify-start"
@@ -91,7 +91,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
             <GraduationCap className="mr-2 h-4 w-4" />
             Interview Preparation
           </Button>
-        </Link>
+        </Link> */}
 
         
         {/* <FeedbackFormComponents /> */}
