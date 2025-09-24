@@ -83,7 +83,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
           </Button>
         </Link>
 
-        <Link to={"/t-dashboard/assignments"}>
+        {/* <Link to={"/t-dashboard/assignments"}>
           <Button
             variant="ghost"
             className="w-full justify-start"
@@ -92,7 +92,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
             <BookOpenText className="mr-2 h-4 w-4" />
             Assignments
           </Button>
-        </Link>
+        </Link> */}
 
         
         {/* <FeedbackFormComponents /> */}
