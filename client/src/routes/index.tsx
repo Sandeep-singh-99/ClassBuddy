@@ -18,6 +18,7 @@ import Notes from "@/page/Dashboard/Notes";
 import UpdatedNote from "@/page/Teacher/UpdatedNote";
 import InterviewPerPage from "@/page/Dashboard/InterviewPerPage";
 import Mock from "@/page/Dashboard/Mock";
+import TAssignment from "@/page/Teacher/TAssignment";
 
 export const router = createBrowserRouter([
     {
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
             {
                 path: "update-note/:noteId",
                 element: <UpdatedNote />
+            },
+            {
+                path: "assignments",
+                element: <TAssignment />
             }
         ]
     },
