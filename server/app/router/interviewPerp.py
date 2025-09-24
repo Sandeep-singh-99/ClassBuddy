@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import TypedDict, Annotated, Dict
-from app.schemas.interviewpreparation import InterviewPreparationCreate, InterviewPreparationResponse
+from app.schemas.interviewpreparation import InterviewPreparationCreate, InterviewPreparationResponse, InterviewPrepSubmit
 from app.dependencies.dependencies import get_current_user
 from app.config.db import get_db
 from app.models.auth import User, userRole
@@ -132,3 +132,45 @@ def create_interview_prep(
     db.refresh(new_entry)
 
     return new_entry
+
+
+
+
+@router.post("/submit-quiz/{quiz_id}")
+def submit_quiz(
+    quiz_id: str,
+    payload: InterviewPrepSubmit,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # Fetch quiz
+    quiz = db.query(InterviewPrep).filter(InterviewPrep.id == quiz_id).first()
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+
+    if quiz.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to submit this quiz")
+
+    total_questions = len(quiz.questions.get("questions", []))
+    score = 0
+    improvement = []
+
+    for idx, q in enumerate(quiz.questions.get("questions", [])):
+        user_answer = payload.answers.get(idx)
+        if user_answer:
+            if user_answer.strip().upper() == q["answer"].strip().upper():
+                score += 1
+            else:
+                improvement.append(f"Q{idx+1}: {q['explanation']}")
+
+    # Update quiz entry
+    quiz.score = score
+    quiz.improvement = "\n".join(improvement)
+    db.commit()
+    db.refresh(quiz)
+
+    return {
+        "score": score,
+        "total_questions": total_questions,
+        "improvement": quiz.improvement,
+    }

@@ -11,15 +11,32 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAppDispatch } from "@/hooks/hooks";
+import { InterviewPrepCreate } from "@/redux/slice/interviewSlice";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function QuizFormComponents() {
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const dispatch = useAppDispatch();
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted");
-    navigate("/dashboard-panel/mock");
+
+
+    try {
+       await dispatch(InterviewPrepCreate({ name: title, description })).unwrap();
+        toast.success("Quiz created successfully!");
+         navigate("/dashboard-panel/mock");
+    } catch (error) {
+      toast.error("Failed to create quiz. Please try again.");
+    }
   };
   return (
     <Dialog>
@@ -40,6 +57,9 @@ export default function QuizFormComponents() {
               <Input
                 id="name-1"
                 name="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
                 placeholder="Enter quiz title..."
               />
             </div>
@@ -48,6 +68,9 @@ export default function QuizFormComponents() {
               <Input
                 id="username-1"
                 name="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
                 placeholder="Enter your description..."
               />
             </div>

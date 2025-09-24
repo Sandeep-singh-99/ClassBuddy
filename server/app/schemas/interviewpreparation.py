@@ -8,7 +8,14 @@ class InterviewPreparationCreate(BaseModel):
     #     ..., 
     #     examples=[{"question1": "What is polymorphism?", "question2": "Explain OOP concepts."}]
     # )
-    
+
+
+class InterviewPrepSubmit(BaseModel):
+    id: str
+    user_id: str
+
+    class Config:
+        from_attributes = True
 
 class InterviewPreparationResponse(BaseModel):
     id: str
