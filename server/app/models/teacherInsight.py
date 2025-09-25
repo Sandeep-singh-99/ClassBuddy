@@ -22,7 +22,7 @@ class TeacherInsight(Base):
     members = relationship("User", secondary=group_members, back_populates="groups") 
 
     notes = relationship("Note", back_populates="group", cascade="all, delete-orphan")
-
+    docsuploads = relationship("DocsUpload", back_populates="group", cascade="all, delete-orphan")
 
 
 
