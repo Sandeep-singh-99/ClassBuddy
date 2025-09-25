@@ -3,13 +3,15 @@ import authSlice from './slice/authSlice'
 import teacherSlice from './slice/tSlice'
 import noteSlice from './slice/noteSlice'
 import interviewSlice from './slice/interviewSlice'
+import docsSlice from './slice/docsSlice'
 
 export const store = configureStore({
     reducer: {
         auth: authSlice,
         teachers: teacherSlice,
         interview: interviewSlice,
-        notes: noteSlice
+        notes: noteSlice,
+        docs: docsSlice
     }
 })
 
