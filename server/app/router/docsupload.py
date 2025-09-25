@@ -50,7 +50,7 @@ def upload_doc(filename: str = Form(...), file: UploadFile = File(...), db: Sess
     return new_doc
 
 
-@router.get("/my-docs", response_model=List[DocsUploadResponse])
+@router.get("/my-docs", response_model=List[DocsBase])
 def get_my_docs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     docs = db.query(DocsUpload).filter(DocsUpload.owner_id == current_user.id).all()
     return docs
