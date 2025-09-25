@@ -68,7 +68,7 @@ const docsSlice = createSlice({
     });
     builder.addCase(DocsUpload.fulfilled, (state, action) => {
       state.loading = false;
-      state.docs = action.payload
+      state.docs = [...state.docs, action.payload];
     });
     builder.addCase(DocsUpload.rejected, (state, action: PayloadAction<any>) => {
       state.loading = false;
