@@ -19,6 +19,7 @@ import UpdatedNote from "@/page/Teacher/UpdatedNote";
 import InterviewPerPage from "@/page/Dashboard/InterviewPerPage";
 import Mock from "@/page/Dashboard/Mock";
 import TAssignment from "@/page/Teacher/TAssignment";
+import Docs from "@/page/Teacher/Docs";
 
 export const router = createBrowserRouter([
     {
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
             {
                 path: "assignments",
                 element: <TAssignment />
+            },
+            {
+                path: "docs",
+                element: <Docs />
             }
         ]
     },
