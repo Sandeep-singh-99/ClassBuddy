@@ -21,6 +21,7 @@ import Mock from "@/page/Dashboard/Mock";
 import TAssignment from "@/page/Teacher/TAssignment";
 import Docs from "@/page/Teacher/Docs";
 import DocsById from "@/page/Teacher/DocsById";
+import DocView from "@/page/Dashboard/DocView";
 
 export const router = createBrowserRouter([
     {
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
             {
                 path: "mock",
                 element: <Mock />
+            },
+            {
+                path: "docs",
+                element: <DocView />
             }
         ]
     },
