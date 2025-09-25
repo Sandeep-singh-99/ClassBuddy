@@ -52,6 +52,24 @@ export const DocsFetchById = createAsyncThunk(
   }
 );
 
+export const DocsStudentFetch = createAsyncThunk(
+  "docs/studentFetch",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get(
+        "/docs/teacher-notes-with-docs"
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data || "Generating notes failed"
+        );
+      }
+    }
+  }
+);
+
 interface IDocs {
   id?: string;
   filename?: string;
@@ -59,6 +77,7 @@ interface IDocs {
   created_at?: string;
   updated_at?: string;
 }
+
 
 interface DocsState {
   docs: IDocs[];
@@ -115,10 +134,29 @@ const docsSlice = createSlice({
       state.loading = false;
       state.currentDoc = action.payload;
     });
-    builder.addCase(DocsFetchById.rejected, (state, action: PayloadAction<any>) => {
-      state.loading = false;
-      state.error = action.payload;
+    builder.addCase(
+      DocsFetchById.rejected,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      }
+    );
+
+    builder.addCase(DocsStudentFetch.pending, (state) => {
+      state.loading = true;
+      state.error = null;
     });
+    builder.addCase(DocsStudentFetch.fulfilled, (state, action) => {
+      state.loading = false;
+      state.docs = action.payload.docsuploads;
+    });
+    builder.addCase(
+      DocsStudentFetch.rejected,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      }
+    );
   },
 });
 
