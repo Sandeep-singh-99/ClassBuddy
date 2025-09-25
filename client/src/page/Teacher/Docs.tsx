@@ -42,7 +42,7 @@ export default function Docs() {
                 Click on this card to view the full content of the note.
               </p>
               <Link
-                to={`/view-notes/${doc.id}`}
+                to={`/docs/${doc.id}`}
                 className="mt-2 text-xs text-blue-500 font-medium flex items-center gap-1"
               >
                 Click to view <ArrowRight className="w-4 h-4" />

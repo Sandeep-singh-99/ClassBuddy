@@ -20,6 +20,7 @@ import InterviewPerPage from "@/page/Dashboard/InterviewPerPage";
 import Mock from "@/page/Dashboard/Mock";
 import TAssignment from "@/page/Teacher/TAssignment";
 import Docs from "@/page/Teacher/Docs";
+import DocsById from "@/page/Teacher/DocsById";
 
 export const router = createBrowserRouter([
     {
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
             {
                 path: "view-notes/:noteId",
                 element: <ViewNoteById />
+            },
+            {
+                path: "docs/:docId",
+                element: <DocsById />
             }
         ]
     },
