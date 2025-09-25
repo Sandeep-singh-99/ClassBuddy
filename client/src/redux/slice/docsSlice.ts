@@ -23,6 +23,20 @@ export const DocsUpload = createAsyncThunk(
   }
 );
 
+
+export const DocsFetch = createAsyncThunk("docs/fetch", async (_ , thunkApi) => {
+    try {
+        const response = await axiosClient.get("/docs/my-docs");
+        return response.data;
+    } catch (error) {
+         if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data || "Generating notes failed"
+        );
+      }
+    }
+})
+
 interface IDocs {
   id?: string;
   filename?: string;
@@ -57,6 +71,18 @@ const docsSlice = createSlice({
       state.docs = action.payload
     });
     builder.addCase(DocsUpload.rejected, (state, action: PayloadAction<any>) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+    builder.addCase(DocsFetch.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(DocsFetch.fulfilled, (state, action) => {
+      state.loading = false;
+      state.docs = action.payload;
+    });
+    builder.addCase(DocsFetch.rejected, (state, action: PayloadAction<any>) => {
       state.loading = false;
       state.error = action.payload;
     });
