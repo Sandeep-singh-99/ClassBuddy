@@ -35,4 +35,6 @@ class User(Base):
 
     interviewpreps = relationship("InterviewPrep", back_populates="owner")
 
+    docsuploads = relationship("DocsUpload", back_populates="owner")
+
 
