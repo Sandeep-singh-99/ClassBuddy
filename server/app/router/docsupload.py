@@ -55,12 +55,17 @@ def get_my_docs(db: Session = Depends(get_db), current_user: User = Depends(get_
     docs = db.query(DocsUpload).filter(DocsUpload.owner_id == current_user.id).all()
     return docs
 
-@router.get("/my-docs/{doc_id}", response_model=DocsUploadResponse)
+@router.get("/my-docs/{doc_id}", response_model=DocsBase)
 def get_my_doc(doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    doc = db.query(DocsUpload).filter(DocsUpload.id == doc_id, DocsUpload.owner_id == current_user.id).first()
-    if not doc:
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    
+    docs = db.query(DocsUpload).filter(DocsUpload.id == doc_id).first()
+
+    if not docs:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
-    return doc
+    
+    return docs
 
 
 @router.get("/teacher-notes-with-docs", response_model=DocsUploadResponse)
