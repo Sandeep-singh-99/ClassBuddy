@@ -7,6 +7,7 @@ class DocsUploadBase(BaseModel):
     pass
 
 class DocsBase(BaseModel):
+    id: str
     filename: str
     file_url: str
 
