@@ -13,12 +13,13 @@ import { teachersGetNoteById } from "@/redux/slice/noteSlice";
 import { updateNotes } from "@/redux/slice/tSlice";
 import MDEditor from "@uiw/react-md-editor";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function UpdatedNote() {
   const { noteId } = useParams<{ noteId: string }>();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { currentNote } = useAppSelector((state) => state.notes);
 
   const [formData, setFormData] = useState({
@@ -66,6 +67,7 @@ export default function UpdatedNote() {
     if (noteId && Object.keys(payload).length > 0) {
       dispatch(updateNotes({ noteId, ...payload }));
       toast.success("Note updated successfully!");
+      navigate("/t-dashboard/home")
       setLoading(false);
     } else {
       toast.error("No changes detected!");

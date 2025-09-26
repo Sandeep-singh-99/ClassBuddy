@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppDispatch } from "@/hooks/hooks";
 import { DocsUpload } from "@/redux/slice/docsSlice";
+import { PlusCircle } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -39,7 +40,10 @@ export default function DocsForm() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">Upload Document</Button>
+        <Button>
+          <PlusCircle className="h-4 w-4" />
+          Upload Document
+          </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form className="space-y-4" onSubmit={handleSubmit}>
