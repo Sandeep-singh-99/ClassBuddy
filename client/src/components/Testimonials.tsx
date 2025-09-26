@@ -21,7 +21,7 @@ export default function Testimonials() {
     <section className="py-20 px-6 bg-[#0f1d33] relative overflow-hidden">
       {/* Section Heading */}
       <div className="text-center max-w-2xl mx-auto mb-14">
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">
+        <h2 className="text-4xl md:text-5xl tracking-wider p-4 font-extrabold  bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">
           What Students Say
         </h2>
         <p className="text-gray-400 text-lg">
