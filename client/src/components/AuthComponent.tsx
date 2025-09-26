@@ -18,8 +18,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-
+} from "@/components/ui/select";
 
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -31,7 +30,6 @@ import { checkAuth, login, register } from "@/redux/slice/authSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-
 interface IFormData {
   fullName: string;
   email: string;
@@ -41,17 +39,17 @@ interface IFormData {
 }
 
 export default function AuthComponent() {
-  const [email, setEmail] = useState<string>("")
-  const [password, setPassword] = useState<string>("")
-  const [loading, setLoading] = useState(false)
-  const [uploadImage, setUploadImage] = useState<File | null>(null)
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [uploadImage, setUploadImage] = useState<File | null>(null);
   const [formData, setFormData] = useState<IFormData>({
     fullName: "",
     email: "",
     password: "",
     role: "",
-    imageUrl: ""
-  })
+    imageUrl: "",
+  });
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -59,7 +57,7 @@ export default function AuthComponent() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -94,15 +92,14 @@ export default function AuthComponent() {
       toast.success(response.message);
       dispatch(checkAuth());
     } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        toast.error("Login error:", error.response?.data.message || error.message);
-      } else {
-        toast.error("Unknown login error");
-      }
+      const axiosError = error as AxiosError<{ detail: string }>;
+      const errorMessage =
+        axiosError.response?.data?.detail || "Invalid Credentials";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,7 +110,12 @@ export default function AuthComponent() {
       return;
     }
 
-    if (!formData.fullName || !formData.email || !formData.password || !formData.role) {
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.role
+    ) {
       setLoading(false);
       console.error("Please fill in all fields");
       return;
@@ -133,13 +135,12 @@ export default function AuthComponent() {
       toast.success("Registration successful");
       navigate("/t-insights");
     } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        setLoading(false);
-        toast.error("Registration error:", error.response?.data.message || error.message);
-      }
+      const axiosError = error as AxiosError<{ detail: string }>;
+      const errorMessage =
+        axiosError.response?.data?.detail || "Invalid Credentials";
+      toast.error(errorMessage);
     }
-  }
-
+  };
 
   return (
     <Dialog>
@@ -236,33 +237,33 @@ export default function AuthComponent() {
             <form className="space-y-4 mt-6" onSubmit={handleSignUpSubmit}>
               {/* Avatar Upload */}
 
-               <div className="flex justify-center">
-                  <input
-                    type="file"
-                    id="fileInput"
-                    name="imageUrl"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                  />
-                  <label
-                    htmlFor="fileInput"
-                    className="cursor-pointer w-24 h-24 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center transition duration-300 ease-in-out hover:bg-gray-100"
-                    aria-label="Upload Image"
-                  >
-                    {uploadImage ? (
-                      <img
-                        src={formData.imageUrl}
-                        alt="Uploaded"
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : (
-                      <span className="text-gray-400 text-center">
-                        Upload Image
-                      </span>
-                    )}
-                  </label>
-                </div>
+              <div className="flex justify-center">
+                <input
+                  type="file"
+                  id="fileInput"
+                  name="imageUrl"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                <label
+                  htmlFor="fileInput"
+                  className="cursor-pointer w-24 h-24 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center transition duration-300 ease-in-out hover:bg-gray-100"
+                  aria-label="Upload Image"
+                >
+                  {uploadImage ? (
+                    <img
+                      src={formData.imageUrl}
+                      alt="Uploaded"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-center">
+                      Upload Image
+                    </span>
+                  )}
+                </label>
+              </div>
 
               <div className="grid gap-2 w-full">
                 <Label htmlFor="fullName">FullName</Label>
@@ -302,7 +303,12 @@ export default function AuthComponent() {
                 <Label htmlFor="role">Role</Label>
                 <div className="relative">
                   <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-400 w-5 h-5" />
-                  <Select value={formData.role} onValueChange={(e) => setFormData((prev) => ({ ...prev, role: e }))}>
+                  <Select
+                    value={formData.role}
+                    onValueChange={(e) =>
+                      setFormData((prev) => ({ ...prev, role: e }))
+                    }
+                  >
                     <SelectTrigger className="w-full pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white">
                       <SelectValue placeholder="Select a Role" />
                     </SelectTrigger>
