@@ -55,6 +55,7 @@ export default function HeroComponent() {
           src={img1}
           alt="ClassBuddy Preview"
           className="rounded-xl shadow-2xl border border-gray-700"
+          loading="lazy"
         />
       </div>
 
