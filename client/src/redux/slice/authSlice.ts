@@ -18,7 +18,7 @@ export const register = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data || "Registration failed"
+          error.response?.data?.detail || "Registration failed"
         );
       }
     }
@@ -36,7 +36,7 @@ export const login = createAsyncThunk("auth/login", async (formData: FormData, t
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
-      return thunkApi.rejectWithValue(error.response?.data || "Login failed");
+      return thunkApi.rejectWithValue(error.response?.data?.detail || "Login failed");
     }
   }
 });
@@ -55,7 +55,7 @@ export const checkAuth = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data || "Check auth failed"
+          error.response?.data?.detail || "Check auth failed"
         );
       }
     }
@@ -74,7 +74,7 @@ export const logout = createAsyncThunk("auth/logout", async (_, thunkApi) => {
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
-      return thunkApi.rejectWithValue(error.response?.data || "Logout failed");
+      return thunkApi.rejectWithValue(error.response?.data?.detail || "Logout failed");
     }
   }
 });
