@@ -11,7 +11,7 @@ export const InterviewPrepCreate = createAsyncThunk("interview/create", async (d
     } catch (error) {
         if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data || "Fetching interview prep failed"
+          error.response?.data?.detail || "Fetching interview prep failed"
         );
       }
     }
