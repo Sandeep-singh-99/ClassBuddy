@@ -83,12 +83,23 @@ export const DocsDelete = createAsyncThunk("docs/delete", async (docId: string, 
   }
 })
 
-interface IDocs {
+interface IOwner {
   id: string;
-  filename?: string;
-  file_url?: string;
+  full_name: string;
+  email: string;
+  role: string;
+  image_url: string;
   created_at?: string;
   updated_at?: string;
+}
+
+interface IDocs {
+  id: string;
+  filename: string;
+  file_url: string;
+  owner: IOwner;
+  created_at: string;
+  updated_at: string;
 }
 
 
