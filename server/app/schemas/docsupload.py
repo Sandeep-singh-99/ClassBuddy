@@ -1,6 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
-from fastapi import UploadFile
+from app.schemas.auth import UserResponse
 
 
 class DocsUploadBase(BaseModel):
@@ -10,6 +9,7 @@ class DocsBase(BaseModel):
     id: str
     filename: str
     file_url: str
+    owner: UserResponse
 
     class Config:
         from_attributes = True
