@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { DocsFetch } from "@/redux/slice/docsSlice";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import DocsDeleteBtn from "./components/DocsDeleteBtn";
 
 export default function Docs() {
   const dispatch = useAppDispatch();
@@ -32,11 +33,11 @@ export default function Docs() {
             className="hover:shadow-lg transition-shadow cursor-pointer flex flex-col justify-between"
           >
             <CardContent className="p-4 flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <File className="w-5 h-5 text-blue-500" />
-                <h2 className="text-lg font-semibold">
+              <div className="flex items-center gap-4 justify-between">
+                <h2 className="text-lg font-semibold ">
                   {doc.filename || "Untitled Document"}
                 </h2>
+                <DocsDeleteBtn />
               </div>
               <p className="text-gray-600 text-sm line-clamp-3">
                 Click on this card to view the full content of the note.
