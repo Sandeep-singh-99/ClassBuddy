@@ -53,6 +53,7 @@ def upload_doc(filename: str = Form(...), file: UploadFile = File(...), db: Sess
 @router.get("/my-docs", response_model=List[DocsBase])
 def get_my_docs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     docs = db.query(DocsUpload).filter(DocsUpload.owner_id == current_user.id).all()
+    docs.sort(key=lambda x: x.updated_at, reverse=True)
     return docs
 
 @router.get("/my-docs/{doc_id}", response_model=DocsBase)
@@ -87,6 +88,7 @@ def get_teacher_notes_with_docs(db: Session = Depends(get_db), current_user: Use
     group_ids = [group.id for group in docs.groups]
 
     docs_with_notes = db.query(DocsUpload).filter(DocsUpload.group_id.in_(group_ids)).all()
+    docs_with_notes.sort(key=lambda x: x.updated_at, reverse=True)
 
     return {
         "count": len(docs_with_notes),
