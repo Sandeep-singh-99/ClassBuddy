@@ -94,3 +94,22 @@ def get_teacher_notes_with_docs(db: Session = Depends(get_db), current_user: Use
         "count": len(docs_with_notes),
         "docsuploads": docs_with_notes
     }
+
+
+@router.delete("/delete-doc/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_doc(doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this document")
+
+    doc = db.query(DocsUpload).filter(DocsUpload.id == doc_id, DocsUpload.owner_id == current_user.id).first()
+    if not doc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="You not authorized to delete this document")
+    
+    if doc.file_url_id:
+        delete_image(doc.file_url_id)
+
+    db.delete(doc)
+    db.commit()
