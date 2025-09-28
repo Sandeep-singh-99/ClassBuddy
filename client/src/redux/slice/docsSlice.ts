@@ -70,8 +70,21 @@ export const DocsStudentFetch = createAsyncThunk(
   }
 );
 
+export const DocsDelete = createAsyncThunk("docs/delete", async (docId: string, thunkApi) => {
+  try {
+    const response = await axiosClient.delete(`/docs/delete-doc/${docId}`);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Generating notes failed"
+        );
+      }
+  }
+})
+
 interface IDocs {
-  id?: string;
+  id: string;
   filename?: string;
   file_url?: string;
   created_at?: string;
@@ -152,6 +165,22 @@ const docsSlice = createSlice({
     });
     builder.addCase(
       DocsStudentFetch.rejected,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    builder.addCase(DocsDelete.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(DocsDelete.fulfilled, (state, action) => {
+      state.loading = false;
+      state.docs = state.docs.filter((doc) => doc.id !== action.meta.arg);
+    });
+
+    builder.addCase(
+      DocsDelete.rejected,
       (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;

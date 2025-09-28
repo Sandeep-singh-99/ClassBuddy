@@ -37,7 +37,7 @@ export default function Docs() {
                 <h2 className="text-lg font-semibold ">
                   {doc.filename || "Untitled Document"}
                 </h2>
-                <DocsDeleteBtn />
+                <DocsDeleteBtn docId={doc.id} />
               </div>
               <p className="text-gray-600 text-sm line-clamp-3">
                 Click on this card to view the full content of the note.
