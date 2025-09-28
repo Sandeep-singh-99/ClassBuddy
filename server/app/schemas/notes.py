@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
+from app.schemas.auth import UserResponse
 
 class NotesCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=100)
@@ -13,6 +14,7 @@ class NoteBaseResponse(BaseModel):
     content: str
     created_at: datetime
     updated_at: datetime
+    owner: UserResponse
 
     class Config:
         from_attributes = True
@@ -31,6 +33,7 @@ class NotesResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     owner_id: str
+    owner: UserResponse
 
     class Config:
         from_attributes = True
