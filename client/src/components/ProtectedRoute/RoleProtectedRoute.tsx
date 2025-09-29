@@ -15,12 +15,12 @@ export default function RoleProtectedRoute({
   const { user } = useAppSelector((state) => state.auth);
 
   if (!user) {
-    toast.error("You must be logged in to access this page");
+    toast.info("You must be logged in to access this page");
     return <Navigate to="/" replace />;
   }
 
   if (!allowedRoles.includes(user.role)) {
-    toast.error("You do not have permission to access this page");
+    toast.info("You do not have permission to access this page");
     return <Navigate to="/" replace />;
   }
   return children;
