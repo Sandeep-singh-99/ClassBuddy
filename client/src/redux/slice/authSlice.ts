@@ -85,7 +85,7 @@ interface IUser {
   email: string;
   image_url: string;
   imageUrlId: string;
-  role?: string;
+  role: string;
   password?: string;
 }
 

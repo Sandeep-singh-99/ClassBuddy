@@ -22,6 +22,7 @@ import TAssignment from "@/page/Teacher/TAssignment";
 import Docs from "@/page/Teacher/Docs";
 import DocsById from "@/page/Teacher/DocsById";
 import DocView from "@/page/Dashboard/DocView";
+import RoleProtectedRoute from "@/components/ProtectedRoute/RoleProtectedRoute";
 
 export const router = createBrowserRouter([
     {
@@ -53,7 +54,11 @@ export const router = createBrowserRouter([
 
     {
         path: "dashboard-panel",
-        element: <DashboardPanel />,
+        element: (
+            <RoleProtectedRoute allowedRoles={['student']} >
+                <DashboardPanel />
+            </RoleProtectedRoute>
+        ),
         children: [
             {
                 path: "home",
@@ -88,7 +93,11 @@ export const router = createBrowserRouter([
 
     {
         path: "t-dashboard",
-        element: <TDashboard />,
+        element: (
+            <RoleProtectedRoute allowedRoles={['teacher']} >
+                <TDashboard />
+            </RoleProtectedRoute>
+        ),
         children: [
             {
                 path: "home",
