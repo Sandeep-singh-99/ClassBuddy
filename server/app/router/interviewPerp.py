@@ -125,52 +125,57 @@ def create_interview_prep(
         user_id=current_user.id,
         name=interview_prep.name,
         description=interview_prep.description,
-        questions=quiz_json
+        questions=quiz_json,
     )
     db.add(new_entry)
     db.commit()
     db.refresh(new_entry)
 
+    # return {
+    #     "name": interview_prep.name,
+    #     "description": interview_prep.description,
+    #     "generated_quiz": quiz_json
+    # }
     return new_entry
 
 
-
-
-@router.post("/submit-quiz/{quiz_id}")
+@router.post("/submit-quiz")
 def submit_quiz(
-    quiz_id: str,
-    payload: InterviewPrepSubmit,
+    submission: InterviewPrepSubmit,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ):
-    # Fetch quiz
-    quiz = db.query(InterviewPrep).filter(InterviewPrep.id == quiz_id).first()
-    if not quiz:
-        raise HTTPException(status_code=404, detail="Quiz not found")
+    """
+    Updates the quiz record with:
+    - score
+    - improvement (user's answers/notes)
+    - user_answers
+    Frontend must send submission.id, score, improvement, and user_answers
+    """
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
 
-    if quiz.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to submit this quiz")
+    # Find the existing quiz entry for the current user
+    quiz_entry = db.query(InterviewPrep).filter(
+        InterviewPrep.id == submission.id,
+        InterviewPrep.user_id == current_user.id
+    ).first()
 
-    total_questions = len(quiz.questions.get("questions", []))
-    score = 0
-    improvement = []
+    if not quiz_entry:
+        raise HTTPException(status_code=404, detail="Quiz not found for this user.")
 
-    for idx, q in enumerate(quiz.questions.get("questions", [])):
-        user_answer = payload.answers.get(idx)
-        if user_answer:
-            if user_answer.strip().upper() == q["answer"].strip().upper():
-                score += 1
-            else:
-                improvement.append(f"Q{idx+1}: {q['explanation']}")
+    
 
-    # Update quiz entry
-    quiz.score = score
-    quiz.improvement = "\n".join(improvement)
+    # Update DB fields
+    quiz_entry.score = submission.score
+    quiz_entry.user_answers = json.dumps(submission.user_answers)  
+
     db.commit()
-    db.refresh(quiz)
+    db.refresh(quiz_entry)
 
     return {
-        "score": score,
-        "total_questions": total_questions,
-        "improvement": quiz.improvement,
+        "message": "Quiz submitted successfully",
+        "quiz_id": quiz_entry.id,
+        "score": quiz_entry.score,
+        "user_answers": json.loads(quiz_entry.user_answers),
     }

@@ -8,6 +8,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { useAppSelector } from "@/hooks/hooks";
+import { axiosClient } from "@/helper/axiosClient";
 
 export default function Mock() {
   const { data } = useAppSelector((state) => state.interview);
@@ -30,7 +31,7 @@ export default function Mock() {
   };
 
   // Next or Submit button
-  const handleNext = () => {
+  const handleNext = async () => {
     const selectedAnswer = answers[currentQuestionIndex];
 
     // ✅ Fix score check using .startsWith
@@ -42,6 +43,17 @@ export default function Mock() {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setQuizCompleted(true);
+       try {
+      const response = await axiosClient.post("/interview-prep/submit-quiz", {
+        id: data.id,            
+        score: score + 1,      
+        user_answers: answers,   
+      });
+
+      console.log("Quiz submitted successfully:", response.data);
+    } catch (error: any) {
+      console.error("Failed to submit quiz:", error.response?.data || error.message);
+    }
     }
   };
 

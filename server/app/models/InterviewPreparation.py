@@ -14,7 +14,7 @@ class InterviewPrep(Base):
     description = Column(String, nullable=True)
     questions = Column(JSON, nullable=False)
     score = Column(Integer, nullable=False, default=0)
-    improvement = Column(String, nullable=False, default="")
+    user_answers = Column(JSON, nullable=False, default=dict)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
