@@ -1,44 +1,82 @@
 import { useState } from "react";
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 import { useAppSelector } from "@/hooks/hooks";
 
 export default function Mock() {
-  // Get quiz data from Redux store
-  const {data} = useAppSelector((state) => state.interview);
+  const { data } = useAppSelector((state) => state.interview);
 
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
-  const [showExplanation, setShowExplanation] = useState<{ [key: number]: boolean }>({});
+  const [score, setScore] = useState(0);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   if (!data || !data.questions) {
     return <div>No quiz data available</div>;
   }
 
   const questions = data.questions.questions;
+  const currentQuestion = questions[currentQuestionIndex];
 
-  const handleSelect = (qIndex: number, value: string) => {
-    setAnswers({ ...answers, [qIndex]: value });
-    setShowExplanation({ ...showExplanation, [qIndex]: true });
+  // Selecting an option
+  const handleSelect = (value: string) => {
+    setAnswers({ ...answers, [currentQuestionIndex]: value });
+  };
+
+  // Next or Submit button
+  const handleNext = () => {
+    const selectedAnswer = answers[currentQuestionIndex];
+
+    // ✅ Fix score check using .startsWith
+    if (selectedAnswer && selectedAnswer.startsWith(currentQuestion.answer)) {
+      setScore((prev) => prev + 1);
+    }
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    } else {
+      setQuizCompleted(true);
+    }
+  };
+
+  const handleRestart = () => {
+    setCurrentQuestionIndex(0);
+    setAnswers({});
+    setScore(0);
+    setQuizCompleted(false);
   };
 
   return (
     <div className="p-6 space-y-6">
-      {questions.map((q, idx) => (
-        <Card key={idx} className="border p-4">
+      {!quizCompleted ? (
+        <Card className="border p-4">
           <h2 className="font-semibold mb-2">
-            Q{idx + 1}: {q.question}
+            Question {currentQuestionIndex + 1} of {questions.length}
           </h2>
+          <p className="mb-4">{currentQuestion.question}</p>
 
           <div className="flex flex-col space-y-2">
-            {q.options.map((opt, i) => (
-              <label key={i} className="flex items-center space-x-2 cursor-pointer">
+            {currentQuestion.options.map((opt, i) => (
+              <label
+                key={i}
+                className={`flex items-center space-x-2 cursor-pointer rounded-lg p-2 border ${
+                  answers[currentQuestionIndex] === opt
+                    ? "border-indigo-400 "
+                    : "border-gray-700"
+                }`}
+              >
                 <input
                   type="radio"
-                  name={`question-${idx}`}
+                  name={`question-${currentQuestionIndex}`}
                   value={opt}
-                  checked={answers[idx] === opt}
-                  onChange={() => handleSelect(idx, opt)}
+                  checked={answers[currentQuestionIndex] === opt}
+                  onChange={() => handleSelect(opt)}
                   className="accent-indigo-500"
                 />
                 <span>{opt}</span>
@@ -46,21 +84,94 @@ export default function Mock() {
             ))}
           </div>
 
-          {showExplanation[idx] && (
-            <div className="mt-2 p-2  rounded">
-              <strong>Answer:</strong> {q.answer} <br />
-              <strong>Explanation:</strong> {q.explanation}
-            </div>
-          )}
+          <div className="mt-4 flex justify-between">
+            <Button
+              onClick={handleNext}
+              disabled={!answers[currentQuestionIndex]}
+            >
+              {currentQuestionIndex === questions.length - 1
+                ? "Submit"
+                : "Next"}
+            </Button>
+          </div>
         </Card>
-      ))}
+      ) : (
+        <Card className="border p-4">
+          <h2 className="font-bold text-xl mb-4 text-center">
+            Quiz Completed 🎉
+          </h2>
+          <p className="mb-6 text-center">
+            Your Score:{" "}
+            <span className="font-semibold">
+              {score}
+            </span>{" "}
+            / {questions.length}
+          </p>
 
-      <Button
-        className="mt-4"
-        onClick={() => alert("Submit functionality not implemented")}
-      >
-        Submit Quiz
-      </Button>
+          {/* Accordion for explanations */}
+          <Accordion type="single" collapsible className="w-full">
+            {questions.map((q, idx) => {
+              const userAnswer = answers[idx];
+              const correctOptionText = q.options.find((opt) =>
+                opt.startsWith(q.answer)
+              );
+              const isCorrect =
+                userAnswer && userAnswer.startsWith(q.answer);
+
+              return (
+                <AccordionItem
+                  key={idx}
+                  value={`question-${idx}`}
+                  className="border-b"
+                >
+                  <AccordionTrigger>
+                    <div className="flex justify-between w-full text-left">
+                      <span className="font-medium">
+                        {idx + 1}. {q.question}
+                      </span>
+                      <span
+                        className={`ml-4 ${
+                          isCorrect ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {isCorrect ? "✅ Correct" : "❌ Incorrect"}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 p-3">
+                      <p>
+                        <strong>Your Answer:</strong>{" "}
+                        <span
+                          className={
+                            isCorrect ? "text-green-600" : "text-red-600"
+                          }
+                        >
+                          {userAnswer || "Not answered"}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Correct Answer:</strong>{" "}
+                        <span className="text-green-600">
+                          {correctOptionText}
+                        </span>
+                      </p>
+                      <div className="p-3 rounded-md border">
+                        <strong>Explanation:</strong>
+                        <p className="mt-2 text-gray-100">{q.explanation}</p>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+
+          <div className="text-center mt-6">
+            <Button onClick={handleRestart}>Restart Quiz</Button>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
