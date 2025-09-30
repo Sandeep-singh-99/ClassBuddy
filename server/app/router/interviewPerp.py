@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import TypedDict, Annotated, Dict, List
-from app.schemas.interviewpreparation import InterviewPreparationCreate, InterviewPreparationResponse, InterviewPrepSubmit, InterviewResponse
+from app.schemas.interviewpreparation import InterviewPreparationCreate, InterviewPreparationResponse, InterviewPrepSubmit, InterviewResponse, InterviewPreparationCreateResponse
 from app.dependencies.dependencies import get_current_user
 from app.config.db import get_db
 from app.models.auth import User, userRole
@@ -53,7 +53,7 @@ def generate_quiz_node(state: State):
     res = state["research"][-1].content if state["research"] else "No research data available."
 
     prompt = (
-        f"Generate 10 interview questions based on the following job description and research data.\n\n"
+        f"Generate 2 interview questions based on the following job description and research data.\n\n"
         f"Job Description:\n{des}\n\n"
         f"Research:\n{res}\n\n"
         f"Each question must be multiple choice with 4 options (A, B, C, D).\n"
@@ -103,7 +103,7 @@ graph = workflow.compile()
 # ---- FastAPI Router ----
 router = APIRouter()
 
-@router.post("/create-interview-prep", response_model=InterviewPreparationResponse)
+@router.post("/create-interview-prep", response_model=InterviewPreparationCreateResponse)
 def create_interview_prep(
     interview_prep: InterviewPreparationCreate,
     db: Session = Depends(get_db),
@@ -120,97 +120,46 @@ def create_interview_prep(
     quiz_raw = final_state["quiz"][-1].content
     quiz_json = json.loads(quiz_raw)
 
-    # Save to DB
+    return {
+        "name": interview_prep.name,
+        "description": interview_prep.description,
+        "questions": quiz_json["questions"], 
+    }
+
+    
+
+
+@router.post("/submit-quiz")
+async def submit_quiz(submission: InterviewPreparationResponse, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
+    
+    query = db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id, InterviewPrep.name == submission.name).first()
+    if query:
+        raise HTTPException(status_code=400, detail="Quiz with this name already submitted.")
+    
+   
+
     new_entry = InterviewPrep(
-        user_id=current_user.id,
-        name=interview_prep.name,
-        description=interview_prep.description,
-        questions=quiz_json,
+        name=submission.name,
+        description=submission.description,
+        questions=[q.dict() for q in submission.questions],
+        score=submission.score,
+        user_answers=submission.user_answers,
+        user_id=current_user.id
     )
+
     db.add(new_entry)
     db.commit()
     db.refresh(new_entry)
 
-    # return {
-    #     "name": interview_prep.name,
-    #     "description": interview_prep.description,
-    #     "generated_quiz": quiz_json
-    # }
-    return new_entry
-
-
-# @router.post("/submit-quiz")
-# def submit_quiz(
-#     submission: InterviewPrepSubmit,
-#     db: Session = Depends(get_db),
-#     current_user: User = Depends(get_current_user)
-# ):
-#     """
-#     Updates the quiz record with:
-#     - score
-#     - improvement (user's answers/notes)
-#     - user_answers
-#     Frontend must send submission.id, score, improvement, and user_answers
-#     """
-#     if current_user.role != userRole.STUDENT:
-#         raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
-
-#     # Find the existing quiz entry for the current user
-#     quiz_entry = db.query(InterviewPrep).filter(
-#         InterviewPrep.id == submission.id,
-#         InterviewPrep.user_id == current_user.id
-#     ).first()
-
-#     if not quiz_entry:
-#         raise HTTPException(status_code=404, detail="Quiz not found for this user.")
-
-    
-
-#     # Update DB fields
-#     quiz_entry.score = submission.score
-#     quiz_entry.user_answers = json.dumps(submission.user_answers)  
-
-#     db.commit()
-#     db.refresh(quiz_entry)
-
-#     return {
-#         "message": "Quiz submitted successfully",
-#         "quiz_id": quiz_entry.id,
-#         "score": quiz_entry.score,
-#         "user_answers": json.loads(quiz_entry.user_answers),
-#     }
-
-
-@router.post("/submit-quiz")
-def submit_quiz(
-    submission: InterviewPrepSubmit,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    if current_user.role != userRole.STUDENT:
-        raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
-
-    quiz_entry = db.query(InterviewPrep).filter(
-        InterviewPrep.id == submission.id,
-        InterviewPrep.user_id == current_user.id
-    ).first()
-
-    if not quiz_entry:
-        raise HTTPException(status_code=404, detail="Quiz not found for this user.")
-
-    
-    quiz_entry.score = submission.score
-    quiz_entry.user_answers = submission.user_answers  
-
-    db.commit()
-    db.refresh(quiz_entry)
-
     return {
         "message": "Quiz submitted successfully",
-        "quiz_id": quiz_entry.id,
-        "score": quiz_entry.score,
-        "user_answers": quiz_entry.user_answers,
+        "quiz_id": new_entry.id,
+        "score": new_entry.score,
+        "user_answers": new_entry.user_answers,
     }
+
 
 
 

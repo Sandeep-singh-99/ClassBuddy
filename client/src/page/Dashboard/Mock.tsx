@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { useAppSelector } from "@/hooks/hooks";
 import { axiosClient } from "@/helper/axiosClient";
+import { de } from "date-fns/locale";
 
 export default function Mock() {
   const { data } = useAppSelector((state) => state.interview);
@@ -22,7 +23,7 @@ export default function Mock() {
     return <div>No quiz data available</div>;
   }
 
-  const questions = data.questions.questions;
+  const questions = data.questions;
   const currentQuestion = questions[currentQuestionIndex];
 
   // Selecting an option
@@ -45,7 +46,9 @@ export default function Mock() {
       setQuizCompleted(true);
        try {
       const response = await axiosClient.post("/interview-prep/submit-quiz", {
-        id: data.id,            
+        name: data.name,
+        description: data.description,
+        questions: data.questions,         
         score: score + 1,      
         user_answers: answers,   
       });
