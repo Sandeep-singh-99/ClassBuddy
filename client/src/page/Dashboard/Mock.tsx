@@ -49,7 +49,7 @@ export default function Mock() {
         name: data.name,
         description: data.description,
         questions: data.questions,         
-        score: score + 1,      
+        score: score,      
         user_answers: answers,   
       });
 
