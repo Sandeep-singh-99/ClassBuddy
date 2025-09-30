@@ -1,9 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { DocsStudentFetch } from "@/redux/slice/docsSlice";
-import { AlertCircle, File, Loader2 } from "lucide-react";
+import { AlertCircle, File } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { BarLoader } from "react-spinners";
 export default function DocView() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -20,10 +21,7 @@ export default function DocView() {
       </h1>
 
       {loading && (
-        <div className="flex items-center justify-center h-64 gap-2 text-gray-500">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-          <span className="text-lg">Loading documents...</span>
-        </div>
+        <BarLoader width={"100%"} color="gray" className="my-4" />
       )}
 
       {error && (

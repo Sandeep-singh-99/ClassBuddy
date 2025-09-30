@@ -2,8 +2,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { JoinedCheckStatus, viewAllTeacher } from "@/redux/slice/tSlice";
 import { useEffect } from "react";
-import { User, JoystickIcon, Loader2 } from "lucide-react";
+import { User, JoystickIcon } from "lucide-react";
 import { useJoinToGroup } from "@/helper/useJoinToGroup";
+import { BarLoader } from "react-spinners";
 
 export default function ViewAllTeacher() {
   const dispatch = useAppDispatch();
@@ -26,20 +27,7 @@ export default function ViewAllTeacher() {
   }, [dispatch, teachers]);
 
   if (loading) {
-    return (
-      <div className="flex flex-col justify-center items-center h-[60vh] space-y-4">
-        {/* Loader Icon */}
-        <Loader2
-          className="animate-spin text-gray-800 dark:text-gray-100"
-          size={42}
-        />
-
-        {/* Loading Text */}
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-          Fetching teachers, please wait...
-        </p>
-      </div>
-    );
+    return <BarLoader width={"100%"} color="gray" className="my-4" />
   }
 
   if (error) {
