@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -29,6 +30,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { checkAuth, login, register } from "@/redux/slice/authSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { BarLoader } from "react-spinners";
 
 interface IFormData {
   fullName: string;
@@ -160,6 +162,12 @@ export default function AuthComponent() {
           <DialogTitle className="text-2xl font-bold text-center text-yellow-400">
             Welcome to ClassBuddy
           </DialogTitle>
+          <DialogDescription className="text-center text-gray-300">
+            Please log in to your account or sign up to get started.
+           {
+            loading && <BarLoader width={"100%"} color="gray" className="my-4" />
+           }
+          </DialogDescription>
         </DialogHeader>
 
         {/* Tabs */}
