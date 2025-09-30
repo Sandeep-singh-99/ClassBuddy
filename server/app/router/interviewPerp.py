@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import TypedDict, Annotated, Dict
-from app.schemas.interviewpreparation import InterviewPreparationCreate, InterviewPreparationResponse, InterviewPrepSubmit
+from typing import TypedDict, Annotated, Dict, List
+from app.schemas.interviewpreparation import InterviewPreparationCreate, InterviewPreparationResponse, InterviewPrepSubmit, InterviewResponse
 from app.dependencies.dependencies import get_current_user
 from app.config.db import get_db
 from app.models.auth import User, userRole
@@ -139,23 +139,57 @@ def create_interview_prep(
     return new_entry
 
 
+# @router.post("/submit-quiz")
+# def submit_quiz(
+#     submission: InterviewPrepSubmit,
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     """
+#     Updates the quiz record with:
+#     - score
+#     - improvement (user's answers/notes)
+#     - user_answers
+#     Frontend must send submission.id, score, improvement, and user_answers
+#     """
+#     if current_user.role != userRole.STUDENT:
+#         raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
+
+#     # Find the existing quiz entry for the current user
+#     quiz_entry = db.query(InterviewPrep).filter(
+#         InterviewPrep.id == submission.id,
+#         InterviewPrep.user_id == current_user.id
+#     ).first()
+
+#     if not quiz_entry:
+#         raise HTTPException(status_code=404, detail="Quiz not found for this user.")
+
+    
+
+#     # Update DB fields
+#     quiz_entry.score = submission.score
+#     quiz_entry.user_answers = json.dumps(submission.user_answers)  
+
+#     db.commit()
+#     db.refresh(quiz_entry)
+
+#     return {
+#         "message": "Quiz submitted successfully",
+#         "quiz_id": quiz_entry.id,
+#         "score": quiz_entry.score,
+#         "user_answers": json.loads(quiz_entry.user_answers),
+#     }
+
+
 @router.post("/submit-quiz")
 def submit_quiz(
     submission: InterviewPrepSubmit,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Updates the quiz record with:
-    - score
-    - improvement (user's answers/notes)
-    - user_answers
-    Frontend must send submission.id, score, improvement, and user_answers
-    """
     if current_user.role != userRole.STUDENT:
         raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
 
-    # Find the existing quiz entry for the current user
     quiz_entry = db.query(InterviewPrep).filter(
         InterviewPrep.id == submission.id,
         InterviewPrep.user_id == current_user.id
@@ -165,10 +199,8 @@ def submit_quiz(
         raise HTTPException(status_code=404, detail="Quiz not found for this user.")
 
     
-
-    # Update DB fields
     quiz_entry.score = submission.score
-    quiz_entry.user_answers = json.dumps(submission.user_answers)  
+    quiz_entry.user_answers = submission.user_answers  
 
     db.commit()
     db.refresh(quiz_entry)
@@ -177,5 +209,20 @@ def submit_quiz(
         "message": "Quiz submitted successfully",
         "quiz_id": quiz_entry.id,
         "score": quiz_entry.score,
-        "user_answers": json.loads(quiz_entry.user_answers),
+        "user_answers": quiz_entry.user_answers,
     }
+
+
+
+@router.get("/get-interview-preps", response_model=List[InterviewResponse])
+def get_interview_preps(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=403, detail="Only students can view their interview preparations.")
+
+    
+    interview_preps = db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id).all()
+
+    return interview_preps
