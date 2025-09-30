@@ -1,7 +1,19 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import QuizFormComponents from "./QuizFormComponents";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useEffect } from "react";
+import { GetAllInterviewPrep } from "@/redux/slice/interviewSlice";
+import { format } from "date-fns";
 
 export default function QuizList() {
+  const dispatch = useAppDispatch();
+
+  const { data } = useAppSelector((state) => state.interview);
+
+  useEffect(() => {
+    dispatch(GetAllInterviewPrep());
+  }, [dispatch]);
+
   return (
     <>
       <Card>
@@ -15,14 +27,35 @@ export default function QuizList() {
                 Review your past quiz performance
               </CardDescription>
             </div>
-            {/* <Link to={"/dashboard-panel/mock"}>
-              <Button>
-                Start New Quiz
-              </Button>
-            </Link> */}
             <QuizFormComponents />
           </div>
         </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {data && data.length > 0 ? (
+              data.map((quiz, i) => (
+                <Card key={quiz.id} className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">
+                      {quiz.name}
+                    </CardTitle>
+                    <CardDescription className="flex justify-between w-full">
+                      <div>
+                        Score: {quiz.score.toFixed(1)}%
+                      </div>
+
+                      <div>
+                        {format(new Date(quiz.created_at), "MMMM dd, yyyy HH:mm")}
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              ))
+            ) : (
+              <p>No quizzes available.</p>
+            )}
+          </div>
+        </CardContent>
       </Card>
     </>
   );
