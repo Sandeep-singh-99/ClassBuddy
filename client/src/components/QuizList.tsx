@@ -6,13 +6,14 @@ import { GetAllInterviewPrep } from "@/redux/slice/interviewSlice";
 import { format } from "date-fns";
 import { Dialog, DialogContent } from "./ui/dialog";
 import QuizResult from "./QuizResult";
+import { BarLoader } from 'react-spinners'
 
 export default function QuizList() {
   const dispatch = useAppDispatch();
 
   const [selectedQuiz, setSelectedQuiz] = useState(null);
 
-  const { data } = useAppSelector((state) => state.interview);
+  const { data, loading } = useAppSelector((state) => state.interview);
 
   useEffect(() => {
     dispatch(GetAllInterviewPrep());
@@ -35,6 +36,9 @@ export default function QuizList() {
           </div>
         </CardHeader>
         <CardContent>
+          {
+            loading && <BarLoader width={"100%"} color="gray" className="my-4" />
+          }
           <div className="space-y-4">
             {data && data.length > 0 ? (
               data.map((quiz, i) => (
@@ -60,7 +64,7 @@ export default function QuizList() {
             )}
           </div>
           <Dialog open={!!selectedQuiz} onOpenChange={() => setSelectedQuiz(null)}>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <QuizResult result={selectedQuiz} onStartNew={() => setSelectedQuiz(null)} />
             </DialogContent>
           </Dialog>
