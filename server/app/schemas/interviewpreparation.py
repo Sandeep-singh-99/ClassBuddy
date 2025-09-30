@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Dict
+from typing import Dict, Union
 
 class InterviewPreparationCreate(BaseModel):
     name: str = Field(..., examples=["Technical Interview Prep"])
@@ -21,6 +21,19 @@ class InterviewPreparationResponse(BaseModel):
     questions: dict
     score: int
     user_answers: dict
+    user_id: str
+
+    class Config:
+        from_attributes = True
+
+
+class InterviewResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    questions: dict
+    score: int
+    user_answers: Union[Dict[str, str], str] = {}
     user_id: str
 
     class Config:
