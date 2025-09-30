@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { useAppSelector } from "@/hooks/hooks";
 import { axiosClient } from "@/helper/axiosClient";
-import { de } from "date-fns/locale";
+import { toast } from "react-toastify";
 
 export default function Mock() {
   const { data } = useAppSelector((state) => state.interview);
@@ -53,9 +53,9 @@ export default function Mock() {
         user_answers: answers,   
       });
 
-      console.log("Quiz submitted successfully:", response.data);
+      toast.success(response.data.message);
     } catch (error: any) {
-      console.error("Failed to submit quiz:", error.response?.data || error.message);
+      toast.error(error.response?.data?.detail || error.message);
     }
     }
   };
