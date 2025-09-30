@@ -1,10 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, AlertCircle, FileText, ArrowRight } from "lucide-react";
+import { AlertCircle, FileText, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { studentJoinGroupNote } from "@/redux/slice/noteSlice";
+import { BarLoader } from "react-spinners";
 
 export default function Notes() {
   const { notes, loading, error } = useAppSelector((state) => state.notes);
@@ -22,9 +23,7 @@ export default function Notes() {
 
       {/* Loading */}
       {loading && (
-        <div className="flex items-center justify-center h-screen gap-2 text-gray-500 mb-4">
-          <Loader2 className="w-5 h-5 animate-spin" /> Loading notes...
-        </div>
+        <BarLoader width={"100%"} color="gray" className="my-4" />
       )}
 
       {/* Error */}
