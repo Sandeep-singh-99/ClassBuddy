@@ -28,7 +28,7 @@ export default function TInsight() {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
-  // 🔹 Handle text input changes
+  //  Handle text input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -39,13 +39,13 @@ export default function TInsight() {
     }));
   };
 
-  // 🔹 Handle file selection
+  //  Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
       try {
-        const imageUrl = URL.createObjectURL(file); // Preview URL
+        const imageUrl = URL.createObjectURL(file); 
         setFormData((prevData) => ({
           ...prevData,
           imageUrl,
@@ -109,7 +109,7 @@ export default function TInsight() {
     }
   };
 
-  // 🔹 Redirect non-teachers away
+  // Redirect non-teachers away
   useEffect(() => {
     if (!user || user.role !== "teacher") {
       navigate("/");
