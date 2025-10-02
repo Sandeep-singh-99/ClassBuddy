@@ -153,6 +153,7 @@ const docsSlice = createSlice({
     builder.addCase(DocsFetchById.pending, (state) => {
       state.loading = true;
       state.error = null;
+      state.currentDoc = null;
     });
     builder.addCase(DocsFetchById.fulfilled, (state, action) => {
       state.loading = false;
