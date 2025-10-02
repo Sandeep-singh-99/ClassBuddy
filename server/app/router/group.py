@@ -36,7 +36,7 @@ def join_group(
     # Find the group
     group = (
         db.query(TeacherInsight)
-        .options(joinedload(TeacherInsight.members))  # Load members to avoid lazy loading later
+        .options(joinedload(TeacherInsight.members))  
         .filter(TeacherInsight.id == request.group_id)
         .first()
     )
