@@ -12,3 +12,13 @@ class StudentInsightBase(BaseModel):
     market_outlook: str = Field(..., example="The job market for data scientists is expected to grow significantly over the next decade.")
     key_trends: List[str] = Field(..., example=["Increased use of AI", "Big Data Analytics", "Cloud Computing"])
     recommend_skills: List[str] = Field(..., example=["Deep Learning", "Statistical Analysis", "Data Visualization"])
+
+
+class StudentInsightResponse(StudentInsightBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    user: Optional[UserResponse]  
+
+    class Config:
+        from_attributes = True
