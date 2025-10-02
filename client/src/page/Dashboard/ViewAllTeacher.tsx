@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { JoinedCheckStatus, viewAllTeacher } from "@/redux/slice/tSlice";
 import { useEffect } from "react";
-import { User, JoystickIcon } from "lucide-react";
+import { User, JoystickIcon, AlertCircle } from "lucide-react";
 import { useJoinToGroup } from "@/helper/useJoinToGroup";
 import { BarLoader } from "react-spinners";
 
@@ -30,19 +30,19 @@ export default function ViewAllTeacher() {
     return <BarLoader width={"100%"} color="gray" className="my-4" />
   }
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-[60vh] text-red-500 dark:text-red-400 font-semibold">
-        {error}
-      </div>
-    );
-  }
 
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100 tracking-tight">
         View All Teachers
       </h1>
+
+      {error && (
+        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+          <AlertCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">Error: {error}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {teachers.map((teacher) => (

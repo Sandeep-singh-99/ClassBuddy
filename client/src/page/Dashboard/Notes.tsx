@@ -27,16 +27,13 @@ export default function Notes() {
       )}
 
       {/* Error */}
+
       {error && (
-        <div className="flex items-center gap-2 text-red-500 mb-4">
-          <AlertCircle className="w-5 h-5" /> Error: {error}
+        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+          <AlertCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">Error: {error}</span>
         </div>
       )}
-
-      {/* Empty */}
-      {/* {!loading && notes.length === 0 && (
-        <p className="text-gray-500 text-center">No notes found.</p>
-      )} */}
 
       {/* Notes Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
