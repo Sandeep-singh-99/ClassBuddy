@@ -1,6 +1,5 @@
 import App from "@/App";
 import ChatPage from "@/page/Dashboard/ChatPage";
-import ContactPage from "@/page/ContactPage";
 import DashboardPanel from "@/page/Dashboard/DashboardPanel";
 import Home from "@/page/Home";
 import Profile from "@/page/Profile";
@@ -23,6 +22,7 @@ import Docs from "@/page/Teacher/Docs";
 import DocsById from "@/page/Teacher/DocsById";
 import DocView from "@/page/Dashboard/DocView";
 import RoleProtectedRoute from "@/components/ProtectedRoute/RoleProtectedRoute";
+import NotFound from "@/page/NotFound";
 
 export const router = createBrowserRouter([
     {
@@ -32,10 +32,6 @@ export const router = createBrowserRouter([
             {
                 path: "",
                 element: <Home />
-            },
-            {
-                path: "contact",
-                element: <ContactPage />
             },
             {
                 path: "profile",
@@ -48,6 +44,10 @@ export const router = createBrowserRouter([
             {
                 path: "docs/:docId",
                 element: <DocsById />
+            },
+            {
+                path: "*",
+                element: <NotFound />
             }
         ]
     },
