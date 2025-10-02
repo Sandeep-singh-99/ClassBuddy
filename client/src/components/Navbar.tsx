@@ -46,7 +46,7 @@ export default function Navbar() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <img src={user.image_url} alt={user.full_name} className="w-8 h-8 rounded-full object-cover" loading="lazy" />
+                  <img src={user.image_url} alt={user.full_name} className="w-8 h-8 rounded-full object-cover cursor-pointer" loading="lazy" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="" align="end" sideOffset={5}>
                   {
