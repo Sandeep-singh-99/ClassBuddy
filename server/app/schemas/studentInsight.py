@@ -25,7 +25,7 @@ class StudentInsightResponse(StudentInsightBase):
     id: str
     created_at: datetime
     updated_at: datetime
-    user: Optional[UserResponse]  
+    owner: Optional[UserResponse]  
 
     class Config:
         from_attributes = True
