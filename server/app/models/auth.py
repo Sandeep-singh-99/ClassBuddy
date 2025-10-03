@@ -38,6 +38,6 @@ class User(Base):
 
     docsuploads = relationship("DocsUpload", back_populates="owner")
 
-    # student_sub = relationship("StudentInsight", back_populates="owner")
+    student_sub = relationship("StudentInsight", back_populates="owner")
 
 
