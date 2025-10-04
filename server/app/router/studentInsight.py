@@ -159,7 +159,7 @@ def generate_industry_insight(
     return new_insight
 
 
-@router.get("/my-insights", response_model=List[StudentInsightResponse])
+@router.get("/my-insights", response_model=StudentInsightResponse)
 def get_my_insights(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -173,7 +173,7 @@ def get_my_insights(
     insights = (
         db.query(StudentInsight)
         .filter(StudentInsight.user_id == current_user.id)
-        .all()
+        .first()
     )
 
     return insights

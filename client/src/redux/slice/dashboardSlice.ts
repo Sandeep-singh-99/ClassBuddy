@@ -69,13 +69,13 @@ export interface StudentInsight {
 }
 
 interface DashboardState {
-  data: StudentInsight[];
+  data: StudentInsight | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: DashboardState = {
-  data: [],
+  data: null,
   loading: false,
   error: null,
 };
