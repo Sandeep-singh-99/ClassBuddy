@@ -2,6 +2,7 @@ import {
   File,
   GraduationCap,
   LayoutDashboard,
+  LayoutGridIcon,
   NotebookTabsIcon,
   Sparkles,
   User2,
@@ -74,6 +75,17 @@ const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
           >
             <GraduationCap className="mr-2 h-4 w-4" />
             Interview Preparation
+          </Button>
+        </Link>
+
+        <Link to={"/dashboard-panel/dashboard"}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => setIsOpen(false)}
+          >
+            <LayoutGridIcon className="mr-2 h-4 w-4" />
+            Career Insights
           </Button>
         </Link>
       </nav>
