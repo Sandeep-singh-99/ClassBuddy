@@ -1,3 +1,4 @@
+import PerformanceChart from "@/components/PerformanceChart";
 import QuizList from "@/components/QuizList";
 
 export default function InterviewPerPage() {
@@ -9,9 +10,8 @@ export default function InterviewPerPage() {
         </h1>
       </div>
       <div className="space-y-6">
-        {/* <StatsCards assessments={assessments} />
-        <PerformanceChart assessments={assessments} />
-        <QuizList assessments={assessments} /> */}
+        {/* <StatsCards assessments={assessments} /> */}
+        <PerformanceChart />
         <QuizList />
       </div>
     </div>
