@@ -7,11 +7,13 @@ import teacherSlice from './slice/tSlice';
 import noteSlice from './slice/noteSlice';
 import interviewSlice from './slice/interviewSlice';
 import docsSlice from './slice/docsSlice';
+import dashboardSlice from './slice/dashboardSlice';
 
 // 1️⃣ Combine all reducers
 const rootReducer = combineReducers({
   auth: authSlice,
   teachers: teacherSlice,
+  dashboard: dashboardSlice,
   interview: interviewSlice,
   notes: noteSlice,
   docs: docsSlice,
