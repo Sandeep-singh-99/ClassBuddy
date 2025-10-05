@@ -26,7 +26,6 @@ class User(Base):
     image_url_id = Column(String, nullable=True)
     role = Column(Enum(userRole), default=userRole.STUDENT, nullable=False)
     hashed_password = Column(String)
-    industry = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

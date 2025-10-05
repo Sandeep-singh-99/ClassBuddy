@@ -20,7 +20,6 @@ async def register(
     email: str = Form(...),
     password: str = Form(...),
     role: str = Form("student"),
-    industry: str = Form(...),
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
@@ -44,7 +43,6 @@ async def register(
         email=email,
         role=role,
         hashed_password=hashed_password,
-        industry=industry,
         image_url=image_url,
         image_url_id=image_url_id
     )
