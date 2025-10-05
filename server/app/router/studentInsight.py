@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, Form, File, HTTPException
 from sqlalchemy.orm import Session
 from typing import TypedDict, Annotated, Dict, List
-from app.schemas.studentInsight import StudentInsightResponse, StudentInsightBase
+from app.schemas.studentInsight import StudentInsightResponse, StudentInsightCreate
 from app.dependencies.dependencies import get_current_user
 from app.config.db import get_db
 from app.models.auth import User, userRole
@@ -104,7 +104,8 @@ router = APIRouter()
 
 @router.post("/generate-industry-insight", response_model=StudentInsightResponse)
 def generate_industry_insight(
-    industry: str = Form(..., description="The industry to generate insights for."),
+    # industry: str = Form(..., description="The industry to generate insights for."),
+    insight_request: Form = Depends(StudentInsightCreate),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -115,7 +116,7 @@ def generate_industry_insight(
         )
 
     initial_state: State = {
-        "industry": [HumanMessage(content=industry)],
+        "industry": [HumanMessage(content=insight_request.industry)],
         "research": [],
         "getIndustry": [],
     }
