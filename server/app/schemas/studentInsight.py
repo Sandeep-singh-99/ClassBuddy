@@ -4,6 +4,11 @@ from datetime import datetime
 from typing import Optional
 from app.schemas.auth import UserResponse
 
+class StudentInsightCreate(BaseModel):
+    industry: str = Field(..., example="Technology")
+    bio: str = Field(..., example="Aspiring data scientist with a passion for machine learning and AI.")
+    experience_level: str = Field(..., example="Entry-level")
+
 class SalaryRange(BaseModel):
     role: str
     min: int
