@@ -24,7 +24,7 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Mail, Lock, User, UserCog, FactoryIcon } from "lucide-react";
+import { Mail, Lock, User, UserCog } from "lucide-react";
 import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
 import { checkAuth, login, register } from "@/redux/slice/authSlice";
@@ -37,7 +37,6 @@ interface IFormData {
   email: string;
   password: string;
   role: string;
-  industry: string;
   imageUrl: string;
 }
 
@@ -51,7 +50,6 @@ export default function AuthComponent() {
     email: "",
     password: "",
     role: "",
-    industry: "",
     imageUrl: "",
   });
 
@@ -131,7 +129,6 @@ export default function AuthComponent() {
     formDataToSend.append("full_name", formData.fullName);
     formDataToSend.append("email", formData.email);
     formDataToSend.append("password", formData.password);
-    formDataToSend.append("industry", formData.industry);
     formDataToSend.append("role", formData.role);
     formDataToSend.append("image", uploadImage);
 
@@ -305,24 +302,6 @@ export default function AuthComponent() {
                     className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
                     required
                     value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-
-              {/* Industry */}
-              <div className="grid gap-2">
-                <Label htmlFor="industry">Industry</Label>
-                <div className="relative">
-                  <FactoryIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-400 w-5 h-5" />
-                  <Input
-                    id="industry"
-                    type="text"
-                    name="industry"
-                    placeholder="Enter your industry"
-                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
-                    required
-                    value={formData.industry}
                     onChange={handleInputChange}
                   />
                 </div>
