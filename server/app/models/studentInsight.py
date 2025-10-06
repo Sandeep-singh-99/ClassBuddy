@@ -12,8 +12,6 @@ class StudentInsight(Base):
     id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     industry = Column(String, nullable=False)
-    bio = Column(String, nullable=False)
-    experience_level = Column(Integer, nullable=False)
 
 
     salary_range = Column(JSON, nullable=False)
