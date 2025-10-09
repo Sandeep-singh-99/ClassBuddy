@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
+const SideBar = () => {
   return (
     <div className="h-full px-4 py-6">
       {/* Logo */}
@@ -27,7 +27,7 @@ const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Overview
@@ -38,7 +38,7 @@ const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <User2 className="mr-2 h-4 w-4" />
             All Teachers
@@ -49,7 +49,7 @@ const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <NotebookTabsIcon className="mr-2 h-4 w-4" />
             Notes
@@ -60,7 +60,7 @@ const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <File className="mr-2 h-4 w-4" />
             Docs
@@ -71,7 +71,7 @@ const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <GraduationCap className="mr-2 h-4 w-4" />
             Interview Preparation
@@ -82,7 +82,7 @@ const SideBar = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <LayoutGridIcon className="mr-2 h-4 w-4" />
             Career Insights
