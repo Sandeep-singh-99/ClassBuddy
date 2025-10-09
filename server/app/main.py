@@ -9,6 +9,7 @@ from app.router.notes import router as notes_router
 from app.router.interviewPerp import router as interview_prep_router
 from app.router.docsupload import router as docsupload_router
 from app.router.studentInsight import router as student_insight_router
+from app.router.assignment import router as assignment_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 
@@ -43,6 +44,7 @@ app.include_router(notes_router, prefix="/notes", tags=["Notes"])
 app.include_router(student_insight_router, prefix="/student-insight", tags=["Student Insights"])
 app.include_router(interview_prep_router, prefix="/interview-prep", tags=["Interview Preparation"])
 app.include_router(docsupload_router, prefix="/docs", tags=["Document Upload"])
+app.include_router(assignment_router, prefix="/assignments", tags=["Assignments"])
 
 @app.get("/")
 def read_root():

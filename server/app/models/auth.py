@@ -39,4 +39,7 @@ class User(Base):
 
     student_sub = relationship("StudentInsight", back_populates="owner")
 
+    assignments = relationship("Assignment", back_populates="owner", cascade="all, delete-orphan")
+    submissions = relationship("Submission", back_populates="student", cascade="all, delete-orphan")
+
 
