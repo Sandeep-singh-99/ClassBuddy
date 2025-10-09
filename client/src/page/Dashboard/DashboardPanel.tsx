@@ -3,6 +3,7 @@ import SideBar from "../../components/Sidebar";
 import { ToastContainer } from "react-toastify";
 import { useState } from "react";
 import { X, Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 function DashboardPanel() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -17,17 +18,18 @@ function DashboardPanel() {
       )}
 
       {/* Toggle Button (ALWAYS VISIBLE) */}
-      <button
-        className={`fixed top-4 left-4 z-50 bg-[#0c1729] text-white p-2 rounded-full shadow-md transition-all duration-300
-          ${sidebarOpen ? "md:left-64" : "md:left-4"}`}
+      <Button
+      variant={"destructive"}
+        className={`fixed top-2 left-4 z-50 bg-[#0c1729] text-white p-2 rounded-full shadow-md transition-all duration-300
+          ${sidebarOpen ? "md:left-64 mx-2 left-64" : "md:left-4 left-4"}`}
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
         {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      </Button>
 
       {/* Main Content */}
       <div
-        className={`flex-1 bg-gradient-to-br from-[#0c1729] via-[#13233f] to-[#0c1729] min-h-screen p-4 overflow-y-auto transition-all duration-300 ${
+        className={`flex-1 bg-gradient-to-br from-[#0c1729] via-[#13233f] to-[#0c1729] min-h-screen px-10 overflow-y-auto transition-all duration-300 ${
           sidebarOpen ? "md:ml-64" : "md:ml-0"
         }`}
       >
