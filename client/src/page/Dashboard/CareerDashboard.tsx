@@ -165,7 +165,7 @@ export default function CareerDashboard() {
         </Card>
 
         {/* Top Skills */}
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Top Skills</CardTitle>
             <Brain className="h-4 w-4 text-muted-foreground" />
@@ -179,7 +179,7 @@ export default function CareerDashboard() {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Salary Chart */}
@@ -222,6 +222,24 @@ export default function CareerDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      <div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Top Skills</CardTitle>
+            <Brain className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-1">
+              {data.top_skills.map((skill) => (
+                <Badge key={skill} variant="secondary">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Trends + Recommended Skills */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -104,8 +104,7 @@ router = APIRouter()
 
 @router.post("/generate-industry-insight", response_model=StudentInsightResponse)
 def generate_industry_insight(
-    # industry: str = Form(..., description="The industry to generate insights for."),
-    insight_request: Form = Depends(StudentInsightCreate),
+    industry: str = Form(..., description="The industry to generate insights for."),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -116,7 +115,7 @@ def generate_industry_insight(
         )
 
     initial_state: State = {
-        "industry": [HumanMessage(content=insight_request.industry)],
+        "industry": [HumanMessage(content=industry)],
         "research": [],
         "getIndustry": [],
     }
@@ -139,6 +138,7 @@ def generate_industry_insight(
 
     try:
         new_insight = StudentInsight(
+            industry=industry,
             salary_range=insight_data.get("salary_range", {}),
             growth_rate=insight_data.get("growth_rate", 0.0),
             demand_level=insight_data.get("demand_level", ""),
