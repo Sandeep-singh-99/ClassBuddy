@@ -1,18 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Form, Query
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
-from app.schemas.assignment import (
-    AssignmentQuestionResponse,
-    AssignmentResponse,
-    AssignmentBase,
-)
-from app.models.assignment import Assignment, AssignmentQuestion, Submission
-from app.models.auth import User
-from app.schemas.auth import UserResponse
-from app.models.auth import userRole
+from app.schemas.assignment import AssignmentQuestionResponse
+from app.models.assignment import Assignment, AssignmentQuestion
+from app.models.auth import User, userRole
 from app.dependencies.dependencies import get_db, get_current_user
-from app.models.teacherInsight import TeacherInsight
 from dotenv import load_dotenv
 from langchain_tavily import TavilySearch
 from fastapi.responses import JSONResponse
@@ -21,33 +14,44 @@ from langgraph.graph import add_messages, StateGraph, END
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 import json
+import re
 
 load_dotenv()
 
 
+# --------------------------
+# Graph State Definition
+# --------------------------
 class State(TypedDict):
     des: Annotated[list, add_messages]
     research: Annotated[list, add_messages]
     question: Annotated[list, add_messages]
 
 
+# --------------------------
+# Initialize Tools
+# --------------------------
 search_tool = TavilySearch(max_results=2)
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
 
+# --------------------------
+# Search Node
+# --------------------------
 def tavily_search_node(state: State):
     topic = state["des"][-1].content
     search_results = search_tool.invoke({"query": topic})
 
-    if not search_results or "results" not in search_results:
-        combined_results = "No search results found."
-    else:
-        combined_results = "\n".join(
+    combined_results = (
+        "\n".join(
             [
                 f"- {item['title']}: {item['content']}"
                 for item in search_results["results"]
             ]
         )
+        if search_results and "results" in search_results
+        else "No search results found."
+    )
 
     return {
         "des": state["des"],
@@ -56,6 +60,9 @@ def tavily_search_node(state: State):
     }
 
 
+# --------------------------
+# Question Generation Node
+# --------------------------
 def generate_question_node(state: State):
     des = state["des"][-1].content
     res = (
@@ -64,36 +71,53 @@ def generate_question_node(state: State):
         else "No research data available."
     )
 
-    prompt = (
-        f"You are an expert at creating assignment questions for students.\n"
-        f"Generate 10 questions based on the following assignment description and research data.\n\n"
-        f"Assignment Description: {des}\n"
-        f"Research Data: {res}\n"
-        f"Some the questions must be pure theory, some must be coding questions.\n"
-        f"Format is markdown with code blocks for coding questions.\n"
-    )
+    prompt = f"""
+You are an expert at creating assignment questions for students.
+Generate **10 questions** based on the assignment description and research data.
+Some should be theoretical, some should be coding-based.
+Use markdown for formatting, and include code blocks for coding questions.
+
+Return output as a **valid JSON list**, where each item is:
+{{
+  "id": number,
+  "type": "theory" | "coding",
+  "question": "text in markdown"
+}}
+
+Assignment Description: {des}
+Research Data: {res}
+    """
 
     response = llm.invoke(prompt)
+
+    # Try to extract JSON part safely
+    try:
+        json_match = re.search(r"\[.*\]", response.content, re.DOTALL)
+        json_data = json.loads(json_match.group()) if json_match else []
+    except Exception:
+        json_data = [{"id": 1, "type": "theory", "question": response.content}]
 
     return {
         "des": state["des"],
         "research": state["research"],
-        "question": [HumanMessage(content=response.content)],
+        "question": [HumanMessage(content=json.dumps(json_data, indent=2))],
     }
 
 
+# --------------------------
+# Graph Workflow
+# --------------------------
 workflow = StateGraph(State)
-
 workflow.add_node("tavily_search", tavily_search_node)
 workflow.add_node("generate_question", generate_question_node)
-
 workflow.set_entry_point("tavily_search")
 workflow.add_edge("tavily_search", "generate_question")
 workflow.add_edge("generate_question", END)
-
 graph = workflow.compile()
 
-
+# --------------------------
+# FastAPI Router
+# --------------------------
 router = APIRouter()
 
 
@@ -105,16 +129,12 @@ async def generate_question(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if not current_user:
+    """Generate structured assignment questions (JSON format)."""
+
+    if not current_user or current_user.role != userRole.TEACHER:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="not authorized to generate questions",
-        )
-    
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="only teachers can generate questions",
+            detail="Only teachers can generate questions.",
         )
 
     assignment = (
@@ -124,50 +144,51 @@ async def generate_question(
     )
     if not assignment:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Assignment not found"
-        )
-    
-    assignment_ques = db.query(AssignmentQuestion).filter(AssignmentQuestion.assignment_id == assignment_id).first()
-    if assignment_ques:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Question already generated for this assignment",
+            status_code=status.HTTP_404_NOT_FOUND, detail="Assignment not found."
         )
 
-
-    question_description = assignment.description
-    if not question_description:
+    # Prevent duplicate generation
+    existing = (
+        db.query(AssignmentQuestion)
+        .filter(AssignmentQuestion.assignment_id == assignment_id)
+        .first()
+    )
+    if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Assignment description is empty",
+            detail="Questions already generated for this assignment.",
+        )
+
+    if not assignment.description:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Assignment description is empty.",
         )
 
     try:
         results = graph.invoke(
             {
-                "des": [HumanMessage(content=question_description)],
+                "des": [HumanMessage(content=assignment.description)],
                 "research": [],
                 "question": [],
             }
         )
 
-        generated_question = (
-            results["question"][-1].content
-            if hasattr(results["question"][-1], "content")
-            else str(results["question"][-1])
-        )
+        generated_content = results["question"][-1].content
+        questions_json = json.loads(generated_content)
 
         question = AssignmentQuestion(
-            assignment_id=assignment.id, question_text=generated_question
+            assignment_id=assignment.id,
+            question_text=json.dumps(questions_json, indent=2),
         )
+        db.add(question)
+        db.commit()
+        db.refresh(question)
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error generating question: {str(e)}",
+            detail=f"Error generating questions: {str(e)}",
         )
-
-    db.add(question)
-    db.commit()
-    db.refresh(question)
 
     return question
