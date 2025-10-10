@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
-
+from app.schemas.auth import UserResponse
 
 # -----------------------------
 # Question Schemas
@@ -10,8 +10,10 @@ class AssignmentQuestionBase(BaseModel):
     question_text: str = Field(..., example="Explain the concept of recursion.")
 
 
-class AssignmentQuestionCreate(AssignmentQuestionBase):
-    pass
+class AssignmentQuestionCreate(BaseModel):
+    title: str = Field(..., example="Python Basics")
+    description: str = Field(..., example="Complete the exercises on loops and functions.")
+    due_date: datetime = Field(..., example="2025-10-20T18:30:00Z")
 
 
 class AssignmentQuestionResponse(AssignmentQuestionBase):
@@ -27,6 +29,7 @@ class AssignmentQuestionResponse(AssignmentQuestionBase):
 # Assignment Schemas
 # -----------------------------
 class AssignmentBase(BaseModel):
+    id: str = Field(..., example="assignment-uuid-here")
     title: str = Field(..., example="Python Basics")
     description: str = Field(..., example="Complete the exercises on loops and functions.")
     due_date: datetime = Field(..., example="2025-10-20T18:30:00Z")
@@ -39,6 +42,7 @@ class AssignmentCreate(AssignmentBase):
 class AssignmentResponse(AssignmentBase):
     id: str
     owner_id: str
+    owner: UserResponse
     created_at: datetime
     updated_at: datetime
     questions: List[AssignmentQuestionResponse] = []
