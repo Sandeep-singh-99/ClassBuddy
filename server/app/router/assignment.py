@@ -10,6 +10,7 @@ from app.models.auth import userRole
 from app.dependencies.dependencies import get_db, get_current_user
 from app.models.teacherInsight import TeacherInsight
 
+
 router = APIRouter()
 
 @router.post("/create-assignment", response_model=AssignmentBase)

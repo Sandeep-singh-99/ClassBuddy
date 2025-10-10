@@ -140,6 +140,7 @@ const authSlice = createSlice({
     );
     builder.addCase(checkAuth.rejected, (state, action) => {
       state.error = action.payload as string;
+      state.user = null;
     });
     builder.addCase(checkAuth.pending, (state) => {
       state.error = null;
