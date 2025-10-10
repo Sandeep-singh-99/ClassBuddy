@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Form, Query
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
-from app.schemas.assignment import AssignmentQuestionResponse, AssignmentResponse, AssignmentBase
+from app.schemas.assignment import AssignmentQuestionResponse, AssignmentResponse, AssignmentBase, AssignmentQuestionCreate
 from app.models.assignment import Assignment, AssignmentQuestion, Submission
 from app.models.auth import User
 from app.schemas.auth import UserResponse
@@ -13,8 +13,8 @@ from app.models.teacherInsight import TeacherInsight
 
 router = APIRouter()
 
-@router.post("/create-assignment", response_model=AssignmentBase)
-async def create_assignment(assignment: Form = Depends(AssignmentBase), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@router.post("/create-assignment", response_model=AssignmentQuestionCreate)
+async def create_assignment(assignment: Form = Depends(AssignmentQuestionCreate), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="not authorized to create assignments")
     
