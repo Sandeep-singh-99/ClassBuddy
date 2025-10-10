@@ -24,5 +24,7 @@ class TeacherInsight(Base):
     notes = relationship("Note", back_populates="group", cascade="all, delete-orphan")
     docsuploads = relationship("DocsUpload", back_populates="group", cascade="all, delete-orphan")
 
+    assignments = relationship("Assignment", back_populates="group", cascade="all, delete-orphan")
+
 
 

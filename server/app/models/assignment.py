@@ -22,6 +22,9 @@ class Assignment(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    group_id = Column(String, ForeignKey("teacher_insights.id"), nullable=False)
+    group = relationship("TeacherInsight", back_populates="assignments")
+
 
 
 class AssignmentQuestion(Base):
