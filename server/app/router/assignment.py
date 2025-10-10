@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Form
+from fastapi import APIRouter, Depends, HTTPException, status, Form, Query
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
@@ -17,4 +17,19 @@ async def create_assignment(assignment: Form = Depends(AssignmentBase), db: Sess
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="not authorized to create assignments")
     
     if current_user.role != userRole.TEACHER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="only teachers can create assignments") 
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="only teachers can create assignments")
+
+    if not assignment.title or not assignment.description or not assignment.due_date:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="missing required fields")
+
+    new_assignment = Assignment(
+        title=assignment.title,
+        description=assignment.description,
+        due_date=assignment.due_date,
+        owner_id=current_user.id
+    )
+
+    db.add(new_assignment)
+    db.commit()
+    db.refresh(new_assignment)
+    return new_assignment
