@@ -17,6 +17,20 @@ export const fetchAssignments = createAsyncThunk("assignments/fetchAll", async (
     }
 })
 
+
+export const fetchAssignmentById = createAsyncThunk("assignments/fetchById", async (id: string , thunkApi) => {
+    try {
+        const response = await axiosClient.get(`/assignments/get-assignment-viewById/${id}`)
+        return response.data
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Registration failed"
+        );
+      }
+    }
+})
+
 interface IOwner {
   id: string;
   full_name: string;
@@ -30,6 +44,7 @@ interface IOwner {
 interface IQuestion {
     id: string;
     type: string;
+    question_text: string; // This will hold the JSON string
     question: string;
 }
 
@@ -46,12 +61,14 @@ interface IAssignment {
 
 interface AssignmentState {
     assignments: IAssignment[];
+    currentAssignment: IAssignment | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: AssignmentState = {
     assignments: [],
+    currentAssignment: null,
     loading: false,
     error: null,
 };
@@ -74,6 +91,22 @@ const assignmentSlice = createSlice({
         builder.addCase(fetchAssignments.rejected, (state, action) => {
             state.loading = false;
             state.assignments = []
+            state.error = action.payload as string;
+        });
+
+        builder.addCase(fetchAssignmentById.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(fetchAssignmentById.fulfilled, (state, action: PayloadAction<IAssignment>) => {
+            state.currentAssignment = action.payload
+            state.loading = false;
+            state.error = null;
+        });
+
+        builder.addCase(fetchAssignmentById.rejected, (state, action) => {
+            state.loading = false;
+            state.currentAssignment = null;
             state.error = action.payload as string;
         });
     }
