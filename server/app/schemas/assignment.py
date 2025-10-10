@@ -8,7 +8,6 @@ from typing import List, Optional
 # -----------------------------
 class AssignmentQuestionBase(BaseModel):
     question_text: str = Field(..., example="Explain the concept of recursion.")
-    answers: str = Field(..., example="Recursion is a process where a function calls itself.")
 
 
 class AssignmentQuestionCreate(AssignmentQuestionBase):

@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime, Table, ForeignKey
+from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime, Table, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from ..config.db import Base
 import uuid
@@ -32,8 +32,7 @@ class AssignmentQuestion(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     assignment_id = Column(String, ForeignKey("assignments.id"), nullable=False)
-    question_text = Column(String, nullable=False)
-    answers = Column(String, nullable=False)
+    question_text = Column(JSON, nullable=False, default=dict)
 
     assignment = relationship("Assignment", back_populates="questions")
 
@@ -46,6 +45,7 @@ class Submission(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     assignment_id = Column(String, ForeignKey("assignments.id"), nullable=False)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
+    answers = Column(JSON, nullable=False, default=dict)
     submitted_at = Column(DateTime, default=datetime.utcnow)
     grade = Column(Integer)
     feedback = Column(String)
