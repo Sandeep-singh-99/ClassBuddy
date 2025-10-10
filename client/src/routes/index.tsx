@@ -24,6 +24,7 @@ import DocView from "@/page/Dashboard/DocView";
 import RoleProtectedRoute from "@/components/ProtectedRoute/RoleProtectedRoute";
 import NotFound from "@/page/NotFound";
 import CareerDashboard from "@/page/Dashboard/CareerDashboard";
+import TAssignmentViewById from "@/page/Teacher/TAssignmentViewById";
 
 export const router = createBrowserRouter([
     {
@@ -127,6 +128,10 @@ export const router = createBrowserRouter([
             {
                 path: "docs",
                 element: <Docs />
+            },
+            {
+                path: "assignments/:assignmentId",
+                element: <TAssignmentViewById />
             }
         ]
     },
