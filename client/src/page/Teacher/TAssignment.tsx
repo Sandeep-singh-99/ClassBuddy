@@ -39,7 +39,7 @@ export default function TAssignment() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
         {assignments.map((assignment) => (
-          <Link key={assignment.id} to={`/teacher/assignments/${assignment.id}`}>
+          <Link key={assignment.id} to={`/t-dashboard/assignments/${assignment.id}`}>
           <AssignmentCard assignment={assignment} />
           </Link>
         ))}
