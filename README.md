@@ -13,6 +13,28 @@ ClassBuddy is a full-stack web application designed to enhance classroom collabo
 - Seamless **note sharing** and **collaboration** within the group.
 
 
+### 💬 **Group Collaboration**
+- Teachers can create groups for their classes.
+- Students can join groups to access shared notes and discussions.
+- Built-in **chat system** for quick communication between teachers and students.
+
+### 🔒 **Secure Authentication**
+- Role-based login system (**Teacher / Student**).
+- **JWT-based authentication** for API protection.
+- Session management via secure tokens.
+
+### ☁️ **Cloud Integration**
+- Media uploads powered by **Cloudinary**.
+- **PostgreSQL (NeonDB)** for scalable cloud database.
+- **Dockerized setup** for easy deployment and reproducibility.
+
+### 🧠 **Agentic AI Workflow**
+- Teachers’ notes are generated using **Gemini 2.5 Flash + Tavily Search**.
+- Integrated through **LangChain** and **LangGraph** for autonomous multi-step reasoning.
+- The system intelligently searches, summarizes, and generates structured Markdown notes.
+
+
+
 ## Tech Stack
 
 **Frontend:**
