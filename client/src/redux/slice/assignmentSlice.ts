@@ -31,6 +31,20 @@ export const fetchAssignmentById = createAsyncThunk("assignments/fetchById", asy
     }
 })
 
+
+export const CreateAssignment = createAsyncThunk("assignments/create", async (data: FormData, thunkApi) => {
+    try {
+        const response = await axiosClient.post("/assignments/create-assignment", data)
+        return response.data
+    } catch (error) {
+        if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Registration failed"
+        );
+      }
+    }
+})
+
 interface IOwner {
   id: string;
   full_name: string;
@@ -44,7 +58,7 @@ interface IOwner {
 interface IQuestion {
     id: string;
     type: string;
-    question_text: string; // This will hold the JSON string
+    question_text: string; 
     question: string;
 }
 
@@ -109,6 +123,22 @@ const assignmentSlice = createSlice({
             state.currentAssignment = null;
             state.error = action.payload as string;
         });
+
+        builder.addCase(CreateAssignment.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        builder.addCase(CreateAssignment.fulfilled, (state, action: PayloadAction<IAssignment>) => {
+            state.assignments.push(action.payload)
+            state.loading = false;
+            state.error = null;
+        })
+
+        builder.addCase(CreateAssignment.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
     }
 })
 
