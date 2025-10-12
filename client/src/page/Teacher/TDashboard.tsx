@@ -17,9 +17,10 @@ export default function TDashboard() {
         </div>
       )}
 
-      {/* Toggle Button (ALWAYS VISIBLE) */}
+      {/* Toggle Button (ALWAYS VISIBLE) bg-[#3c619b] hover:bg-[#2a4d7f] */}
       <Button
-        className={`fixed top-2 left-4 z-50 bg-[#3c619b] hover:bg-[#2a4d7f] text-white p-2 rounded-full shadow-md transition-all duration-300
+      variant={"ghost"}
+        className={`fixed top-2 cursor-pointer left-4 z-50 text-white p-2 rounded-full shadow-md transition-all duration-300
           ${sidebarOpen ? "md:left-64 mx-2 left-64" : "md:left-4 left-4"}`}
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
