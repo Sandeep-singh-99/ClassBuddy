@@ -34,7 +34,11 @@ export const fetchAssignmentById = createAsyncThunk("assignments/fetchById", asy
 
 export const CreateAssignment = createAsyncThunk("assignments/create", async (data: FormData, thunkApi) => {
     try {
-        const response = await axiosClient.post("/assignments/create-assignment", data)
+        const response = await axiosClient.post("/assignments/create-assignment", data, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        })
         return response.data
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -130,7 +134,7 @@ const assignmentSlice = createSlice({
         })
 
         builder.addCase(CreateAssignment.fulfilled, (state, action: PayloadAction<IAssignment>) => {
-            state.assignments.push(action.payload)
+            state.assignments = [action.payload, ...state.assignments];
             state.loading = false;
             state.error = null;
         })

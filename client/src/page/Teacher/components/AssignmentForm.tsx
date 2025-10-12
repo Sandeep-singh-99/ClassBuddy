@@ -37,7 +37,7 @@ export default function AssignmentForm() {
     const formDataToSend = new FormData();
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
-    formDataToSend.append("dueDate", formData.dueDate);
+    formDataToSend.append("due_date", new Date(formData.dueDate).toISOString());
 
     try {
         dispatch(CreateAssignment(formDataToSend));
