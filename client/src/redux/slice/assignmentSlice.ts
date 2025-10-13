@@ -39,7 +39,7 @@ export const CreateAssignment = createAsyncThunk("assignments/create", async (da
                 "Content-Type": "multipart/form-data"
             }
         })
-        return response.data
+        return response.data;
     } catch (error) {
         if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
@@ -48,6 +48,20 @@ export const CreateAssignment = createAsyncThunk("assignments/create", async (da
       }
     }
 })
+
+
+export const GenerateAssignment = createAsyncThunk("assignments/generate", async (id: string, thunkApi) => {
+    try {
+        const response = await axiosClient.post(`/assignments/generate-question/${id}`)
+        return response.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Registration failed"
+        );
+      }
+    }
+} )
 
 interface IOwner {
   id: string;
@@ -140,6 +154,22 @@ const assignmentSlice = createSlice({
         })
 
         builder.addCase(CreateAssignment.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+
+        builder.addCase(GenerateAssignment.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        builder.addCase(GenerateAssignment.fulfilled, (state, action: PayloadAction<IAssignment>) => {
+            state.currentAssignment = action.payload;
+            state.loading = false;
+            state.error = null;
+        })
+
+        builder.addCase(GenerateAssignment.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         })
