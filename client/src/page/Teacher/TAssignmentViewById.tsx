@@ -39,7 +39,7 @@ export default function TAssignmentViewById() {
 
   if (!currentAssignment) {
     return (
-       <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-red-50 text-red-600 border border-red-200 rounded-lg max-w-5xl mx-auto">
+      <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-red-50 text-red-600 border border-red-200 rounded-lg max-w-5xl mx-auto">
         <AlertCircle className="w-5 h-5" />
         <span className="text-sm font-medium">No Assignment Found</span>
       </div>
@@ -52,18 +52,31 @@ export default function TAssignmentViewById() {
 
   return (
     <div className="max-w-5xl mx-auto mt-8 px-4 space-y-6">
-      <Card className="border border-zinc-700 bg-zinc-900/60 text-zinc-100 shadow-lg backdrop-blur-md transition-all duration-300 hover:shadow-xl">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-white tracking-tight">
-            {currentAssignment.title}
-          </CardTitle>
-          <p className="text-sm text-zinc-400 mt-1">
-            {currentAssignment.description}
-          </p>
-        </CardHeader>
+      {questions.length === 0 && (
+       <div>
+        <div className="py-10">
+          
+        </div>
+         <div className="flex items-center justify-center gap-2 p-4 bg-yellow-50 text-yellow-600 border border-yellow-200 rounded-lg">
+          <AlertCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">No Questions Found</span>
+        </div>
+       </div>
+      )}
+      {questions.length > 0 && (
+        <Card className="border border-zinc-700 bg-zinc-900/60 text-zinc-100 shadow-lg backdrop-blur-md transition-all duration-300 hover:shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-white tracking-tight">
+              {currentAssignment.title}
+            </CardTitle>
+            <p className="text-sm text-zinc-400 mt-1">
+              {currentAssignment.description}
+            </p>
+          </CardHeader>
 
-        <AQuestions questions={questions} />
-      </Card>
+          <AQuestions questions={questions} />
+        </Card>
+      )}
     </div>
   );
 }
