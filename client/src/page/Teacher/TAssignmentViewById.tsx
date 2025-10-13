@@ -6,6 +6,7 @@ import { BarLoader } from "react-spinners";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import AQuestions from "./components/AQuestions";
+import GenerateAssignment from "./components/GenerateAssignment";
 
 export default function TAssignmentViewById() {
   const dispatch = useAppDispatch();
@@ -54,8 +55,8 @@ export default function TAssignmentViewById() {
     <div className="max-w-5xl mx-auto mt-8 px-4 space-y-6">
       {questions.length === 0 && (
        <div>
-        <div className="py-10">
-          
+        <div className="py-10 flex justify-end">
+          <GenerateAssignment id={assignmentId!} />
         </div>
          <div className="flex items-center justify-center gap-2 p-4 bg-yellow-50 text-yellow-600 border border-yellow-200 rounded-lg">
           <AlertCircle className="w-5 h-5" />

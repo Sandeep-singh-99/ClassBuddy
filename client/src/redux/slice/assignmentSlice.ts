@@ -50,7 +50,7 @@ export const CreateAssignment = createAsyncThunk("assignments/create", async (da
 })
 
 
-export const GenerateAssignment = createAsyncThunk("assignments/generate", async (id: string, thunkApi) => {
+export const GenerateAssignmentById = createAsyncThunk("assignments/generate", async (id: string, thunkApi) => {
     try {
         const response = await axiosClient.post(`/assignments/generate-question/${id}`)
         return response.data;
@@ -158,18 +158,18 @@ const assignmentSlice = createSlice({
             state.error = action.payload as string;
         })
 
-        builder.addCase(GenerateAssignment.pending, (state) => {
+        builder.addCase(GenerateAssignmentById.pending, (state) => {
             state.loading = true;
             state.error = null;
         })
 
-        builder.addCase(GenerateAssignment.fulfilled, (state, action: PayloadAction<IAssignment>) => {
+        builder.addCase(GenerateAssignmentById.fulfilled, (state, action: PayloadAction<IAssignment>) => {
             state.currentAssignment = action.payload;
             state.loading = false;
             state.error = null;
         })
 
-        builder.addCase(GenerateAssignment.rejected, (state, action) => {
+        builder.addCase(GenerateAssignmentById.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         })
