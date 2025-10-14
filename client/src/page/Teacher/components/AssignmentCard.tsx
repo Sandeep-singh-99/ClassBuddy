@@ -24,7 +24,7 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
           <NotebookIcon className="w-6 h-6 text-blue-600" />
           {assignment.title}
         </Link>
-        <AssignmentDelete />
+        <AssignmentDelete id={assignment.id} />
       </CardContent>
     </Card>
   );
