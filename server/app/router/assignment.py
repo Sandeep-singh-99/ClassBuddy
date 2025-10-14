@@ -14,6 +14,7 @@ from app.schemas.auth import UserResponse
 from app.models.auth import userRole
 from app.dependencies.dependencies import get_db, get_current_user
 from app.models.teacherInsight import TeacherInsight
+from sqlalchemy.orm import joinedload
 
 
 router = APIRouter()
@@ -135,5 +136,29 @@ async def get_assignment(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="not authorized to view this assignment",
             )
+
+    return assignment
+
+@router.delete("/delete-assignment/{assignment_id}", response_model=AssignmentResponse)
+async def delete_assignment(
+    assignment_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not current_user or current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=403, detail="Only teachers can delete assignments")
+
+    assignment = (
+        db.query(Assignment)
+        .options(joinedload(Assignment.questions), joinedload(Assignment.submissions))
+        .filter(Assignment.id == assignment_id, Assignment.owner_id == current_user.id)
+        .first()
+    )
+
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+
+    db.delete(assignment)
+    db.commit()
 
     return assignment

@@ -31,7 +31,7 @@ class AssignmentQuestion(Base):
     __tablename__ ="assignment_questions"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    assignment_id = Column(String, ForeignKey("assignments.id"), nullable=False)
+    assignment_id = Column(String, ForeignKey("assignments.id", ondelete="CASCADE"), nullable=False)
     question_text = Column(JSON, nullable=False, default=dict)
 
     assignment = relationship("Assignment", back_populates="questions")
@@ -43,7 +43,7 @@ class Submission(Base):
     __tablename__ = "submissions"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    assignment_id = Column(String, ForeignKey("assignments.id"), nullable=False)
+    assignment_id = Column(String, ForeignKey("assignments.id", ondelete="CASCADE"), nullable=False)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     answers = Column(JSON, nullable=False, default=dict)
     submitted_at = Column(DateTime, default=datetime.utcnow)
