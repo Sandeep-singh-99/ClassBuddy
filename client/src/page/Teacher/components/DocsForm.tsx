@@ -40,7 +40,7 @@ export default function DocsForm() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
+        <Button variant={"destructive"}>
           <PlusCircle className="h-4 w-4" />
           Upload Document
           </Button>

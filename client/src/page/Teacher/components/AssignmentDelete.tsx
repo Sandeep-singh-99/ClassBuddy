@@ -27,7 +27,7 @@ export default function AssignmentDelete() {
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button variant="default">Confirm</Button>
+          <Button variant="default" className="cursor-pointer">Confirm</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
