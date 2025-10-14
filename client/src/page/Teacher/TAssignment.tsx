@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { fetchAssignments } from "@/redux/slice/assignmentSlice";
 import { BarLoader } from "react-spinners";
 import AssignmentCard from "./components/AssignmentCard";
-import { Link } from "react-router-dom";
 
 export default function TAssignment() {
   const dispatch = useAppDispatch();
@@ -31,7 +30,7 @@ export default function TAssignment() {
       {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
 
       {error && (
-        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+        <div className="flex items-center justify-center gap-2 p-4 my-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
           <AlertCircle className="w-5 h-5" />
           <span className="text-sm font-medium">Error: {error}</span>
         </div>
@@ -39,9 +38,7 @@ export default function TAssignment() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
         {assignments.map((assignment) => (
-          <Link key={assignment.id} to={`/t-dashboard/assignments/${assignment.id}`}>
           <AssignmentCard assignment={assignment} />
-          </Link>
         ))}
       </div>
     </div>
