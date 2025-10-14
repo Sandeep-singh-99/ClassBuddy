@@ -51,7 +51,7 @@ export default function AssignmentForm() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">Create Assignment</Button>
+        <Button variant="destructive">Create Assignment</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form className="space-y-4" onSubmit={handleSubmit}>
