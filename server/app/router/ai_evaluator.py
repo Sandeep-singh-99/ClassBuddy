@@ -13,127 +13,144 @@ from datetime import datetime
 
 load_dotenv()
 
-# ----- Logging -----
+# ===== Logging =====
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ----- Initialize LLM -----
+# ===== LLM Setup =====
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash", 
+    model="gemini-2.5-flash",
     temperature=0.2,
     api_version="v1",
 )
 
-# ----- Helper: Clean JSON -----
+# ===== Helper =====
 def clean_json_output(output: str):
-    """Remove markdown code fences if present."""
+    """Strip markdown/code fences from AI output."""
     return re.sub(r"^```[a-zA-Z]*\n?|```$", "", output.strip(), flags=re.MULTILINE).strip()
 
-# ----- FastAPI Router -----
-router = APIRouter(prefix="/ai-evaluator", tags=["AI Evaluator"])
+
+# ===== Router =====
+router = APIRouter()
 
 @router.post("/{assignment_id}/evaluate")
 async def evaluate_answers(
     assignment_id: str,
-    answers: dict[str, str],  # {"question_id": "student_answer"}
+    answers: dict[str, str],
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Evaluate all student answers for a given assignment (store only total marks & final feedback)."""
+    """Evaluate assignment answers and return a detailed JSON structure."""
 
-    # --- Authorization ---
+    # --- 1️⃣ Authorization ---
     if current_user.role != userRole.STUDENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only students can submit answers."
         )
-    
-    submission_exists = db.query(Submission).filter(Submission.student_id == current_user.id, Submission.assignment_id == assignment_id).first()
-    if submission_exists:
+
+    # --- 2️⃣ Duplicate check ---
+    if db.query(Submission).filter(
+        Submission.student_id == current_user.id,
+        Submission.assignment_id == assignment_id
+    ).first():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You have already submitted this assignment."
         )
 
+    # --- 3️⃣ Fetch assignment ---
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found.")
     if not assignment.questions:
         raise HTTPException(status_code=404, detail="No questions found in this assignment.")
 
-    # ----- Combine all questions and answers -----
-    combined_text = ""
-    for q in assignment.questions:
-        qid = str(q.id)
+    # --- 4️⃣ Parse stored questions (ensure it's a list of dicts) ---
+    try:
+        questions = (
+            assignment.questions[0].question_text
+            if isinstance(assignment.questions[0].question_text, list)
+            else json.loads(assignment.questions[0].question_text)
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid question format in database.")
 
-        # Convert question_text (list/dict) to readable string
-        if isinstance(q.question_text, list):
-            question_str = "\n".join(
-                [item.get("question", str(item)) if isinstance(item, dict) else str(item) for item in q.question_text]
-            )
-        elif isinstance(q.question_text, dict):
-            question_str = json.dumps(q.question_text)
-        else:
-            question_str = str(q.question_text)
+    # --- 5️⃣ Combine Q&A for AI evaluation ---
+    qa_text = ""
+    for q in questions:
+        qid = str(q.get("id"))
+        question = q.get("question", "")
+        answer = answers.get(qid, "").strip()
+        qa_text += f"Question: {question}\nAnswer: {answer}\n\n"
 
-        student_answer = answers.get(qid, "").strip()
-        combined_text += f"Question:\n{question_str}\nAnswer:\n{student_answer}\n\n"
-
-    # ----- AI Prompt -----
+    # --- 6️⃣ Prompt for LLM ---
     prompt = f"""
-You are an AI evaluator. Evaluate the student's assignment below.
+You are an AI evaluator. Evaluate the student's assignment based on the questions and answers below.
 
-{combined_text}
+{qa_text}
 
-Provide:
-1. Total marks (sum of marks for all questions, out of 5 per question)
-2. Final constructive feedback summarizing overall performance
+Each question is worth 5 marks. Evaluate each answer and assign marks between 0 and 5.
 
-Respond ONLY in valid JSON:
+Provide output strictly in valid JSON:
 {{
-    "total_marks": <integer>,
-    "final_feedback": "<string>"
+  "answers": [
+    {{
+      "id": <int>,
+      "type": "<string>",
+      "question": "<string>",
+      "answer": "<string>"
+    }}
+  ],
+  "total_marks": <integer>,
+  "final_feedback": "<string>"
 }}
 
-Do NOT include markdown or code fences.
+Rules:
+- One global feedback only.
+- Do not include markdown, code fences, or extra commentary.
+- Each question gets only its question text and student's answer.
 """
 
-    # ----- Invoke AI -----
+    # --- 7️⃣ Invoke AI safely ---
     try:
         response = llm.invoke([HumanMessage(content=prompt)])
         cleaned = clean_json_output(response.content)
         result = json.loads(cleaned)
-        total_marks = int(result.get("total_marks", 0))
-        final_feedback = result.get("final_feedback", "No feedback provided.")
     except json.JSONDecodeError:
-        logger.warning("Invalid JSON from LLM. Raw output: %s", response.content)
-        total_marks, final_feedback = 0, "Invalid AI response format."
+        logger.warning("Invalid JSON from AI: %s", response.content)
+        result = {
+            "answers": [],
+            "total_marks": 0,
+            "final_feedback": "Invalid AI response format."
+        }
     except Exception as e:
-        logger.error("Evaluation failed: %s", str(e))
-        total_marks, final_feedback = 0, "An evaluation error occurred."
+        logger.error("AI evaluation failed: %s", str(e))
+        result = {
+            "answers": [],
+            "total_marks": 0,
+            "final_feedback": "An internal evaluation error occurred."
+        }
 
-    # ----- Save submission -----
+    # --- 8️⃣ Save submission (store only total + feedback) ---
     new_submission = Submission(
         assignment_id=assignment_id,
         student_id=current_user.id,
-        answers=answers,
+        answers=answers,  # original raw answers
         submitted_at=datetime.utcnow(),
-        grade=total_marks,
-        feedback=final_feedback,  # store only final feedback
+        grade=result.get("total_marks", 0),
+        feedback=result.get("final_feedback", "No feedback."),
     )
     db.add(new_submission)
     db.commit()
     db.refresh(new_submission)
 
-    logger.info(
-        "AI evaluated assignment %s for student %s. Total Marks: %d",
-        assignment_id, current_user.id, total_marks
-    )
-
+    # --- 9️⃣ Return clean structured response ---
     return {
-        "submission_id": new_submission.id,
+        "submission_id": str(new_submission.id),
         "assignment_id": assignment_id,
         "student_id": current_user.id,
-        "total_marks": total_marks,
-        "final_feedback": final_feedback,
+        "answers": result.get("answers", []),
+        "total_marks": result.get("total_marks", 0),
+        "final_feedback": result.get("final_feedback", "No feedback."),
     }
