@@ -12,6 +12,7 @@ from app.router.studentInsight import router as student_insight_router
 from app.router.assignment import router as assignment_router
 from app.router.generate_assignment import router as generate_assignment_router
 from app.router.ai_evaluator import router as ai_evaluator_router
+from app.router.submission import router as submission_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 
@@ -49,6 +50,7 @@ app.include_router(docsupload_router, prefix="/docs", tags=["Document Upload"])
 app.include_router(assignment_router, prefix="/assignments", tags=["Assignments"])
 app.include_router(generate_assignment_router, prefix="/assignments", tags=["Generate Assignment"])
 app.include_router(ai_evaluator_router, prefix="/ai-evaluator", tags=["AI Evaluator"])
+app.include_router(submission_router, prefix="/submissions", tags=["Submissions"])
 
 
 @app.get("/")
