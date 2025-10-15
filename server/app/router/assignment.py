@@ -118,21 +118,27 @@ async def get_assignment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="assignment not found"
         )
-
+    
+    # TEACHER: can only view their own assignments
     if current_user.role == userRole.TEACHER and assignment.owner_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="not authorized to view this assignment",
         )
-
+    
+    # STUDENT: can only view assignments in groups they belong to
     if current_user.role == userRole.STUDENT:
-        teacher_group = (
-            db.query(TeacherInsight)
-            .join(User)
-            .filter(User.id == current_user.id)
-            .first()
+        # Check if student is part of the assignment's group
+
+        member_exists = (
+            db.query(group_members)
+            .filter(
+                group_members.c.group_id == assignment.group_id,
+                group_members.c.user_id == current_user.id,
+            ).first()
         )
-        if not teacher_group or assignment.group_id != teacher_group.id:
+
+        if not member_exists:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="not authorized to view this assignment",
