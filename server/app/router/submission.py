@@ -18,3 +18,38 @@ async def get_submissions(assignment_id: str, db: Session = Depends(get_db), cur
     
     submissions = db.query(Submission).filter(Submission.assignment_id == assignment_id, Submission.student_id == current_user.id).all()
     return {"submissions": submissions}
+
+
+
+@router.get("/assignment-stats/{assignment_id}")
+async def assignment_stats(
+    assignment_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # Only teachers can view
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    # Get the assignment and its group
+    assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+    if not assignment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Assignment not found")
+
+    group = assignment.group
+    if not group:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found for this assignment")
+
+    total_students = len(group.members)
+
+    # Count students who submitted
+    students_completed = db.query(Submission).filter(
+        Submission.assignment_id == assignment_id
+    ).count()
+
+    return {
+        "assignment_id": assignment_id,
+        "group_id": group.id,
+        "total_students": total_students,
+        "students_completed": students_completed
+    }
