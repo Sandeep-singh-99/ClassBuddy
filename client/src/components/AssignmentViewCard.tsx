@@ -64,7 +64,7 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
         </span>
       </CardContent>
 
-      <CardFooter className="flex justify-end pt-2">
+      <CardFooter className="flex justify-end">
         <Link
           key={assignment.id}
           to={`/dashboard-panel/assignments/${assignment.id}`}
