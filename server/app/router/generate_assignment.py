@@ -73,7 +73,7 @@ def generate_question_node(state: State):
 
     prompt = f"""
 You are an expert at creating assignment questions for students.
-Generate **1 questions** based on the assignment description and research data.
+Generate **3 questions** based on the assignment description and research data.
 Some should be theoretical, some should be coding-based.
 Use markdown for formatting, and include code blocks for coding questions.
 
