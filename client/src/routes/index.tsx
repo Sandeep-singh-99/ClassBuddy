@@ -25,6 +25,8 @@ import RoleProtectedRoute from "@/components/ProtectedRoute/RoleProtectedRoute";
 import NotFound from "@/page/NotFound";
 import CareerDashboard from "@/page/Dashboard/CareerDashboard";
 import TAssignmentViewById from "@/page/Teacher/TAssignmentViewById";
+import Assignment from "@/page/Dashboard/Assignment";
+import AssignmentViewById from "@/page/Dashboard/AssignmentViewById";
 
 export const router = createBrowserRouter([
     {
@@ -93,6 +95,14 @@ export const router = createBrowserRouter([
             {
                 path: "dashboard",
                 element: <CareerDashboard />
+            },
+            {
+                path: "assignments",
+                element: <Assignment />
+            },
+            {
+                path: "assignments/:assignmentId",
+                element: <AssignmentViewById />
             }
         ]
     },

@@ -1,4 +1,5 @@
 import {
+  BookOpenCheck,
   File,
   GraduationCap,
   LayoutDashboard,
@@ -86,6 +87,17 @@ const SideBar = () => {
           >
             <LayoutGridIcon className="mr-2 h-4 w-4" />
             Career Insights
+          </Button>
+        </Link>
+
+        <Link to={"/dashboard-panel/assignments"}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            // onClick={() => setIsOpen(false)}
+          >
+            <BookOpenCheck className="mr-2 h-4 w-4" />
+            Assignments
           </Button>
         </Link>
       </nav>

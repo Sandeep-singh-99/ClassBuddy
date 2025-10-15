@@ -9,7 +9,7 @@ from app.schemas.assignment import (
     AssignmentQuestionCreate,
 )
 from app.models.assignment import Assignment, AssignmentQuestion, Submission
-from app.models.auth import User
+from app.models.auth import User, group_members
 from app.schemas.auth import UserResponse
 from app.models.auth import userRole
 from app.dependencies.dependencies import get_db, get_current_user
@@ -88,9 +88,10 @@ async def get_assignments(
     else:
         assignments = (
             db.query(Assignment)
-            .join(TeacherInsight)
-            .join(User)
-            .filter(User.id == current_user.id)
+            .join(TeacherInsight, Assignment.group_id == TeacherInsight.id)
+            .join(group_members, TeacherInsight.id == group_members.c.group_id)
+            .filter(group_members.c.user_id == current_user.id)
+            .options(joinedload(Assignment.group))
             .all()
         )
 
@@ -139,6 +140,7 @@ async def get_assignment(
 
     return assignment
 
+
 @router.delete("/delete-assignment/{assignment_id}", response_model=AssignmentResponse)
 async def delete_assignment(
     assignment_id: str,
@@ -146,7 +148,9 @@ async def delete_assignment(
     current_user: User = Depends(get_current_user),
 ):
     if not current_user or current_user.role != userRole.TEACHER:
-        raise HTTPException(status_code=403, detail="Only teachers can delete assignments")
+        raise HTTPException(
+            status_code=403, detail="Only teachers can delete assignments"
+        )
 
     assignment = (
         db.query(Assignment)
