@@ -35,6 +35,32 @@ export const fetchSubmissionResult = createAsyncThunk("submission/fetchResult", 
   }
 })
 
+export const fetchAssignmentStats = createAsyncThunk("submission/fetchStats", async (id: string, thunkApi) => {
+  try {
+    const response = await axiosClient.get(`/submissions/assignment-stats/${id}`)
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Fetching notes failed"
+        );
+      }
+  }
+})
+
+export const fetchAllStudentSubmissions = createAsyncThunk("submission/fetchAllStudentSubmissions", async (id: string, thunkApi) => {
+  try {
+    const response = await axiosClient.get(`/submissions/assignment-marks/${id}`)
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Fetching notes failed"
+        );
+      }
+  }
+})
+
 interface SubmissionState {
   loading: boolean;
   error: string | null;
