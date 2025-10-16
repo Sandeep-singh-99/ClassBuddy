@@ -61,7 +61,7 @@ export default function AssignmentViewById() {
     }
   };
 
-  // ======= Loading =======
+ 
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto mt-12 px-4">
@@ -70,7 +70,7 @@ export default function AssignmentViewById() {
     );
   }
 
-  // ======= Error =======
+ 
   if (error) {
     return (
       <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-red-950/30 text-red-400 border border-red-800 rounded-lg max-w-5xl mx-auto">
@@ -80,7 +80,7 @@ export default function AssignmentViewById() {
     );
   }
 
-  // ======= No Assignment =======
+
   if (!currentAssignment) {
     return (
       <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-yellow-900/30 text-yellow-400 border border-yellow-700 rounded-lg max-w-5xl mx-auto">
