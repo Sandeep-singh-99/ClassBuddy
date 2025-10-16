@@ -17,6 +17,10 @@ async def get_submissions(assignment_id: str, db: Session = Depends(get_db), cur
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view submissions")
     
     submissions = db.query(Submission).filter(Submission.assignment_id == assignment_id, Submission.student_id == current_user.id).all()
+
+    if not submissions:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No submissions found for this assignment")
+    
     return {"submissions": submissions}
 
 
