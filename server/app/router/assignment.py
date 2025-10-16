@@ -119,6 +119,12 @@ async def get_assignment(
             status_code=status.HTTP_404_NOT_FOUND, detail="assignment not found"
         )
     
+    if assignment.due_date < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The due date for this assignment has passed.",
+        )
+    
     # TEACHER: can only view their own assignments
     if current_user.role == userRole.TEACHER and assignment.owner_id != current_user.id:
         raise HTTPException(
