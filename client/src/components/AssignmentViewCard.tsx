@@ -65,19 +65,28 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
       </CardContent>
 
       <CardFooter className="flex justify-end">
-        <Link
+       {
+        !isPastDue ? (
+           <Link
           key={assignment.id}
           to={`/dashboard-panel/assignments/${assignment.id}`}
         >
           <Button
             variant="outline"
             size="sm"
-            disabled={isPastDue}
             className="hover:scale-[1.02] transition-transform"
           >
             View Assignment
           </Button>
         </Link>
+        ) : (
+          <Link key={assignment.id} to={`/dashboard-panel/assignments-details/${assignment.id}`}>
+            <Button variant={"outline"} size={"sm"} className="hover:scale-[1.02] transition-transform">
+              View Details
+            </Button>
+          </Link>
+        )
+       }
       </CardFooter>
     </Card>
   );

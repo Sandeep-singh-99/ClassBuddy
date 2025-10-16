@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import MDEditor from "@uiw/react-md-editor";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  fetchSubmissionResult,
   SubmitSubmission,
 } from "@/redux/slice/submissionSlice";
 
@@ -20,15 +19,11 @@ export default function AssignmentViewById() {
     (state) => state.assignments
   );
 
-  const { submissionResult } = useAppSelector((state) => state.submissions);
   const submissionState = useAppSelector((state) => state.submissions);
 
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (assignmentId) dispatch(fetchSubmissionResult(assignmentId));
-  }, [assignmentId, dispatch]);
 
   useEffect(() => {
     if (assignmentId) dispatch(fetchAssignmentById(assignmentId));
@@ -101,24 +96,6 @@ export default function AssignmentViewById() {
 
   return (
     <>
-      {submissionResult ? (
-        <div className="flex justify-center items-center h-screen">
-          <Card className="p-8 rounded-xl bg-green-950/40 border border-green-700 shadow-lg">
-            <CardContent className="text-center">
-              <h2 className="text-2xl font-bold text-green-300 mb-4">
-                Submission Feedback
-              </h2>
-              <p className="text-gray-200 text-lg">
-                <span className="font-semibold">Total Marks:</span>{" "}
-                {submissionResult.grade}
-              </p>
-              <div className="mt-4 p-4 bg-green-900/30 rounded-md border border-green-700 text-gray-200">
-                {submissionResult.feedback}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      ) : (
         <div
           className="max-w-6xl mx-auto p-8 space-y-8 text-gray-200"
           data-color-mode="dark"
@@ -237,7 +214,6 @@ export default function AssignmentViewById() {
             </Card>
           )}
         </div>
-      )}
     </>
   );
 }
