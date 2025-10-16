@@ -65,6 +65,12 @@ async def evaluate_answers(
         raise HTTPException(status_code=404, detail="Assignment not found.")
     if not assignment.questions:
         raise HTTPException(status_code=404, detail="No questions found in this assignment.")
+    
+    if assignment.due_date < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The due date for this assignment has passed.",
+        )
 
     # --- 4️⃣ Parse stored questions (ensure it's a list of dicts) ---
     try:

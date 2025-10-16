@@ -27,6 +27,7 @@ import CareerDashboard from "@/page/Dashboard/CareerDashboard";
 import TAssignmentViewById from "@/page/Teacher/TAssignmentViewById";
 import Assignment from "@/page/Dashboard/Assignment";
 import AssignmentViewById from "@/page/Dashboard/AssignmentViewById";
+import AssignmentDetails from "@/page/Dashboard/AssignmentDetails";
 
 export const router = createBrowserRouter([
     {
@@ -103,6 +104,10 @@ export const router = createBrowserRouter([
             {
                 path: "assignments/:assignmentId",
                 element: <AssignmentViewById />
+            },
+            {
+                path: "assignments-details/:assignmentId",
+                element: <AssignmentDetails />
             }
         ]
     },
