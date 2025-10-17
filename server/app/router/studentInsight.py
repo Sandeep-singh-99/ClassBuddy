@@ -177,4 +177,10 @@ def get_my_insights(
         .first()
     )
 
+    if not insights:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No industry insights found for the current user.",
+        )
+
     return insights

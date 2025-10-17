@@ -89,12 +89,16 @@ const dashboardSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
+
     builder.addCase(FetchDashboardData.fulfilled, (state, action) => {
       state.loading = false;
       state.data = action.payload;
+      state.error = null;
     });
+
     builder.addCase(FetchDashboardData.rejected, (state, action) => {
       state.loading = false;
+      state.data = null;
       state.error = action.payload as string;
     });
   },
