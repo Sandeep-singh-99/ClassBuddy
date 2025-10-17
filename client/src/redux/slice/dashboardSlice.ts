@@ -1,14 +1,18 @@
 import { axiosClient } from "@/helper/axiosClient";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 
 export const GenerateDashboardData = createAsyncThunk(
   "career/dashboard",
-  async (data , thunkApi) => {
+  async ( {industry}: {industry: string}, thunkApi) => {
     try {
       const response = await axiosClient.post(
-        "/student-insight/generate-industry-insight", data
+        "/student-insight/generate-industry-insight", { industry },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          }
+        }
       );
       return response.data;
     } catch (error) {
@@ -85,6 +89,24 @@ const dashboardSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+
+    builder.addCase(GenerateDashboardData.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    builder.addCase(GenerateDashboardData.fulfilled, (state, action: PayloadAction<StudentInsight>) => {
+      state.loading = false;
+      state.data = [action.payload, ...state.data];
+      state.error = null;
+    });
+
+    builder.addCase(GenerateDashboardData.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+
     builder.addCase(FetchDashboardData.pending, (state) => {
       state.loading = true;
       state.error = null;
