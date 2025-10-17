@@ -14,6 +14,7 @@ import {
   TrendingUp,
   TrendingDown,
   Brain,
+  AlertCircle,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import {
@@ -28,6 +29,8 @@ import { Progress } from "@/components/ui/progress";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { FetchDashboardData } from "@/redux/slice/dashboardSlice";
 import { Skeleton } from "@/components/ui/skeleton";
+import GenerateDashboardBtn from "@/components/GenerateDashboardBtn";
+
 
 export default function CareerDashboard() {
   const dispatch = useAppDispatch();
@@ -47,9 +50,15 @@ export default function CareerDashboard() {
 
   if (error)
     return (
-      <div className="p-8 text-red-500 font-semibold">
-        Error loading dashboard: {error}
+     <section>
+      <div className="flex justify-end pt-20">
+        <GenerateDashboardBtn />
       </div>
+       <div className="flex items-center justify-center gap-2 p-4 my-4 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+        <AlertCircle className="w-5 h-5" />
+        <span className="text-sm font-medium">Error: {error}</span>
+      </div>
+     </section>
     );
 
   if (!data) return null;
