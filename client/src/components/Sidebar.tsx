@@ -16,7 +16,7 @@ const SideBar = () => {
     <div className="h-full px-4 py-6">
       {/* Logo */}
       <div className="flex items-center gap-2 mb-8 px-2">
-        <Link to={"/"} className="flex items-center gap-2">
+        <Link to={"/"} className="flex items-center gap-2 text-yellow-400">
           <Sparkles />
           <span className="text-xl font-bold">Class Buddy</span>
         </Link>

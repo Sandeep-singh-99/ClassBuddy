@@ -12,7 +12,10 @@ from langgraph.graph import add_messages, StateGraph, END
 from langchain_tavily import TavilySearch
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
+from app.dependencies.redis_client import get_redis_client
 import json
+from datetime import datetime
+
 
 load_dotenv()
 
@@ -164,12 +167,19 @@ def generate_industry_insight(
 def get_my_insights(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    redis_client = Depends(get_redis_client)
 ):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only students can access their industry insights.",
         )
+    
+    cache_key = f"student_insights:{current_user.id}"
+
+    cached_data = redis_client.get(cache_key)
+    if cached_data:
+        return json.loads(cached_data)
 
     insights = (
         db.query(StudentInsight)
@@ -182,5 +192,8 @@ def get_my_insights(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No industry insights found for the current user.",
         )
+    
+    insights_data = StudentInsightResponse.from_orm(insights).dict()
+    redis_client.set(cache_key, json.dumps(insights_data, default=str), ex=3600)  # Cache for 1 hour
 
-    return insights
+    return insights_data

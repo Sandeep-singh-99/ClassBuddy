@@ -8,12 +8,15 @@ services:
       - "8000:8000"
     volumes:
       - ./server:/app
-      - /app/__pycache__ 
+      - /app/__pycache__
     environment:
       - PYTHONUNBUFFERED=1
       - WATCHFILES_FORCE_POLLING=true
       - WATCHFILES_POLL_INTERVAL=0.5
+      - REDIS_URL=redis://redis:6379/0
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/app
+    depends_on:
+      - redis
 
   client:
     build: ./client
@@ -22,5 +25,19 @@ services:
       - "5173:5173"
     volumes:
       - ./client:/app
-      - /app/node_modules 
+      - /app/node_modules
     command: npm run dev
+    depends_on:
+      - server
+
+  redis:
+    image: redis:latest
+    container_name: classbuddy_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:
