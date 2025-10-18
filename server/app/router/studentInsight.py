@@ -194,6 +194,12 @@ def get_my_insights(
         )
     
     insights_data = StudentInsightResponse.from_orm(insights).dict()
-    redis_client.set(cache_key, json.dumps(insights_data, default=str), ex=3600)  # Cache for 1 hour
+    if not insights_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No industry insights found for the current user.",
+        )
+    
+    redis_client.set(cache_key, json.dumps(insights_data, default=str), ex=3600)  
 
     return insights_data
