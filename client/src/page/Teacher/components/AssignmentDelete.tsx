@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAppDispatch } from "@/hooks/hooks";
 import { DeleteAssignment } from "@/redux/slice/assignmentSlice";
-import { Trash } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import type React from "react";
 import { toast } from "react-toastify";
 
@@ -38,7 +38,7 @@ export default function AssignmentDelete({ id }: { id: string }) {
           onClick={handleClick}
           className="cursor-pointer"
         >
-          <Trash className="w-5 h-5 text-red-600" />
+          <Trash2 className="w-5 h-5 text-red-600" />
         </Button>
       </DialogTrigger>
       <DialogContent onClick={(e) => e.stopPropagation()}>

@@ -9,11 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 
-export const TSideBar = ({
-  setIsOpen,
-}: {
-  setIsOpen: (open: boolean) => void;
-}) => {
+export const TSideBar = () => {
   return (
     <div className="h-full px-4 py-6">
       {/* Logo */}
@@ -30,7 +26,7 @@ export const TSideBar = ({
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Overview
@@ -41,7 +37,7 @@ export const TSideBar = ({
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <NotebookTabs className="mr-2 h-4 w-4" />
             create Notes
@@ -52,7 +48,7 @@ export const TSideBar = ({
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <NotepadTextDashed className="mr-2 h-4 w-4" />
             View Notes
@@ -63,7 +59,7 @@ export const TSideBar = ({
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <File className="mr-2 h-4 w-4" />
             Docs
@@ -74,7 +70,7 @@ export const TSideBar = ({
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => setIsOpen(false)}
+            // onClick={() => setIsOpen(false)}
           >
             <BookOpenText className="mr-2 h-4 w-4" />
             Assignments
