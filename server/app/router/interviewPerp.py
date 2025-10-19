@@ -12,6 +12,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
 import json
 from app.models.InterviewPreparation import InterviewPrep
+from app.dependencies.redis_client import get_redis_client
+from fastapi.encoders import jsonable_encoder
 
 load_dotenv()
 
@@ -130,15 +132,17 @@ def create_interview_prep(
 
 
 @router.post("/submit-quiz")
-async def submit_quiz(submission: InterviewPreparationResponse, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def submit_quiz(submission: InterviewPreparationResponse, redis_client = Depends(get_redis_client), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
     
     query = db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id, InterviewPrep.name == submission.name).first()
     if query:
         raise HTTPException(status_code=400, detail="Quiz with this name already submitted.")
-    
-   
+
+    # Invalidate cache
+    cache_key = f"interview_preps:{current_user.id}"
+    redis_client.delete(cache_key)
 
     new_entry = InterviewPrep(
         name=submission.name,
@@ -163,15 +167,55 @@ async def submit_quiz(submission: InterviewPreparationResponse, db: Session = De
 
 
 
+# @router.get("/get-interview-preps", response_model=List[InterviewResponse])
+# def get_interview_preps(
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     if current_user.role != userRole.STUDENT:
+#         raise HTTPException(status_code=403, detail="Only students can view their interview preparations.")
+
+    
+#     interview_preps = db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id).all()
+
+#     return interview_preps
+
+
+
 @router.get("/get-interview-preps", response_model=List[InterviewResponse])
 def get_interview_preps(
     db: Session = Depends(get_db),
+    redis_client = Depends(get_redis_client),
     current_user: User = Depends(get_current_user)
 ):
+    # Role check
     if current_user.role != userRole.STUDENT:
-        raise HTTPException(status_code=403, detail="Only students can view their interview preparations.")
+        raise HTTPException(
+            status_code=403, 
+            detail="Only students can view their interview preparations."
+        )
 
-    
-    interview_preps = db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id).all()
+    # Create unique cache key per user
+    cache_key = f"interview_preps:{current_user.id}"
+
+    # Try fetching from Redis
+    cached_data = redis_client.get(cache_key)
+    if cached_data:
+        data = json.loads(cached_data)
+        if isinstance(data, list) and all(isinstance(item, dict) for item in data):
+            return [InterviewResponse(**d) for d in data]
+        # If corrupted cache, delete it
+        redis_client.delete(cache_key)
+
+    # Fetch from DB
+    interview_preps = (
+        db.query(InterviewPrep)
+        .filter(InterviewPrep.user_id == current_user.id)
+        .all()
+    )
+
+    # Encode and cache result for 2 minutes
+    encoded_data = jsonable_encoder(interview_preps)
+    redis_client.set(cache_key, json.dumps(encoded_data))
 
     return interview_preps
