@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session , joinedload
 from typing import List
 from datetime import datetime
 from app.models.assignment import Assignment, AssignmentQuestion, Submission
@@ -59,20 +59,23 @@ async def assignment_stats(
     }
 
 
-
-
 @router.get("/assignment-marks/{assignment_id}")
 async def get_assignment_marks(
     assignment_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # Only teachers can access
-    if not current_user:
+    # Only teachers or authorized users
+    if not current_user or current_user.role != userRole.TEACHER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
-    # Fetch the assignment
-    assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+    # Fetch assignment
+    assignment = (
+        db.query(Assignment)
+        .options(joinedload(Assignment.group))
+        .filter(Assignment.id == assignment_id)
+        .first()
+    )
     if not assignment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Assignment not found")
 
@@ -80,24 +83,31 @@ async def get_assignment_marks(
     if not group:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
 
-    result = []
+    # Fetch only submissions for this assignment
+    submissions = (
+        db.query(Submission)
+        .join(User, Submission.student_id == User.id)
+        .filter(Submission.assignment_id == assignment_id)
+        .options(joinedload(Submission.student))
+        .all()
+    )
 
-    for student in group.members:
-        submission = db.query(Submission).filter(
-            Submission.assignment_id == assignment_id,
-            Submission.student_id == student.id
-        ).first()
-
-        result.append({
-            "student_id": student.id,
-            "student_name": student.full_name,
-            "submitted": bool(submission),
-            "grade": submission.grade if submission else None,
-            "feedback": submission.feedback if submission else None
-        })
+    # Prepare response
+    result = [
+        {
+            "student_id": submission.student.id,
+            "student_name": submission.student.full_name,
+            "student_email": submission.student.email,
+            "student_image_url": submission.student.image_url,
+            "submitted": True,
+            "grade": submission.grade,
+            "feedback": submission.feedback,
+        }
+        for submission in submissions
+    ]
 
     return {
         "assignment_id": assignment_id,
         "group_id": group.id,
-        "students": result
+        "students": result,
     }
