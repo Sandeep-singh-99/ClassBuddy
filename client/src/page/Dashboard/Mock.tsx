@@ -10,6 +10,7 @@ import {
 import { useAppSelector } from "@/hooks/hooks";
 import { axiosClient } from "@/helper/axiosClient";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 export default function Mock() {
   const { data } = useAppSelector((state) => state.interview);
@@ -58,13 +59,6 @@ export default function Mock() {
       toast.error(error.response?.data?.detail || error.message);
     }
     }
-  };
-
-  const handleRestart = () => {
-    setCurrentQuestionIndex(0);
-    setAnswers({});
-    setScore(0);
-    setQuizCompleted(false);
   };
 
   return (
@@ -182,9 +176,11 @@ export default function Mock() {
             })}
           </Accordion>
 
-          <div className="text-center mt-6">
-            <Button onClick={handleRestart}>Restart Quiz</Button>
-          </div>
+          
+            <Link to={"/dashboard-panel/interview-prep"} className="text-center mt-6">
+            <Button>Dashboard</Button>
+          </Link>
+          
         </Card>
       )}
     </div>

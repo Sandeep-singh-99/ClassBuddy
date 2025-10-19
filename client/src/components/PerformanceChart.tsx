@@ -16,19 +16,15 @@ import {
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { GetAllInterviewPrep } from "@/redux/slice/interviewSlice";
+import { useAppSelector } from "@/hooks/hooks";
 import { BarLoader } from "react-spinners";
 
 export default function PerformanceChart() {
-  const dispatch = useAppDispatch();
+
   const { data, loading, error } = useAppSelector((state) => state.interview);
   const [chartData, setChartData] = useState([]);
 
-  useEffect(() => {
-    dispatch(GetAllInterviewPrep());
-  }, [dispatch]);
-
+  
   useEffect(() => {
     if (data && Array.isArray(data)) {
       const formattedData = data.map((quiz) => ({

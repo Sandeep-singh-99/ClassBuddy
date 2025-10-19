@@ -1,23 +1,19 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import QuizFormComponents from "./QuizFormComponents";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { useEffect, useState } from "react";
-import { GetAllInterviewPrep } from "@/redux/slice/interviewSlice";
+import { useAppSelector } from "@/hooks/hooks";
+import { useState } from "react";
 import { format } from "date-fns";
 import { Dialog, DialogContent } from "./ui/dialog";
 import QuizResult from "./QuizResult";
 import { BarLoader } from 'react-spinners'
 
 export default function QuizList() {
-  const dispatch = useAppDispatch();
+ 
 
   const [selectedQuiz, setSelectedQuiz] = useState(null);
 
   const { data, loading } = useAppSelector((state) => state.interview);
 
-  useEffect(() => {
-    dispatch(GetAllInterviewPrep());
-  }, [dispatch]);
 
   return (
     <>
