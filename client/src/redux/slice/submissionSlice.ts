@@ -66,6 +66,8 @@ interface SubmissionState {
   error: string | null;
   result: any | null;
   submissionResult?: any | null;
+  stats: any | null;
+  studentData: any[] | null;
 }
 
 const initialState: SubmissionState = {
@@ -73,6 +75,8 @@ const initialState: SubmissionState = {
   error: null,
   result: null,
   submissionResult: null,
+  stats: null,
+  studentData: null,
 };
 
 const submissionSlice = createSlice({
@@ -113,6 +117,38 @@ const submissionSlice = createSlice({
     );
 
     builder.addCase(fetchSubmissionResult.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    builder.addCase(fetchAssignmentStats.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.stats = null;
+    });
+
+    builder.addCase(fetchAssignmentStats.fulfilled, (state, action: PayloadAction<any>) => {
+      state.loading = false;
+      state.stats = action.payload;
+    });
+
+    builder.addCase(fetchAssignmentStats.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    builder.addCase(fetchAllStudentSubmissions.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.studentData = null;
+    });
+
+    builder.addCase(fetchAllStudentSubmissions.fulfilled, (state, action: PayloadAction<any>) => {
+      state.loading = false;
+      state.studentData = action.payload;
+    });
+
+    builder.addCase(fetchAllStudentSubmissions.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

@@ -7,6 +7,8 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import AQuestions from "./components/AQuestions";
 import GenerateAssignment from "./components/GenerateAssignment";
+import AssignmentStats from "@/components/AssignmentStats";
+import AssignmentMarksCard from "./components/AssignmentMarksCard";
 
 export default function TAssignmentViewById() {
   const dispatch = useAppDispatch();
@@ -65,6 +67,11 @@ export default function TAssignmentViewById() {
        </div>
       )}
       {questions.length > 0 && (
+        <>
+        <div className="flex flex-col gap-4">
+          <AssignmentStats id={assignmentId!} />
+          <AssignmentMarksCard id={assignmentId!} />
+        </div>
         <Card className="border border-zinc-700 bg-zinc-900/60 text-zinc-100 shadow-lg backdrop-blur-md transition-all duration-300 hover:shadow-xl">
           <CardHeader>
             <CardTitle className="text-2xl font-semibold text-white tracking-tight">
@@ -77,6 +84,7 @@ export default function TAssignmentViewById() {
 
           <AQuestions questions={questions} />
         </Card>
+        </>
       )}
     </div>
   );
