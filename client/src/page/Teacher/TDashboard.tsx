@@ -13,7 +13,7 @@ export default function TDashboard() {
       {/* Sidebar */}
       {sidebarOpen && (
         <div className="fixed h-screen w-64 bg-[#0c1729] md:border-r md:border-gray-800 z-40">
-          <TSideBar setIsOpen={setSidebarOpen} />
+          <TSideBar />
         </div>
       )}
 
