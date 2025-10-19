@@ -41,7 +41,7 @@ export default function QuizFormComponents() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">Start New Quiz</Button>
+        <Button variant="destructive">Start New Quiz</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit} className="space-y-4">
