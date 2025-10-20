@@ -7,7 +7,7 @@ from app.models.auth import User, group_members
 from app.schemas.auth import UserResponse
 from app.models.auth import userRole
 from app.dependencies.dependencies import get_db, get_current_user
-
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -138,4 +138,39 @@ async def total_submissions(
     return {
         "teacher_id": current_user.id,
         "total_submissions": total_submissions,
+    }
+
+
+@router.get("/student-submissions-stats")
+async def student_submissions_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user or current_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+    
+    submissions = (
+        db.query(Submission)
+        .filter(Submission.student_id == current_user.id)
+        .order_by(Submission.submitted_at.asc())
+        .all()
+    )
+
+    if not submissions:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No submissions found for this student")
+    
+    completion_stats = (
+        db.query(func.date(Submission.submitted_at).label("date"),
+                 func.count(Submission.id).label("count"))
+        .filter(Submission.student_id == current_user.id)
+        .group_by(func.date(Submission.submitted_at))
+        .order_by(func.date(Submission.submitted_at).asc())
+        .all()
+    )
+
+    completion_over_time = [
+        {"date": str(record.date), "count": record.count} for record in completion_stats
+    ]
+
+    return {
+        "student_id": current_user.id,
+        "total_submissions": len(submissions),
+        "completion_over_time": completion_over_time
     }

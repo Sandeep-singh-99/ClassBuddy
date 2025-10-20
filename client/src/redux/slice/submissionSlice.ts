@@ -75,6 +75,20 @@ export const totalSubmission = createAsyncThunk("submission/totalSubmission", as
   }
 })
 
+
+export const studentSubmissionStats = createAsyncThunk("submission/studentSubmissionStats", async ( _ , thunkApi) => {
+  try {
+    const response = await axiosClient.get("/submissions/student-submissions-stats")
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Fetching notes failed"
+        );
+      }
+  }
+})
+
 interface SubmissionState {
   loading: boolean;
   error: string | null;
@@ -83,6 +97,7 @@ interface SubmissionState {
   stats: any | null;
   studentData: any[] | null;
   totalSubmissions: number | null;
+  studentAssignmentStats: any | null;
 }
 
 const initialState: SubmissionState = {
@@ -93,6 +108,7 @@ const initialState: SubmissionState = {
   stats: null,
   studentData: null,
   totalSubmissions: null,
+  studentAssignmentStats: null,
 };
 
 const submissionSlice = createSlice({
@@ -183,6 +199,23 @@ const submissionSlice = createSlice({
     builder.addCase(totalSubmission.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+    });
+
+    builder.addCase(studentSubmissionStats.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.studentAssignmentStats = null;
+    });
+
+    builder.addCase(studentSubmissionStats.fulfilled, (state, action: PayloadAction<any>) => {
+      state.loading = false;
+      state.studentAssignmentStats = action.payload;
+    });
+
+    builder.addCase(studentSubmissionStats.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+      state.studentAssignmentStats = null;
     });
   },
 });
