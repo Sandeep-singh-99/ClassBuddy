@@ -1,8 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { studentSubmissionStats } from "@/redux/slice/submissionSlice";
+import { fetchStudentAssignmentStats, studentSubmissionStats } from "@/redux/slice/submissionSlice";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import AssignmentStatsChart from "@/components/AssignmentStatsChart";
+import ProfileCard from "@/components/ProfileCard";
+import AssignmentLists from "@/components/AssignmentLists";
 
 export default function DashboardHome() {
   const dispatch = useAppDispatch();
@@ -12,6 +14,7 @@ export default function DashboardHome() {
 
   useEffect(() => {
     dispatch(studentSubmissionStats());
+    dispatch(fetchStudentAssignmentStats());
   }, [dispatch]);
 
   if (loading) {
@@ -34,11 +37,35 @@ export default function DashboardHome() {
   const { total_submissions, completion_over_time } = studentAssignmentStats;
 
   return (
-    <div className="space-y-6 p-5">
-      <AssignmentStatsChart
-        data={completion_over_time}
-        totalCompleted={total_submissions}
-      />
+    <div className="relative min-h-screen text-foreground p-6">
+  {/* Header Section */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+    <div>
+      <h1 className="text-2xl font-bold tracking-tight">📊 Student Dashboard</h1>
+      <p className="text-muted-foreground text-sm">
+        Track your assignments, progress, and performance insights.
+      </p>
     </div>
+
+    {/* Profile on the right */}
+    <div className="mt-4 md:mt-0">
+      <ProfileCard />
+    </div>
+  </div>
+
+  {/* Main Content Section */}
+  <div className="space-y-6 mx-auto w-full max-w-6xl">
+
+    <AssignmentLists />
+
+  
+
+    <AssignmentStatsChart
+      data={completion_over_time}
+      totalCompleted={total_submissions}
+    />
+
+  </div>
+</div>
   );
 }

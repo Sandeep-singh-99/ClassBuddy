@@ -22,72 +22,123 @@ export const SubmitSubmission = createAsyncThunk(
   }
 );
 
-export const fetchSubmissionResult = createAsyncThunk("submission/fetchResult", async (id: string, thunkApi) => {
-  try {
-    const response = await axiosClient.get(`/submissions/student-view/${id}`)
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
+export const fetchSubmissionResult = createAsyncThunk(
+  "submission/fetchResult",
+  async (id: string, thunkApi) => {
+    try {
+      const response = await axiosClient.get(`/submissions/student-view/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail || "Fetching notes failed"
         );
       }
+    }
   }
-})
+);
 
-export const fetchAssignmentStats = createAsyncThunk("submission/fetchStats", async (id: string, thunkApi) => {
-  try {
-    const response = await axiosClient.get(`/submissions/assignment-stats/${id}`)
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
+export const fetchAssignmentStats = createAsyncThunk(
+  "submission/fetchStats",
+  async (id: string, thunkApi) => {
+    try {
+      const response = await axiosClient.get(
+        `/submissions/assignment-stats/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail || "Fetching notes failed"
         );
       }
+    }
   }
-})
+);
 
-export const fetchAllStudentSubmissions = createAsyncThunk("submission/fetchAllStudentSubmissions", async (id: string, thunkApi) => {
-  try {
-    const response = await axiosClient.get(`/submissions/assignment-marks/${id}`)
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
+export const fetchAllStudentSubmissions = createAsyncThunk(
+  "submission/fetchAllStudentSubmissions",
+  async (id: string, thunkApi) => {
+    try {
+      const response = await axiosClient.get(
+        `/submissions/assignment-marks/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail || "Fetching notes failed"
         );
       }
+    }
   }
-})
+);
 
-
-export const totalSubmission = createAsyncThunk("submission/totalSubmission", async ( _ , thunkApi) => {
-  try {
-    const response = await axiosClient.get("/submissions/total-submissions")
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
+export const totalSubmission = createAsyncThunk(
+  "submission/totalSubmission",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get("/submissions/total-submissions");
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail || "Fetching notes failed"
         );
       }
+    }
   }
-})
+);
 
-
-export const studentSubmissionStats = createAsyncThunk("submission/studentSubmissionStats", async ( _ , thunkApi) => {
-  try {
-    const response = await axiosClient.get("/submissions/student-submissions-stats")
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
+export const studentSubmissionStats = createAsyncThunk(
+  "submission/studentSubmissionStats",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get(
+        "/submissions/student-submissions-stats"
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail || "Fetching notes failed"
         );
       }
+    }
   }
-})
+);
+
+export const fetchStudentAssignmentStats = createAsyncThunk(
+  "submission/fetchStudentAssignmentStats",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get(
+        "/submissions/student/assignments"
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail || "Fetching notes failed"
+        );
+      }
+    }
+  }
+);
+
+
+// export const fetchStudentPerformanceStats = createAsyncThunk("submission/fetchStudentPerformanceStats", async (_, thunkApi) => {
+//   try {
+//     const response = await axiosClient.get("/submissions/student-performance-stats");
+//     return response.data;
+//   } catch (error) {
+//     if (error instanceof AxiosError) {
+//         return thunkApi.rejectWithValue(
+//           error.response?.data?.detail || "Fetching notes failed"
+//         );
+//       }
+//   }
+// })
 
 interface SubmissionState {
   loading: boolean;
@@ -98,6 +149,8 @@ interface SubmissionState {
   studentData: any[] | null;
   totalSubmissions: number | null;
   studentAssignmentStats: any | null;
+  ownerAssignmentStats: any[] | null;
+ 
 }
 
 const initialState: SubmissionState = {
@@ -109,6 +162,8 @@ const initialState: SubmissionState = {
   studentData: null,
   totalSubmissions: null,
   studentAssignmentStats: null,
+  ownerAssignmentStats: null,
+
 };
 
 const submissionSlice = createSlice({
@@ -159,10 +214,13 @@ const submissionSlice = createSlice({
       state.stats = null;
     });
 
-    builder.addCase(fetchAssignmentStats.fulfilled, (state, action: PayloadAction<any>) => {
-      state.loading = false;
-      state.stats = action.payload;
-    });
+    builder.addCase(
+      fetchAssignmentStats.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.stats = action.payload;
+      }
+    );
 
     builder.addCase(fetchAssignmentStats.rejected, (state, action) => {
       state.loading = false;
@@ -175,10 +233,13 @@ const submissionSlice = createSlice({
       state.studentData = null;
     });
 
-    builder.addCase(fetchAllStudentSubmissions.fulfilled, (state, action: PayloadAction<any>) => {
-      state.loading = false;
-      state.studentData = action.payload;
-    });
+    builder.addCase(
+      fetchAllStudentSubmissions.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.studentData = action.payload;
+      }
+    );
 
     builder.addCase(fetchAllStudentSubmissions.rejected, (state, action) => {
       state.loading = false;
@@ -191,10 +252,13 @@ const submissionSlice = createSlice({
       state.totalSubmissions = null;
     });
 
-    builder.addCase(totalSubmission.fulfilled, (state, action: PayloadAction<any>) => {
-      state.loading = false;
-      state.totalSubmissions = action.payload.total_submissions;
-    });
+    builder.addCase(
+      totalSubmission.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.totalSubmissions = action.payload.total_submissions;
+      }
+    );
 
     builder.addCase(totalSubmission.rejected, (state, action) => {
       state.loading = false;
@@ -207,16 +271,41 @@ const submissionSlice = createSlice({
       state.studentAssignmentStats = null;
     });
 
-    builder.addCase(studentSubmissionStats.fulfilled, (state, action: PayloadAction<any>) => {
-      state.loading = false;
-      state.studentAssignmentStats = action.payload;
-    });
+    builder.addCase(
+      studentSubmissionStats.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.studentAssignmentStats = action.payload;
+      }
+    );
 
     builder.addCase(studentSubmissionStats.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
       state.studentAssignmentStats = null;
     });
+
+    builder.addCase(fetchStudentAssignmentStats.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.ownerAssignmentStats = null;
+    });
+
+    builder.addCase(
+      fetchStudentAssignmentStats.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.ownerAssignmentStats = action.payload;
+      }
+    );
+
+    builder.addCase(fetchStudentAssignmentStats.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+      state.ownerAssignmentStats = null;
+    });
+
+    
   },
 });
 
