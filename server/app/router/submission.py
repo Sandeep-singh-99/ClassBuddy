@@ -111,3 +111,31 @@ async def get_assignment_marks(
         "group_id": group.id,
         "students": result,
     }
+
+
+@router.get("/total-submissions")
+async def total_submissions(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not current_user or current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    assignments = (
+        db.query(Assignment)
+        .filter(Assignment.owner_id == current_user.id)
+        .all()
+    )
+
+    assignment_ids = [assignment.id for assignment in assignments]
+
+    total_submissions = (
+        db.query(Submission)
+        .filter(Submission.assignment_id.in_(assignment_ids))
+        .count()
+    )
+
+    return {
+        "teacher_id": current_user.id,
+        "total_submissions": total_submissions,
+    }
