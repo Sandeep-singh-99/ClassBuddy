@@ -21,6 +21,8 @@ export default function DocsForm() {
   const [file, setFile] = useState<File | null>(null);
   const [filename, setFilename] = useState<string>("");
 
+  const [open, setOpen] = useState(false);
+
   const dispatch = useAppDispatch();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,12 +35,13 @@ export default function DocsForm() {
 
       setFile(null);
       setFilename("");
+      setOpen(false);
     } catch (error) {
       toast.error("Failed to upload document");
     }
   };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"destructive"}>
           <PlusCircle className="h-4 w-4" />
