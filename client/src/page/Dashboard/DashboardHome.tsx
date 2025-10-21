@@ -1,10 +1,15 @@
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { fetchStudentAssignmentStats, studentSubmissionStats } from "@/redux/slice/submissionSlice";
+import {
+  fetchStudentAssignmentStats,
+  fetchStudentPerformanceStats,
+  studentSubmissionStats,
+} from "@/redux/slice/submissionSlice";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import AssignmentStatsChart from "@/components/AssignmentStatsChart";
 import ProfileCard from "@/components/ProfileCard";
 import AssignmentLists from "@/components/AssignmentLists";
+import AssignmentPerformanceStats from "@/components/AssignmentPerformanceStats";
 
 export default function DashboardHome() {
   const dispatch = useAppDispatch();
@@ -13,8 +18,13 @@ export default function DashboardHome() {
   );
 
   useEffect(() => {
-    dispatch(studentSubmissionStats());
-    dispatch(fetchStudentAssignmentStats());
+    (async () => {
+      await Promise.all([
+        dispatch(studentSubmissionStats()),
+        dispatch(fetchStudentAssignmentStats()),
+        dispatch(fetchStudentPerformanceStats()),
+      ]);
+    })();
   }, [dispatch]);
 
   if (loading) {
@@ -38,34 +48,33 @@ export default function DashboardHome() {
 
   return (
     <div className="relative min-h-screen text-foreground p-6">
-  {/* Header Section */}
-  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight">📊 Student Dashboard</h1>
-      <p className="text-muted-foreground text-sm">
-        Track your assignments, progress, and performance insights.
-      </p>
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            📊 Student Dashboard
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Track your assignments, progress, and performance insights.
+          </p>
+        </div>
+
+        {/* Profile on the right */}
+        <div className="mt-4 md:mt-0">
+          <ProfileCard />
+        </div>
+      </div>
+
+      {/* Main Content Section */}
+      <div className="space-y-6 mx-auto w-full max-w-6xl">
+        <AssignmentLists />
+
+        <AssignmentPerformanceStats />
+        <AssignmentStatsChart
+          data={completion_over_time}
+          totalCompleted={total_submissions}
+        />
+      </div>
     </div>
-
-    {/* Profile on the right */}
-    <div className="mt-4 md:mt-0">
-      <ProfileCard />
-    </div>
-  </div>
-
-  {/* Main Content Section */}
-  <div className="space-y-6 mx-auto w-full max-w-6xl">
-
-    <AssignmentLists />
-
-  
-
-    <AssignmentStatsChart
-      data={completion_over_time}
-      totalCompleted={total_submissions}
-    />
-
-  </div>
-</div>
   );
 }
