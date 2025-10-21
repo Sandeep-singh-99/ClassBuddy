@@ -127,7 +127,7 @@ interface IAssignment {
 
 interface AssignmentState {
   assignments: IAssignment[];
-  currentAssignment: IAssignment | null;
+  currentAssignment: any | null;
   loading: boolean;
   error: string | null;
 }
@@ -207,7 +207,7 @@ const assignmentSlice = createSlice({
 
     builder.addCase(
       GenerateAssignmentById.fulfilled,
-      (state, action: PayloadAction<IAssignment>) => {
+      (state, action: PayloadAction<any>) => {
         state.currentAssignment = action.payload;
         state.loading = false;
         state.error = null;

@@ -6,7 +6,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { DeleteAssignment } from "@/redux/slice/assignmentSlice";
 import { Trash2 } from "lucide-react";
 import type React from "react";
@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 
 export default function AssignmentDelete({ id }: { id: string }) {
   const dispatch = useAppDispatch();
+
+  const { loading } = useAppSelector((state) => state.assignments);
 
   const handleDelete = async () => {
     try {
@@ -51,8 +53,9 @@ export default function AssignmentDelete({ id }: { id: string }) {
             variant="default"
             className="cursor-pointer"
             onClick={handleDelete}
+            disabled={loading}
           >
-            Delete
+            {loading ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

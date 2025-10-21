@@ -20,7 +20,7 @@ from sqlalchemy.orm import joinedload
 router = APIRouter()
 
 
-@router.post("/create-assignment", response_model=AssignmentQuestionCreate)
+@router.post("/create-assignment", response_model=AssignmentBase)
 async def create_assignment(
     title: str = Form(...),
     description: str = Form(...),
