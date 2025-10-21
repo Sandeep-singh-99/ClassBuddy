@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAppDispatch } from "@/hooks/hooks";
-import { GenerateAssignmentById } from "@/redux/slice/assignmentSlice";
+import { fetchAssignmentById, GenerateAssignmentById } from "@/redux/slice/assignmentSlice";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -16,11 +16,12 @@ export default function GenerateAssignment({ id }: { id: string }) {
 
   const [loading, setLoading] = useState(false);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setLoading(true);
     try {
-      dispatch(GenerateAssignmentById(id));
+      await dispatch(GenerateAssignmentById(id)).unwrap();
       toast.success("Assignment generated successfully");
+      await dispatch(fetchAssignmentById(id)).unwrap();
       setLoading(false);
     } catch (error) {
       toast.error("Failed to generate assignment");
