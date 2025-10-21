@@ -11,8 +11,10 @@ export default function DocView() {
   const { docs, error, loading } = useAppSelector((state) => state.docs);
 
   useEffect(() => {
+    if (docs.length === 0) {
     dispatch(DocsStudentFetch());
-  }, [dispatch]);
+    }
+  }, [dispatch, docs.length]);
 
   return (
     <div className="max-w-5xl mx-auto p-6">
