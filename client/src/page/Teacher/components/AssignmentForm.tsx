@@ -20,6 +20,8 @@ import { toast } from "react-toastify";
 export default function AssignmentForm() {
   const dispatch = useAppDispatch();
 
+  const [open, setOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -40,16 +42,20 @@ export default function AssignmentForm() {
     formDataToSend.append("due_date", new Date(formData.dueDate).toISOString());
 
     try {
-        dispatch(CreateAssignment(formDataToSend));
-        toast.success("Assignment created successfully");
-        setFormData({ title: "", description: "", dueDate: "" });
+        dispatch(CreateAssignment(formDataToSend)).unwrap().then(() => {
+          toast.success("Assignment created successfully");
+          setFormData({ title: "", description: "", dueDate: "" });
+          setOpen(false);
+        }).catch((rejectedValueOrSerializedError) => {
+          toast.error(rejectedValueOrSerializedError as string);
+        });
     } catch (error) {
         toast.error("Failed to create assignment");
     }
   }
 
   return (
-    <Dialog>
+    <Dialog  open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive">Create Assignment</Button>
       </DialogTrigger>

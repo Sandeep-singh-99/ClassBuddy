@@ -95,6 +95,8 @@ async def get_assignments(
             .all()
         )
 
+        assignments.sort(key=lambda x: x.created_at, reverse=True)
+
     return assignments
 
 
