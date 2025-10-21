@@ -37,8 +37,10 @@ export default function CareerDashboard() {
   const { data, loading, error } = useAppSelector((state) => state.dashboard);
 
   useEffect(() => {
-    dispatch(FetchDashboardData());
-  }, [dispatch]);
+    if (!data) {
+      dispatch(FetchDashboardData());
+    }
+  }, [dispatch, data]);
 
   if (loading)
     return (

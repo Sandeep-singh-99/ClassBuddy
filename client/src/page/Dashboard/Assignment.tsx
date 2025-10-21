@@ -13,8 +13,10 @@ export default function Assignment() {
   );
 
   useEffect(() => {
-    dispatch(fetchAssignments());
-  }, [dispatch]);
+    if (assignments.length === 0) {
+      dispatch(fetchAssignments()); 
+    }
+  }, [dispatch, assignments.length]);
 
   return (
     <div className="max-w-6xl mx-auto p-8">

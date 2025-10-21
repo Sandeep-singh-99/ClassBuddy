@@ -4,12 +4,14 @@ import {
   fetchStudentPerformanceStats,
   studentSubmissionStats,
 } from "@/redux/slice/submissionSlice";
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { Loader2 } from "lucide-react";
-import AssignmentStatsChart from "@/components/AssignmentStatsChart";
 import ProfileCard from "@/components/ProfileCard";
-import AssignmentLists from "@/components/AssignmentLists";
-import AssignmentPerformanceStats from "@/components/AssignmentPerformanceStats";
+
+// Lazy load heavy components
+const AssignmentStatsChart = lazy(() => import("@/components/AssignmentStatsChart"));
+const AssignmentPerformanceStats = lazy(() => import("@/components/AssignmentPerformanceStats"));
+const AssignmentLists = lazy(() => import("@/components/AssignmentLists"));
 
 export default function DashboardHome() {
   const dispatch = useAppDispatch();
@@ -67,13 +69,41 @@ export default function DashboardHome() {
 
       {/* Main Content Section */}
       <div className="space-y-6 mx-auto w-full max-w-6xl">
-        <AssignmentLists />
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-40 text-gray-400">
+              <Loader2 className="animate-spin w-5 h-5 mr-2" />
+              Loading assignments...
+            </div>
+          }
+        >
+          <AssignmentLists />
+        </Suspense>
 
-        <AssignmentPerformanceStats />
-        <AssignmentStatsChart
-          data={completion_over_time}
-          totalCompleted={total_submissions}
-        />
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-40 text-gray-400">
+              <Loader2 className="animate-spin w-5 h-5 mr-2" />
+              Loading performance...
+            </div>
+          }
+        >
+          <AssignmentPerformanceStats />
+        </Suspense>
+
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-40 text-gray-400">
+              <Loader2 className="animate-spin w-5 h-5 mr-2" />
+              Loading chart...
+            </div>
+          }
+        >
+          <AssignmentStatsChart
+            data={completion_over_time}
+            totalCompleted={total_submissions}
+          />
+        </Suspense>
       </div>
     </div>
   );

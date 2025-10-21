@@ -15,8 +15,10 @@ export default function ViewAllTeacher() {
   );
 
   useEffect(() => {
-    dispatch(viewAllTeacher());
-  }, [dispatch]);
+    if (teachers.length === 0) {
+      dispatch(viewAllTeacher());
+    }
+  }, [dispatch, teachers.length]);
 
   useEffect(() => {
     if (teachers.length > 0) {
