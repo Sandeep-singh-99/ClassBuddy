@@ -1,4 +1,5 @@
 import { axiosClient } from "@/helper/axiosClient";
+import type { NoteState } from "@/types/note";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -61,14 +62,7 @@ export const studentJoinGroupNote = createAsyncThunk("notes/student-join-group-n
   }
 })
 
-interface NoteState {
-  id: string;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  owner_id: string;
-}
+
 
 interface NoteSliceState {
   notes: NoteState[];

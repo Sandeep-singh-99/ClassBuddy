@@ -1,4 +1,5 @@
 import { axiosClient } from "@/helper/axiosClient";
+import type { TViewAllState } from "@/types/teacher";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -131,37 +132,6 @@ export const updateNotes = createAsyncThunk("teacher/update-notes", async (data:
   }
 })
 
-interface IOwner {
-  id: string;
-  full_name: string;
-  email: string;
-  role: string;
-  image_url: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface IMember {
-  id: string;
-  full_name: string;
-  email: string;
-  image_url: string;
-  role: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface TViewAllState {
-  id: string;
-  group_name: string;
-  group_des: string;
-  image_url: string;
-  owner: IOwner;
-  members: IMember[];
-  students_count: number;
-  created_at?: string;
-  updated_at?: string;
-}
 
 interface TState {
   teachers: TViewAllState[];
