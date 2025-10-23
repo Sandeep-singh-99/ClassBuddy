@@ -1,3 +1,4 @@
+import type { IUser } from "@/types/user";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
@@ -78,16 +79,6 @@ export const logout = createAsyncThunk("auth/logout", async (_, thunkApi) => {
     }
   }
 });
-
-interface IUser {
-  id: string;
-  full_name: string;
-  email: string;
-  image_url: string;
-  imageUrlId: string;
-  role: string;
-  password?: string;
-}
 
 interface AuthState {
   user: IUser | null;

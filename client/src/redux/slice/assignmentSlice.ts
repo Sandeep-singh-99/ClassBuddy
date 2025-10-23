@@ -1,4 +1,5 @@
 import { axiosClient } from "@/helper/axiosClient";
+import type { IAssignment } from "@/types/assignment";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -97,33 +98,6 @@ export const DeleteAssignment = createAsyncThunk(
   }
 );
 
-interface IOwner {
-  id: string;
-  full_name: string;
-  email: string;
-  role: string;
-  image_url: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface IQuestion {
-  id: string;
-  type: string;
-  question_text: string;
-  question: string;
-}
-
-interface IAssignment {
-  id: string;
-  title: string;
-  description: string;
-  due_date: string;
-  owner: IOwner;
-  created_at: string;
-  updated_at: string;
-  questions: IQuestion[];
-}
 
 interface AssignmentState {
   assignments: IAssignment[];

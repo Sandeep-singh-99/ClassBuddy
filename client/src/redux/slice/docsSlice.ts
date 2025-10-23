@@ -1,4 +1,5 @@
 import { axiosClient } from "@/helper/axiosClient";
+import type { IDocs } from "@/types/doc";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -82,25 +83,6 @@ export const DocsDelete = createAsyncThunk("docs/delete", async (docId: string, 
       }
   }
 })
-
-interface IOwner {
-  id: string;
-  full_name: string;
-  email: string;
-  role: string;
-  image_url: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface IDocs {
-  id: string;
-  filename: string;
-  file_url: string;
-  owner: IOwner;
-  created_at: string;
-  updated_at: string;
-}
 
 
 interface DocsState {
