@@ -98,7 +98,7 @@ export const studentSubmissionStats = createAsyncThunk(
         "/submissions/student-submissions-stats"
       );
       return response.data;
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail || "Fetching notes failed"
@@ -282,7 +282,7 @@ const submissionSlice = createSlice({
     builder.addCase(studentSubmissionStats.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
-      state.studentAssignmentStats = null;
+      // state.studentAssignmentStats = null;
     });
 
     builder.addCase(fetchStudentAssignmentStats.pending, (state) => {

@@ -7,25 +7,36 @@ import {
 import { useEffect, Suspense, lazy } from "react";
 import { Loader2 } from "lucide-react";
 import ProfileCard from "@/components/ProfileCard";
+import { toast } from "react-toastify";
 
 // Lazy load heavy components
-const AssignmentStatsChart = lazy(() => import("@/components/AssignmentStatsChart"));
-const AssignmentPerformanceStats = lazy(() => import("@/components/AssignmentPerformanceStats"));
+const AssignmentStatsChart = lazy(
+  () => import("@/components/AssignmentStatsChart")
+);
+const AssignmentPerformanceStats = lazy(
+  () => import("@/components/AssignmentPerformanceStats")
+);
 const AssignmentLists = lazy(() => import("@/components/AssignmentLists"));
 
 export default function DashboardHome() {
   const dispatch = useAppDispatch();
-  const { studentAssignmentStats, loading } = useAppSelector(
+  const { studentAssignmentStats, loading, error } = useAppSelector(
     (state) => state.submissions
   );
 
   useEffect(() => {
     (async () => {
-      await Promise.all([
+      const results = await Promise.allSettled([
         dispatch(studentSubmissionStats()),
         dispatch(fetchStudentAssignmentStats()),
         dispatch(fetchStudentPerformanceStats()),
       ]);
+
+      results.forEach((res, index) => {
+        if (res.status === "rejected") {
+          toast.error(`Failed to load data ${index + 1}: ${res.reason}`);
+        }
+      });
     })();
   }, [dispatch]);
 
@@ -38,15 +49,15 @@ export default function DashboardHome() {
     );
   }
 
-  if (!studentAssignmentStats) {
-    return (
-      <div className="flex items-center justify-center h-[400px] text-gray-500">
-        No stats available yet 📉
-      </div>
-    );
-  }
+  // if (!studentAssignmentStats) {
+  //   return (
+  //     <div className="flex items-center justify-center h-[400px] text-gray-500">
+  //       No stats available yet 📉
+  //     </div>
+  //   );
+  // }
 
-  const { total_submissions, completion_over_time } = studentAssignmentStats;
+  // const { total_submissions, completion_over_time } = studentAssignmentStats;
 
   return (
     <div className="relative min-h-screen text-foreground p-6">
@@ -91,19 +102,25 @@ export default function DashboardHome() {
           <AssignmentPerformanceStats />
         </Suspense>
 
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center h-40 text-gray-400">
-              <Loader2 className="animate-spin w-5 h-5 mr-2" />
-              Loading chart...
-            </div>
-          }
-        >
-          <AssignmentStatsChart
-            data={completion_over_time}
-            totalCompleted={total_submissions}
-          />
-        </Suspense>
+        {studentAssignmentStats ? (
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-40 text-gray-400">
+                <Loader2 className="animate-spin w-5 h-5 mr-2" />
+                Loading chart...
+              </div>
+            }
+          >
+            <AssignmentStatsChart
+              data={studentAssignmentStats.completion_over_time || []}
+              totalCompleted={studentAssignmentStats.total_submissions || 0}
+            />
+          </Suspense>
+        ) : (
+          <div className="flex items-center justify-center h-[400px] text-gray-500">
+            No stats available yet 📉
+          </div>
+        )}
       </div>
     </div>
   );
