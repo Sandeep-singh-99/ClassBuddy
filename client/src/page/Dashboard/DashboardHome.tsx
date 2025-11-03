@@ -20,7 +20,7 @@ const AssignmentLists = lazy(() => import("@/components/AssignmentLists"));
 
 export default function DashboardHome() {
   const dispatch = useAppDispatch();
-  const { studentAssignmentStats, loading, error } = useAppSelector(
+  const { studentAssignmentStats, loading } = useAppSelector(
     (state) => state.submissions
   );
 
