@@ -15,8 +15,6 @@ services:
       - WATCHFILES_POLL_INTERVAL=0.5
       - REDIS_URL=redis://redis:6379/0
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/app
-    # depends_on:
-    #   - redis
 
   client:
     build: ./client
@@ -29,15 +27,3 @@ services:
     command: npm run dev
     depends_on:
       - server
-
-#   redis:
-#     image: redis:latest
-#     container_name: classbuddy_redis
-#     ports:
-#       - "6379:6379"
-#     volumes:
-#       - redis_data:/data
-#     restart: unless-stopped
-
-# volumes:
-#   redis_data:
