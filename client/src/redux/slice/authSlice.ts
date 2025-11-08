@@ -1,15 +1,15 @@
+import { axiosClient } from "@/helper/axiosClient";
 import type { IUser } from "@/types/user";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
 
 export const register = createAsyncThunk(
   "auth/register",
   async (formData: FormData, thunkApi) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, formData, {
+      const response = await axiosClient.post(`/auth/register`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -28,7 +28,7 @@ export const register = createAsyncThunk(
 
 export const login = createAsyncThunk("auth/login", async (formData: FormData, thunkApi) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/login`, formData, {
+    const response = await axiosClient.post(`/auth/login`, formData, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -46,7 +46,7 @@ export const checkAuth = createAsyncThunk(
   "auth/checkAuth",
   async (_, thunkApi) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+      const response = await axiosClient.get(`/auth/me`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -65,13 +65,9 @@ export const checkAuth = createAsyncThunk(
 
 export const logout = createAsyncThunk("auth/logout", async (_, thunkApi) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/auth/logout`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axiosClient.post(`/auth/logout`, {}, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
