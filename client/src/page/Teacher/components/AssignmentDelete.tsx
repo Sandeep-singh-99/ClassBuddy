@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { DeleteAssignment } from "@/redux/slice/assignmentSlice";
-import { Trash2 } from "lucide-react";
+import { Loader2Icon, Trash2 } from "lucide-react";
 import type React from "react";
 import { toast } from "react-toastify";
 
@@ -50,12 +50,13 @@ export default function AssignmentDelete({ id }: { id: string }) {
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button
-            variant="default"
+            variant="destructive"
             className="cursor-pointer"
             onClick={handleDelete}
             disabled={loading}
           >
-            {loading ? "Deleting..." : "Delete"}
+            {loading && <Loader2Icon className="animate-spin" />}
+           Delete
           </Button>
         </DialogFooter>
       </DialogContent>

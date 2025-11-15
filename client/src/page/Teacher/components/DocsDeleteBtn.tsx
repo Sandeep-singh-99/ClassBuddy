@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useAppDispatch } from "@/hooks/hooks";
 import { DocsDelete } from "@/redux/slice/docsSlice";
-import { Trash2 } from "lucide-react";
+import { Loader2Icon, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -33,7 +33,8 @@ export default function DocsDeleteBtn({ docId }: { docId: string }) {
         <div className="flex justify-end gap-2 mt-4">
           <Button variant="outline">Cancel</Button>
           <Button onClick={handleDelete} disabled={loading} className="cursor-pointer" variant="destructive">
-            {loading ? "Deleting..." : "Delete"}
+            {loading && <Loader2Icon className="animate-spin" />}
+            Delete
           </Button>
         </div>
       </DialogContent>
