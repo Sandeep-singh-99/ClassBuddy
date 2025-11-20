@@ -1,53 +1,65 @@
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar'
-import { BookOpenCheck, File, GraduationCap, LayoutDashboard, LayoutGridIcon, NotebookIcon, Sparkles, User2 } from 'lucide-react'
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar'
 import { Link } from 'react-router-dom'
+
+import {
+  LayoutDashboard,
+  Users,
+  Notebook,
+  FolderOpen,
+  MessageSquareQuote,
+  LineChart,
+  ClipboardList,
+  Sparkles,
+} from "lucide-react";
+
 
 const MenuOptions = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "/dashboard-panel/home",
     icon: <LayoutDashboard />,
   },
-   {
-    title: "All Teachers",
+  {
+    title: "Teachers",
     url: "/dashboard-panel/view-teachers",
-    icon: <User2 />,
+    icon: <Users />,
   },
-   {
+  {
     title: "Notes",
     url: "/dashboard-panel/notes",
-    icon: <NotebookIcon />,
+    icon: <Notebook />,
   },
-   {
-    title: "Docs",
+  {
+    title: "Resources",
     url: "/dashboard-panel/docs",
-    icon: <File />,
+    icon: <FolderOpen />,
   },
-   {
-    title: "Interview Preparation",
+  {
+    title: "Interview Prep",
     url: "/dashboard-panel/interview-prep",
-    icon: <GraduationCap />,
+    icon: <MessageSquareQuote />,
   },
-   {
+  {
     title: "Career Insights",
     url: "/dashboard-panel/dashboard",
-    icon: <LayoutGridIcon />,
+    icon: <LineChart />,
   },
   {
     title: "Assignments",
     url: "/dashboard-panel/assignments",
-    icon: <BookOpenCheck />,
+    icon: <ClipboardList />,
   },
 ];
 
 
 export default function AppSidebar() {
+  const { open } = useSidebar();
   return (
-    <Sidebar>
+    <Sidebar collapsible='icon'>
       <SidebarHeader>
         <Link to={"/"} className='flex items-center gap-2 text-yellow-400'>
           <Sparkles />
-          <span className="text-3xl font-bold">Class Buddy</span>
+          { open && <span className="text-3xl font-bold">Class Buddy</span> }
         </Link>
       </SidebarHeader>
       <SidebarContent>
@@ -57,7 +69,7 @@ export default function AppSidebar() {
             <SidebarMenu>
               {MenuOptions.map((option, index) => (
                 <SidebarMenuItem key={index}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild size={open ? "lg" : "default"}>
                     <Link to={option.url}>
                      {option.icon}
                       <span>{option.title}</span>
