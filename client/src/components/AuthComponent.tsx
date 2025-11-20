@@ -24,13 +24,12 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Mail, Lock, User, UserCog } from "lucide-react";
+import { Mail, Lock, User, UserCog, Loader } from "lucide-react";
 import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
 import { checkAuth, login, register } from "@/redux/slice/authSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { BarLoader } from "react-spinners";
 
 interface IFormData {
   fullName: string;
@@ -164,9 +163,6 @@ export default function AuthComponent() {
           </DialogTitle>
           <DialogDescription className="text-center text-gray-300">
             Please log in to your account or sign up to get started.
-           {
-            loading && <BarLoader width={"100%"} color="gray" className="my-4" />
-           }
           </DialogDescription>
         </DialogHeader>
 
@@ -234,7 +230,8 @@ export default function AuthComponent() {
                   disabled={loading}
                   className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6"
                 >
-                  {loading ? "Loading..." : "Log In"}
+                  { loading && <Loader className="animate-spin" />}
+                  Log In
                 </Button>
               </DialogFooter>
             </form>
@@ -360,7 +357,8 @@ export default function AuthComponent() {
                   disabled={loading}
                   className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6"
                 >
-                  {loading ? "Loading..." : "Sign Up"}
+                  { loading && <Loader className="animate-spin" />}
+                  Sign Up
                 </Button>
               </DialogFooter>
             </form>
