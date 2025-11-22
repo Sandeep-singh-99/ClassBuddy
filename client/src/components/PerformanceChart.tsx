@@ -1,13 +1,9 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { useEffect, useState, useMemo } from "react";
+import { format } from "date-fns";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { BarLoader } from "react-spinners";
+import { TrendingUp } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -15,14 +11,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { useAppSelector } from "@/hooks/hooks";
-import { BarLoader } from "react-spinners";
-import { TrendingUp } from "lucide-react";
 
-// Colors for lines
-const COLORS = ["#ffffff", "#4ade80", "#60a5fa", "#facc15", "#ff6b6b", "#a78bfa"];
+// Fallback colors if CSS variables aren't set
+// Blue shades palette
+const CHART_COLORS = [
+  "#2563eb", // Blue 600
+  "#3b82f6", // Blue 500
+  "#60a5fa", // Blue 400
+  "#93c5fd", // Blue 300
+  "#1d4ed8", // Blue 700
+];
 
 export default function PerformanceChart() {
   const { data, loading, error } = useAppSelector((state) => state.interview);
@@ -32,120 +39,117 @@ export default function PerformanceChart() {
   useEffect(() => {
     if (!data || !Array.isArray(data)) return;
 
-    // Collect all quiz names
-    const names = data.map((quiz) => quiz.name);
+    // Collect all unique quiz names
+    const names = Array.from(new Set(data.map((quiz) => quiz.name)));
     setQuizNames(names);
 
-    // Build chart data with one object per quiz date
-    const formattedData = data.map((quiz) => ({
-      date: format(new Date(quiz.created_at), "MMM dd"),
-      [quiz.name]: quiz.score * 50, // convert to percentage
-    }));
+    // Group data by date
+    // We need to merge scores for the same date into one object
+    const dataByDate = data.reduce((acc: any, quiz) => {
+      const dateKey = format(new Date(quiz.created_at), "MMM dd");
+      if (!acc[dateKey]) {
+        acc[dateKey] = { date: dateKey };
+      }
+      // Convert score to percentage (assuming score is out of 2)
+      acc[dateKey][quiz.name] = quiz.score * 50;
+      return acc;
+    }, {});
 
-    setChartData(formattedData);
+    setChartData(Object.values(dataByDate));
   }, [data]);
 
-  if (loading)
+  const chartConfig = useMemo(() => {
+    const config: ChartConfig = {};
+    quizNames.forEach((name, index) => {
+      config[name] = {
+        label: name,
+        color: CHART_COLORS[index % CHART_COLORS.length],
+      };
+    });
+    return config;
+  }, [quizNames]);
+
+  if (loading) {
     return (
-      <div className="p-6">
-        <BarLoader width={"100%"} color="white" className="my-4" />
+      <div className="flex items-center justify-center h-[400px] w-full bg-muted/10 rounded-xl">
+        <BarLoader color="#3b82f6" />
       </div>
     );
+  }
 
-  if (error) return <p className="text-center text-red-400">{error}</p>;
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[400px] w-full bg-red-500/10 rounded-xl border border-red-500/20">
+        <p className="text-red-400 font-medium">{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <Card className="border-0 shadow-md bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-2xl md:text-3xl font-semibold text-white">
-            Performance Trend
-          </CardTitle>
-          <CardDescription className="text-gray-300">
-            Your quiz scores over time
-          </CardDescription>
-        </div>
-        <TrendingUp className="h-8 w-8 text-white/70" />
+    <Card className="w-full shadow-sm">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">
+          Performance Analytics
+        </CardTitle>
+        <CardDescription>Your quiz scores over time</CardDescription>
       </CardHeader>
 
       <CardContent>
-        <div className="h-[320px]">
+        <div className="h-[350px] w-full">
           {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
+            <ChartContainer config={chartConfig} className="h-full w-full">
+              <BarChart
                 data={chartData}
-                margin={{ top: 10, right: 30, left: 10, bottom: 0 }}
+                margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.15)" />
-
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  className="stroke-muted"
+                />
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: "white", fontSize: 12 }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.3)" }}
                   tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tick={{ fontSize: 12 }}
+                  className="text-muted-foreground"
                 />
-
                 <YAxis
-                  domain={[0, 100]}
-                  tick={{ fill: "white", fontSize: 12 }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.3)" }}
                   tickLine={false}
+                  axisLine={false}
+                  tickMargin={10}
+                  tick={{ fontSize: 12 }}
+                  className="text-muted-foreground"
+                  domain={[0, 100]}
+                  unit="%"
                 />
-
-                <Tooltip
-                  content={({ active, payload }) => {
-                    if (active && payload?.length) {
-                      return (
-                        <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-md p-3 rounded-lg">
-                          {payload.map((p, i) => (
-                            <div key={i} className="mb-1">
-                              <p className="font-semibold text-sm">{p.dataKey}</p>
-                              <p className="text-white font-bold text-sm">
-                                Score: {p.value}%
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
+                <ChartTooltip
+                  cursor={{ fill: "rgba(0,0,0,0.05)" }}
+                  content={<ChartTooltipContent indicator="dashed" />}
                 />
-
-                <Legend
-                  wrapperStyle={{ color: "white", fontSize: 12 }}
-                  verticalAlign="top"
-                  align="right"
-                  iconType="circle"
+                <ChartLegend
+                  content={<ChartLegendContent className="pt-4" />}
                 />
-
                 {quizNames.map((name, index) => (
-                  <Line
+                  <Bar
                     key={name}
-                    type="monotone"
                     dataKey={name}
-                    stroke={COLORS[index % COLORS.length]}
-                    strokeWidth={3}
-                    dot={{
-                      r: 4,
-                      stroke: COLORS[index % COLORS.length],
-                      strokeWidth: 2,
-                      fill: "white",
-                    }}
-                    activeDot={{
-                      r: 6,
-                      stroke: COLORS[index % COLORS.length],
-                      strokeWidth: 2,
-                      fill: "white",
-                    }}
+                    fill={CHART_COLORS[index % CHART_COLORS.length]}
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={50}
                   />
                 ))}
-              </LineChart>
-            </ResponsiveContainer>
+              </BarChart>
+            </ChartContainer>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center text-gray-400 space-y-2">
-              <TrendingUp className="h-10 w-10 text-gray-500" />
-              <p>No quiz performance data yet.</p>
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+              <div className="p-3 bg-muted rounded-full">
+                <TrendingUp className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <p className="text-muted-foreground">
+                No quiz performance data yet.
+              </p>
             </div>
           )}
         </div>
