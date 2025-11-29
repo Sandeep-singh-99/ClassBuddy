@@ -8,7 +8,7 @@ export default function ProfileCard() {
     const { user } = useAppSelector((state) => state.auth)
     
   return (
-    <Card className="w-full max-w-md mx-auto bg-gray-900 border-gray-800 text-gray-100">
+    <Card className="w-full max-w-md mx-auto bg-sidebar  border-gray-800 text-gray-100">
       <CardHeader className="flex flex-row items-center gap-4">
         <Avatar className="h-16 w-16">
           <AvatarImage src={user?.image_url} alt={user?.full_name} />

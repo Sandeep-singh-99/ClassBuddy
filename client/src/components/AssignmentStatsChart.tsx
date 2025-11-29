@@ -5,35 +5,58 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from "recharts";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
+  CardDescription,
 } from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 
-export default function AssignmentStatsChart({ data = [], totalCompleted = 0 }) {
+const chartConfig = {
+  count: {
+    label: "Assignments",
+    color: "#6366f1",
+  },
+  trend: {
+    label: "Trend",
+    color: "#22d3ee",
+  },
+} satisfies ChartConfig;
+
+export default function AssignmentStatsChart({
+  data = [],
+  totalCompleted = 0,
+}: {
+  data: any[];
+  totalCompleted: number;
+}) {
   return (
-    <Card className="bg-[#0f172a] border border-gray-800 shadow-lg rounded-2xl">
+    <Card className="shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-gray-100 text-xl flex items-center justify-between">
+        <CardTitle className="text-xl flex items-center justify-between">
           <span>📊 Assignment Completion Insights</span>
-          <span className="text-sm font-normal text-gray-400">
+          <span className="text-sm font-normal text-muted-foreground">
             Total:{" "}
-            <span className="text-indigo-400 font-semibold">{totalCompleted}</span>
+            <span className="text-primary font-semibold">{totalCompleted}</span>
           </span>
         </CardTitle>
+        <CardDescription>Daily assignment completion trends</CardDescription>
       </CardHeader>
 
       <CardContent className="pt-4">
         <div className="w-full h-[360px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer config={chartConfig} className="h-full w-full">
             <ComposedChart data={data}>
-              {/* Gradients */}
               <defs>
                 <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#6366f1" stopOpacity={0.8} />
@@ -45,38 +68,31 @@ export default function AssignmentStatsChart({ data = [], totalCompleted = 0 }) 
                 </linearGradient>
               </defs>
 
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
                 dataKey="date"
-                stroke="#94a3b8"
-                tick={{ fill: "#94a3b8" }}
-                tickLine={{ stroke: "#334155" }}
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tick={{ fontSize: 12 }}
               />
               <YAxis
                 allowDecimals={false}
-                stroke="#94a3b8"
-                tick={{ fill: "#94a3b8" }}
-                tickLine={{ stroke: "#334155" }}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                tick={{ fontSize: 12 }}
               />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1e293b",
-                  border: "1px solid #334155",
-                  borderRadius: "10px",
-                  color: "#e2e8f0",
-                }}
-                labelStyle={{ color: "#cbd5e1" }}
+              <ChartTooltip
+                cursor={{ fill: "rgba(0,0,0,0.05)" }}
+                content={<ChartTooltipContent indicator="dashed" />}
               />
-              <Legend
-                verticalAlign="top"
-                wrapperStyle={{ color: "#94a3b8", marginBottom: 10 }}
-              />
+              <ChartLegend content={<ChartLegendContent />} />
 
-              {/* Smooth trend + solid bars */}
               <Area
                 type="monotone"
                 dataKey="count"
-                name="Completion Trend"
+                name="trend"
                 stroke="#22d3ee"
                 strokeWidth={2}
                 fillOpacity={1}
@@ -84,13 +100,13 @@ export default function AssignmentStatsChart({ data = [], totalCompleted = 0 }) 
               />
               <Bar
                 dataKey="count"
-                name="Assignments Completed"
+                name="count"
                 fill="url(#barGradient)"
                 barSize={30}
-                radius={[6, 6, 0, 0]}
+                radius={[4, 4, 0, 0]}
               />
             </ComposedChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </div>
       </CardContent>
     </Card>

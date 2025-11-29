@@ -7,7 +7,7 @@ export default function TDashboard() {
   return (
     <SidebarProvider>
       <TSideBar />
-      <div className="w-full p-5">
+      <div className="w-full p-5 bg-gradient-to-br from-[#0c1729] via-[#13233f] to-[#0c1729]">
         <AppHeader />
         <Outlet />
       </div>
