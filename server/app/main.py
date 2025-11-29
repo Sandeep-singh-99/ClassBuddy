@@ -14,6 +14,20 @@ from app.router.generate_assignment import router as generate_assignment_router
 from app.router.ai_evaluator import router as ai_evaluator_router
 from app.router.submission import router as submission_router
 from app.mobile.router.auth import router as mobile_auth_router
+from app.mobile.router.ai_evaluator import router as mobile_ai_evaluator_router
+from app.mobile.router.assignment import router as mobile_assignment_router
+from app.mobile.router.chat_with_pdf import router as mobile_chat_with_pdf_router
+from app.mobile.router.docsupload import router as mobile_docsupload_router
+from app.mobile.router.generate_assignment import (
+    router as mobile_generate_assignment_router,
+)
+from app.mobile.router.generate_notes import router as mobile_generate_notes_router
+from app.mobile.router.group import router as mobile_group_router
+from app.mobile.router.interviewPerp import router as mobile_interview_prep_router
+from app.mobile.router.notes import router as mobile_notes_router
+from app.mobile.router.studentInsight import router as mobile_student_insight_router
+from app.mobile.router.submission import router as mobile_submission_router
+from app.mobile.router.teacherInsight import router as mobile_teacher_insight_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 
@@ -63,6 +77,48 @@ app.include_router(
 app.include_router(ai_evaluator_router, prefix="/ai-evaluator", tags=["AI Evaluator"])
 app.include_router(submission_router, prefix="/submissions", tags=["Submissions"])
 app.include_router(mobile_auth_router, prefix="/mobile/auth", tags=["Mobile Auth"])
+app.include_router(
+    mobile_ai_evaluator_router,
+    prefix="/mobile/ai-evaluator",
+    tags=["Mobile AI Evaluator"],
+)
+app.include_router(
+    mobile_assignment_router, prefix="/mobile/assignments", tags=["Mobile Assignments"]
+)
+app.include_router(
+    mobile_chat_with_pdf_router, prefix="/mobile/pdf", tags=["Mobile PDF Chat"]
+)
+app.include_router(
+    mobile_docsupload_router, prefix="/mobile/docs", tags=["Mobile Document Upload"]
+)
+app.include_router(
+    mobile_generate_assignment_router,
+    prefix="/mobile/assignments",
+    tags=["Mobile Generate Assignment"],
+)
+app.include_router(
+    mobile_generate_notes_router, prefix="/mobile/notes", tags=["Mobile Generate Notes"]
+)
+app.include_router(mobile_group_router, prefix="/mobile/groups", tags=["Mobile Groups"])
+app.include_router(
+    mobile_interview_prep_router,
+    prefix="/mobile/interview-prep",
+    tags=["Mobile Interview Preparation"],
+)
+app.include_router(mobile_notes_router, prefix="/mobile/notes", tags=["Mobile Notes"])
+app.include_router(
+    mobile_student_insight_router,
+    prefix="/mobile/student-insight",
+    tags=["Mobile Student Insights"],
+)
+app.include_router(
+    mobile_submission_router, prefix="/mobile/submissions", tags=["Mobile Submissions"]
+)
+app.include_router(
+    mobile_teacher_insight_router,
+    prefix="/mobile/insights",
+    tags=["Mobile Teacher Insights"],
+)
 
 
 @app.get("/")
