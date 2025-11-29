@@ -131,6 +131,9 @@ def get_group_notes_for_student(
     # Fetch all notes for those groups
     notes = db.query(Note).filter(Note.group_id.in_(group_ids)).all()
 
+    if not notes:
+        raise HTTPException(status_code=404, detail="Teacher has not uploaded any notes")
+
     return {
         "count": len(notes),
         "notes": notes
