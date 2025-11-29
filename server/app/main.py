@@ -13,6 +13,7 @@ from app.router.assignment import router as assignment_router
 from app.router.generate_assignment import router as generate_assignment_router
 from app.router.ai_evaluator import router as ai_evaluator_router
 from app.router.submission import router as submission_router
+from app.mobile.router.auth import router as mobile_auth_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 
@@ -22,8 +23,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-           "http://localhost:5173",
-           "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -33,24 +34,35 @@ app.add_middleware(
 
 # Base.metadata.create_all(bind=engine)
 
+
 @app.on_event("startup")
 def on_startup():
     print("Creating database tables (if not exist)...")
     Base.metadata.create_all(bind=engine)
 
+
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
-app.include_router(teacher_insight_router, prefix="/insights", tags=["Teacher Insights"])
+app.include_router(
+    teacher_insight_router, prefix="/insights", tags=["Teacher Insights"]
+)
 app.include_router(group_router, prefix="/groups", tags=["Groups"])
 app.include_router(generate_notes_router, prefix="/notes", tags=["Generate Notes"])
 app.include_router(notes_router, prefix="/notes", tags=["Notes"])
-app.include_router(student_insight_router, prefix="/student-insight", tags=["Student Insights"])
-app.include_router(interview_prep_router, prefix="/interview-prep", tags=["Interview Preparation"])
+app.include_router(
+    student_insight_router, prefix="/student-insight", tags=["Student Insights"]
+)
+app.include_router(
+    interview_prep_router, prefix="/interview-prep", tags=["Interview Preparation"]
+)
 app.include_router(docsupload_router, prefix="/docs", tags=["Document Upload"])
 app.include_router(assignment_router, prefix="/assignments", tags=["Assignments"])
-app.include_router(generate_assignment_router, prefix="/assignments", tags=["Generate Assignment"])
+app.include_router(
+    generate_assignment_router, prefix="/assignments", tags=["Generate Assignment"]
+)
 app.include_router(ai_evaluator_router, prefix="/ai-evaluator", tags=["AI Evaluator"])
 app.include_router(submission_router, prefix="/submissions", tags=["Submissions"])
+app.include_router(mobile_auth_router, prefix="/mobile/auth", tags=["Mobile Auth"])
 
 
 @app.get("/")
