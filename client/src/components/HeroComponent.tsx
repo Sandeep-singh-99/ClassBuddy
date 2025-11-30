@@ -1,8 +1,7 @@
 import { Sparkles, ArrowRight, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import img1 from "../assets/img.png";
 
-// bg-gradient-to-br from-[#0c1729] via-[#13233f] to-[#0c1729]
+
 
 export default function HeroComponent() {
   return (
