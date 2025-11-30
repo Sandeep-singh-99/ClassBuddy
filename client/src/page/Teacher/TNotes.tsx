@@ -8,6 +8,7 @@ import MDEditor from "@uiw/react-md-editor";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
+import { Loader } from "lucide-react";
 
 export default function TNotes() {
   const [visible, setVisible] = useState(false);
@@ -17,17 +18,23 @@ export default function TNotes() {
 
   const { generatedNotes, loading } = useAppSelector((state) => state.teachers);
 
-
   useEffect(() => {
     if (!loading && generatedNotes) {
       setVisible(true);
     }
   }, [loading, generatedNotes]);
 
-  const handleGenerateNotes = (e: React.FormEvent) => {
+  const handleGenerateNotes = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(generateNotes(title));
-    toast.success("Generating notes, please wait...");
+    try {
+      toast.info("Generating notes, please wait...");
+      await dispatch(generateNotes(title)).unwrap();
+      toast.success("Notes generated successfully!");
+    } catch (error) {
+      toast.error(
+        (error as string) || "Failed to generate notes. Please try again."
+      );
+    }
   };
 
   const handleSaveNotes = (e: React.FormEvent) => {
@@ -40,7 +47,7 @@ export default function TNotes() {
     try {
       dispatch(saveNotes(formData));
       setTitle("");
-      setVisible(false); 
+      setVisible(false);
       toast.success("Notes saved successfully!");
     } catch (error) {
       console.log("Error saving notes:", error);
@@ -59,11 +66,17 @@ export default function TNotes() {
           <form onSubmit={handleGenerateNotes}>
             <Textarea
               placeholder="Provide a title or topic, and our AI will create detailed notes."
+              className="h-36"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            <Button type="submit" className="mt-4" disabled={loading || !title.trim()}>
-              {loading ? "Generating..." : "Generate Notes"}
+            <Button
+              type="submit"
+              className="mt-4 cursor-pointer"
+              disabled={loading || !title.trim()}
+            >
+              {loading && <Loader className="animate-spin" />}
+              Generate Notes
             </Button>
           </form>
         </CardContent>
@@ -72,7 +85,9 @@ export default function TNotes() {
       {/* Loading State */}
       {loading && (
         <div>
-          <p className="mt-6 text-center text-gray-500">Generating notes, please wait...</p>
+          <p className="mt-6 text-center text-gray-500">
+            Generating notes, please wait...
+          </p>
         </div>
       )}
 
@@ -107,7 +122,8 @@ export default function TNotes() {
       {!loading && !visible && (
         <div>
           <p className="mt-6 text-center text-gray-400">
-            No notes generated yet. Please enter a title and click "Generate Notes".
+            No notes generated yet. Please enter a title and click "Generate
+            Notes".
           </p>
         </div>
       )}

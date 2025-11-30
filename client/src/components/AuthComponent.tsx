@@ -149,35 +149,35 @@ export default function AuthComponent() {
       <DialogTrigger asChild>
         <Button
           variant="secondary"
-          className="rounded-xl px-6 py-2 bg-yellow-400 text-black hover:bg-yellow-500 shadow-md"
+          className="rounded-xl px-6 py-2 bg-yellow-500 text-white hover:bg-yellow-600 shadow-md cursor-pointer"
         >
           Login
         </Button>
       </DialogTrigger>
 
       {/* Content */}
-      <DialogContent className="sm:max-w-md bg-[#0c1729] border border-gray-700 text-white rounded-2xl shadow-2xl">
+      <DialogContent className="sm:max-w-md bg-white border border-gray-200 text-gray-900 rounded-2xl shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center text-yellow-400">
+          <DialogTitle className="text-2xl font-bold text-center text-yellow-500">
             Welcome to ClassBuddy
           </DialogTitle>
-          <DialogDescription className="text-center text-gray-300">
+          <DialogDescription className="text-center text-gray-500">
             Please log in to your account or sign up to get started.
           </DialogDescription>
         </DialogHeader>
 
         {/* Tabs */}
         <Tabs defaultValue="login" className="w-full mt-4">
-          <TabsList className="grid w-full grid-cols-2 bg-[#111b30] rounded-lg p-1">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-lg p-1">
             <TabsTrigger
               value="login"
-              className="rounded-md data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=inactive]:text-gray-300 hover:data-[state=inactive]:text-white"
+              className="rounded-md data-[state=active]:bg-yellow-500 data-[state=active]:text-white data-[state=inactive]:text-gray-500 hover:data-[state=inactive]:text-gray-900"
             >
               Log In
             </TabsTrigger>
             <TabsTrigger
               value="signup"
-              className="rounded-md data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=inactive]:text-gray-300 hover:data-[state=inactive]:text-white"
+              className="rounded-md data-[state=active]:bg-yellow-500 data-[state=active]:text-white data-[state=inactive]:text-gray-500 hover:data-[state=inactive]:text-gray-900"
             >
               Sign Up
             </TabsTrigger>
@@ -187,25 +187,29 @@ export default function AuthComponent() {
           <TabsContent value="login">
             <form className="space-y-4 mt-6" onSubmit={handleLoginSubmit}>
               <div className="grid gap-2 w-full">
-                <Label htmlFor="email">Email ID</Label>
+                <Label htmlFor="email" className="text-gray-700">
+                  Email ID
+                </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-500" />
                   <Input
                     id="email"
                     placeholder="Enter your Email ID"
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
+                    className="pl-10 bg-gray-50 border-gray-200 rounded-lg text-gray-900 focus:border-yellow-500 focus:ring-yellow-500"
                     required
                   />
                 </div>
               </div>
 
               <div className="grid gap-2 w-full">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">
+                  Password
+                </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-500" />
                   <Input
                     id="password"
                     type="password"
@@ -213,7 +217,7 @@ export default function AuthComponent() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
+                    className="pl-10 bg-gray-50 border-gray-200 rounded-lg text-gray-900 focus:border-yellow-500 focus:ring-yellow-500"
                     required
                   />
                 </div>
@@ -228,9 +232,9 @@ export default function AuthComponent() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6"
+                  className="bg-yellow-500 text-white hover:bg-yellow-600 rounded-lg px-6"
                 >
-                  { loading && <Loader className="animate-spin" />}
+                  {loading && <Loader className="animate-spin text-blue-900" />}
                   Log In
                 </Button>
               </DialogFooter>
@@ -271,16 +275,18 @@ export default function AuthComponent() {
               </div>
 
               <div className="grid gap-2 w-full">
-                <Label htmlFor="fullName">FullName</Label>
+                <Label htmlFor="fullName" className="text-gray-700">
+                  FullName
+                </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-500" />
                   <Input
                     id="fullName"
                     placeholder="Enter your Full Name"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
+                    className="pl-10 bg-gray-50 border-gray-200 rounded-lg text-gray-900 focus:border-yellow-500 focus:ring-yellow-500"
                     required
                   />
                 </div>
@@ -288,15 +294,17 @@ export default function AuthComponent() {
 
               {/* Email */}
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-gray-700">
+                  Email
+                </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-400 w-5 h-5" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500 w-5 h-5" />
                   <Input
                     id="email"
                     type="email"
                     name="email"
                     placeholder="Enter your email"
-                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
+                    className="pl-10 bg-gray-50 border-gray-200 rounded-lg text-gray-900 focus:border-yellow-500 focus:ring-yellow-500"
                     required
                     value={formData.email}
                     onChange={handleInputChange}
@@ -305,23 +313,37 @@ export default function AuthComponent() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="role">Role</Label>
+                <Label htmlFor="role" className="text-gray-700">
+                  Role
+                </Label>
                 <div className="relative">
-                  <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-400 w-5 h-5" />
+                  <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500 w-5 h-5" />
                   <Select
                     value={formData.role}
                     onValueChange={(e) =>
                       setFormData((prev) => ({ ...prev, role: e }))
                     }
                   >
-                    <SelectTrigger className="w-full pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white">
+                    <SelectTrigger className="w-full pl-10 bg-gray-50 border-gray-200 rounded-lg text-gray-900 focus:border-yellow-500 focus:ring-yellow-500">
                       <SelectValue placeholder="Select a Role" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white border-gray-200">
                       <SelectGroup>
-                        <SelectLabel>Roles</SelectLabel>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="teacher">Teacher</SelectItem>
+                        <SelectLabel className="text-gray-500">
+                          Roles
+                        </SelectLabel>
+                        <SelectItem
+                          value="student"
+                          className="text-gray-900 focus:bg-gray-100"
+                        >
+                          Student
+                        </SelectItem>
+                        <SelectItem
+                          value="teacher"
+                          className="text-gray-900 focus:bg-gray-100"
+                        >
+                          Teacher
+                        </SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -330,9 +352,11 @@ export default function AuthComponent() {
 
               {/* Password */}
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">
+                  Password
+                </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-400 w-5 h-5" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500 w-5 h-5" />
                   <Input
                     id="password"
                     type="password"
@@ -340,7 +364,7 @@ export default function AuthComponent() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Enter your password"
-                    className="pl-10 bg-[#111b30] border-gray-700 rounded-lg text-white"
+                    className="pl-10 bg-gray-50 border-gray-200 rounded-lg text-gray-900 focus:border-yellow-500 focus:ring-yellow-500"
                     required
                   />
                 </div>
@@ -355,9 +379,9 @@ export default function AuthComponent() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg px-6"
+                  className="bg-yellow-500 text-white hover:bg-yellow-600 rounded-lg px-6"
                 >
-                  { loading && <Loader className="animate-spin" />}
+                  {loading && <Loader className="animate-spin text-blue-900" />}
                   Sign Up
                 </Button>
               </DialogFooter>

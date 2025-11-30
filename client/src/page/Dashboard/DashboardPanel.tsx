@@ -7,7 +7,7 @@ export default function DashboardPanel() {
   return (
     <SidebarProvider>
       <AppSidebar />
-     <div className='w-full p-5 bg-gradient-to-br from-[#0c1729] via-[#13233f] to-[#0c1729]'>
+     <div className='w-full p-5 bg-gradient-to-b from-white via-gray-50 to-white'>
       <AppHeader />
        <Outlet />
      </div>

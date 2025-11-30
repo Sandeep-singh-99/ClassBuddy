@@ -23,9 +23,6 @@ export default function ViewNotes() {
 
       {/* Loading */}
       {loading && (
-        // <div className="flex items-center justify-center h-screen gap-2 text-gray-500 mb-4">
-        //   <Loader2 className="w-5 h-5 animate-spin" /> Loading notes...
-        // </div>
         <BarLoader width={"100%"} color="gray" className="my-4" />
       )}
 
@@ -39,7 +36,6 @@ export default function ViewNotes() {
 
       {/* Empty */}
       {!loading && notes.length === 0 && (
-        // <p className="text-gray-500 text-center">No notes found.</p>
         <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
           <AlertCircle className="w-5 h-5" />
           <span className="text-sm font-medium">No notes found.</span>

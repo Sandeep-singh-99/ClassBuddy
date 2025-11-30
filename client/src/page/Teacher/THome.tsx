@@ -34,7 +34,7 @@ export default function THome() {
         </div>
 
         <Link to={"/t-dashboard/create-notes"}>
-          <Button variant={"destructive"}>
+          <Button variant={"destructive"} className="cursor-pointer">
             <PlusCircle className="h-4 w-4" />
             Create Notes
           </Button>

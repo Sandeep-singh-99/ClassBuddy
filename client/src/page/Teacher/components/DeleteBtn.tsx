@@ -20,7 +20,7 @@ export default function DeleteBtn({ noteId }: { noteId: string }) {
 
   return (
     <div>
-      <Button variant={"outline"} size={"sm"} onClick={handleDelete}>
+      <Button variant={"destructive"} size={"sm"} onClick={handleDelete} className="cursor-pointer">
         Delete
       </Button>
     </div>
