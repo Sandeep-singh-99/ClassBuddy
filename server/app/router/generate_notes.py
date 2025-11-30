@@ -29,7 +29,7 @@ search_tool = TavilySearch(max_results=3)
 # 2. Initialize LLM and Tavily Tool
 # -------------------------------
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
 
 # -------------------------------
