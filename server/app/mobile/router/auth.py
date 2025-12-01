@@ -8,10 +8,12 @@ from fastapi import (
     Form,
     status,
 )
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.config.db import get_db
 from app.schemas.auth import UserResponse, UserOut
 from app.models.auth import User
+from app.schemas.notes import TeacherNotesResponse
+from app.models.notes import Note
 from app.utils.utils import (
     hash_password,
     verify_password,
@@ -19,6 +21,7 @@ from app.utils.utils import (
     decode_access_token,
 )
 from app.utils.cloudinary import upload_image
+
 
 router = APIRouter()
 
@@ -115,7 +118,52 @@ def login(
 def read_users_me(current_user: User = Depends(get_current_user_mobile)):
     return current_user
 
+@router.get("/student/notes", response_model=TeacherNotesResponse)
+def get_group_notes_for_student(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user_mobile)
+):
+    # Ensure only authenticated users can access
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required")
 
-@router.post("/logout")
-def logout(current_user: User = Depends(get_current_user_mobile)):
-    return {"message": "Successfully logged out"}
+    # Fetch student with their groups
+    student = (
+        db.query(User)
+        .options(joinedload(User.groups))
+        .filter(User.id == current_user.id)
+        .first()
+    )
+
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    if len(student.groups) == 0:
+        raise HTTPException(status_code=400, detail="You haven't joined any groups")
+
+    # Get all group IDs the student is part of
+    group_ids = [group.id for group in student.groups]
+
+    # Fetch all notes for those groups
+    notes = db.query(Note).filter(Note.group_id.in_(group_ids)).all()
+
+    if not notes:
+        raise HTTPException(
+            status_code=404, detail="Teacher has not uploaded any notes"
+        )
+
+    return {"count": len(notes), "notes": notes}
+
+
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Header,
+    UploadFile,
+    File,
+    Form,
+    status,
+)
+
+
