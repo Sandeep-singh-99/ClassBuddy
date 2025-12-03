@@ -30,16 +30,19 @@ from app.mobile.router.submission import router as mobile_submission_router
 from app.mobile.router.teacherInsight import router as mobile_teacher_insight_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = FastAPI()
+
+origins = os.getenv("CORS_ORIGINS", "").split(",")
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
