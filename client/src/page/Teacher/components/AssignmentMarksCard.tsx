@@ -93,7 +93,7 @@ export default function AssignmentMarksCard({
             </TableHeader>
 
             <TableBody>
-              {studentData.students.map((student, index) => (
+              {studentData.students.map((student: any, index: number) => (
                 <TableRow key={student.student_id}>
                   <TableCell className="text-muted-foreground">
                     {index + 1}

@@ -2,29 +2,39 @@ import { Trophy, CheckCircle2, XCircle } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import { Progress } from "./ui/progress";
 
-export default function QuizResult({
-  result,
-  hideStartNew = false,
-  onStartNew,
-}) {
+interface QuizResultProps {
+  result: {
+    questions: {
+      question: string;
+      answer: string;
+      options: string[];
+      explanation: string;
+    }[];
+    user_answers: { [key: number]: string };
+  };
+  hideStartNew?: boolean;
+  onStartNew?: () => void;
+}
+
+export default function QuizResult({ result }: QuizResultProps) {
   if (!result) return null;
 
   // Prepare derived data
   const totalQuestions = result.questions.length;
-  const correctCount = result.questions.filter((q, idx) => {
+  const correctCount = result.questions.filter((q: any, idx: number) => {
     const userAns = result.user_answers[idx];
     return userAns && userAns.startsWith(q.answer);
   }).length;
 
   const quizScore = ((correctCount / totalQuestions) * 100).toFixed(1);
 
-  const mappedQuestions = result.questions.map((q, idx) => {
+  const mappedQuestions = result.questions.map((q: any, idx: number) => {
     const userAnswer = result.user_answers[idx];
     const isCorrect = userAnswer?.startsWith(q.answer);
     return {
       question: q.question,
       userAnswer,
-      answer: q.options.find((opt) => opt.startsWith(q.answer)),
+      answer: q.options.find((opt: string) => opt.startsWith(q.answer)),
       isCorrect,
       explanation: q.explanation,
     };

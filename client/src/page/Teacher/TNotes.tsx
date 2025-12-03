@@ -50,7 +50,7 @@ export default function TNotes() {
       setVisible(false);
       toast.success("Notes saved successfully!");
     } catch (error) {
-      console.log("Error saving notes:", error);
+      // console.log("Error saving notes:", error);
       toast.error("Failed to save notes. Please try again.");
     }
   };

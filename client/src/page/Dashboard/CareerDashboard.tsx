@@ -31,13 +31,12 @@ import { FetchDashboardData } from "@/redux/slice/dashboardSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import GenerateDashboardBtn from "@/components/GenerateDashboardBtn";
 
-
 export default function CareerDashboard() {
   const dispatch = useAppDispatch();
   const { data, loading, error } = useAppSelector((state) => state.dashboard);
 
   useEffect(() => {
-    if (!data) {
+    if (!data || data.length === 0) {
       dispatch(FetchDashboardData());
     }
   }, [dispatch, data]);
@@ -52,28 +51,44 @@ export default function CareerDashboard() {
 
   if (error)
     return (
-     <section>
-      <div className="flex justify-end pt-20">
-        <GenerateDashboardBtn />
-      </div>
-       <div className="flex items-center justify-center gap-2 p-4 my-4 bg-red-50 text-red-600 border border-red-200 rounded-lg">
-        <AlertCircle className="w-5 h-5" />
-        <span className="text-sm font-medium">Error: {error}</span>
-      </div>
-     </section>
+      <section>
+        <div className="flex justify-end pt-20">
+          <GenerateDashboardBtn />
+        </div>
+        <div className="flex items-center justify-center gap-2 p-4 my-4 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+          <AlertCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">Error: {error}</span>
+        </div>
+      </section>
     );
 
-  if (!data) return null;
+  if (!data || data.length === 0 || !data[0]) {
+    return (
+      <section>
+        <div className="flex justify-end pt-20">
+          <GenerateDashboardBtn />
+        </div>
+        <div className="flex items-center justify-center gap-2 p-4 my-4 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg">
+          <AlertCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">
+            No insights found. Generate your first insight!
+          </span>
+        </div>
+      </section>
+    );
+  }
+
+  const latestData = data[0];
 
   // Helper functions
-  const salaryData = data.salary_range.map((range) => ({
+  const salaryData = latestData.salary_range.map((range) => ({
     name: range.role,
     min: range.min / 1000,
     max: range.max / 1000,
     median: range.median / 1000,
   }));
 
-  const getDemandLevelColor = (level) => {
+  const getDemandLevelColor = (level: string) => {
     switch (level.toLowerCase()) {
       case "high":
         return "bg-green-500";
@@ -86,7 +101,7 @@ export default function CareerDashboard() {
     }
   };
 
-  const getMarketOutlookInfo = (outlook) => {
+  const getMarketOutlookInfo = (outlook: string) => {
     switch (outlook.toLowerCase()) {
       case "positive":
         return { icon: TrendingUp, color: "text-green-500" };
@@ -99,13 +114,16 @@ export default function CareerDashboard() {
     }
   };
 
-  const OutlookIcon = getMarketOutlookInfo(data.market_outlook).icon;
-  const outlookColor = getMarketOutlookInfo(data.market_outlook).color;
+  const OutlookIcon = getMarketOutlookInfo(latestData.market_outlook).icon;
+  const outlookColor = getMarketOutlookInfo(latestData.market_outlook).color;
 
-  const lastUpdatedDate = format(new Date(data.updated_at), "dd/MM/yyyy");
-  const nextUpdateDistance = formatDistanceToNow(new Date(data.updated_at), {
-    addSuffix: true,
-  });
+  const lastUpdatedDate = format(new Date(latestData.updated_at), "dd/MM/yyyy");
+  const nextUpdateDistance = formatDistanceToNow(
+    new Date(latestData.updated_at),
+    {
+      addSuffix: true,
+    }
+  );
 
   return (
     <div className="space-y-6 p-8">
@@ -114,14 +132,14 @@ export default function CareerDashboard() {
         <Badge variant="outline">Last updated: {lastUpdatedDate}</Badge>
         <div className="flex items-center space-x-2">
           <img
-            src={data.owner.image_url}
-            alt={data.owner.full_name}
+            src={latestData.owner.image_url}
+            alt={latestData.owner.full_name}
             className="h-10 w-10 rounded-full border"
           />
           <div>
-            <p className="font-semibold">{data.owner.full_name}</p>
+            <p className="font-semibold">{latestData.owner.full_name}</p>
             <p className="text-xs text-muted-foreground">
-              {data.owner.industry}
+              {latestData.owner.industry}
             </p>
           </div>
         </div>
@@ -138,7 +156,9 @@ export default function CareerDashboard() {
             <OutlookIcon className={`h-4 w-4 ${outlookColor}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.market_outlook}</div>
+            <div className="text-2xl font-bold">
+              {latestData.market_outlook}
+            </div>
             <p className="text-xs text-muted-foreground">
               Next update {nextUpdateDistance}
             </p>
@@ -154,8 +174,8 @@ export default function CareerDashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.growth_rate}%</div>
-            <Progress value={data.growth_rate} className="mt-2" />
+            <div className="text-2xl font-bold">{latestData.growth_rate}%</div>
+            <Progress value={latestData.growth_rate} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -166,10 +186,10 @@ export default function CareerDashboard() {
             <BriefcaseIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.demand_level}</div>
+            <div className="text-2xl font-bold">{latestData.demand_level}</div>
             <div
               className={`h-2 w-full rounded-full mt-2 ${getDemandLevelColor(
-                data.demand_level
+                latestData.demand_level
               )}`}
             />
           </CardContent>
@@ -183,7 +203,7 @@ export default function CareerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-1">
-              {data.top_skills.map((skill) => (
+              {latestData.top_skills.map((skill) => (
                 <Badge key={skill} variant="secondary">
                   {skill}
                 </Badge>
@@ -242,7 +262,7 @@ export default function CareerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-1">
-              {data.top_skills.map((skill) => (
+              {latestData.top_skills.map((skill) => (
                 <Badge key={skill} variant="secondary">
                   {skill}
                 </Badge>
@@ -264,7 +284,7 @@ export default function CareerDashboard() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {data.key_trends.map((trend, index) => (
+              {latestData.key_trends.map((trend, index) => (
                 <li key={index} className="flex items-start space-x-2">
                   <div className="h-2 w-2 mt-2 rounded-full bg-primary" />
                   <span>{trend}</span>
@@ -282,7 +302,7 @@ export default function CareerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {data.recommend_skills.map((skill) => (
+              {latestData.recommend_skills.map((skill) => (
                 <Badge key={skill} variant="outline">
                   {skill}
                 </Badge>

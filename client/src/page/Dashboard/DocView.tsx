@@ -12,7 +12,7 @@ export default function DocView() {
 
   useEffect(() => {
     if (docs.length === 0) {
-    dispatch(DocsStudentFetch());
+      dispatch(DocsStudentFetch());
     }
   }, [dispatch, docs.length]);
 
@@ -22,9 +22,7 @@ export default function DocView() {
         <File className="w-7 h-7 text-blue-600" /> Documents
       </h1>
 
-      {loading && (
-        <BarLoader width={"100%"} color="gray" className="my-4" />
-      )}
+      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
 
       {error && (
         <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
@@ -47,13 +45,13 @@ export default function DocView() {
         {docs.map((doc) => (
           <Card
             key={doc.id}
-            className=" border border-gray-800 rounded-lg shadow-lg hover:shadow-xl hover:border-blue-600 transition-all duration-200 cursor-pointer group"
+            className="  rounded-lg shadow-lg hover:shadow-xl hover:border-blue-600 transition-all duration-200 cursor-pointer group"
             onClick={() => navigate(`/docs/${doc.id}`)}
           >
             <CardContent className="p-5 flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <File className="w-5 h-5 text-blue-500 group-hover:text-blue-600 transition-colors" />
-                <h2 className="text-lg font-semibold text-gray-100 group-hover:text-blue-500 transition-colors flex-1 line-clamp-1">
+                <h2 className="text-lg font-semibold text-foreground group-hover:text-blue-500 transition-colors flex-1 line-clamp-1">
                   {doc.filename || "Untitled Document"}
                 </h2>
               </div>
@@ -64,7 +62,7 @@ export default function DocView() {
                   className="w-8 h-8 rounded-full object-cover border"
                 />
                 <div>
-                  <p className="text-sm font-medium text-gray-200">
+                  <p className="text-sm font-medium text-gray-700">
                     {doc.owner.full_name}
                   </p>
                   <p className="text-xs text-gray-400">

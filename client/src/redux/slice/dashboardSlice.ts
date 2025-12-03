@@ -1,18 +1,23 @@
 import { axiosClient } from "@/helper/axiosClient";
 import type { StudentInsight } from "@/types/dashboard";
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 
 export const GenerateDashboardData = createAsyncThunk(
   "career/dashboard",
-  async ( {industry}: {industry: string}, thunkApi) => {
+  async ({ industry }: { industry: string }, thunkApi) => {
     try {
       const response = await axiosClient.post(
-        "/student-insight/generate-industry-insight", { industry },
+        "/student-insight/generate-industry-insight",
+        { industry },
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-          }
+          },
         }
       );
       return response.data;
@@ -42,15 +47,14 @@ export const FetchDashboardData = createAsyncThunk(
   }
 );
 
-
 interface DashboardState {
-  data: StudentInsight | null;
+  data: StudentInsight[] | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: DashboardState = {
-  data: null,
+  data: [],
   loading: false,
   error: null,
 };
@@ -60,23 +64,24 @@ const dashboardSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-
     builder.addCase(GenerateDashboardData.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
 
-    builder.addCase(GenerateDashboardData.fulfilled, (state, action: PayloadAction<StudentInsight>) => {
-      state.loading = false;
-      state.data = [action.payload, ...state.data];
-      state.error = null;
-    });
+    builder.addCase(
+      GenerateDashboardData.fulfilled,
+      (state, action: PayloadAction<StudentInsight>) => {
+        state.loading = false;
+        state.data = [action.payload, ...(state.data || [])];
+        state.error = null;
+      }
+    );
 
     builder.addCase(GenerateDashboardData.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
-
 
     builder.addCase(FetchDashboardData.pending, (state) => {
       state.loading = true;
@@ -85,7 +90,7 @@ const dashboardSlice = createSlice({
 
     builder.addCase(FetchDashboardData.fulfilled, (state, action) => {
       state.loading = false;
-      state.data = action.payload;
+      state.data = [action.payload];
       state.error = null;
     });
 
@@ -96,6 +101,5 @@ const dashboardSlice = createSlice({
     });
   },
 });
-
 
 export default dashboardSlice.reducer;

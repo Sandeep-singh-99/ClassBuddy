@@ -16,12 +16,11 @@ export default function ChatPage() {
             📄 Upload a PDF to start chatting
           </p>
           <p className="text-gray-500 text-sm">
-            Once uploaded, you can ask questions and get instant answers from your document.
+            Once uploaded, you can ask questions and get instant answers from
+            your document.
           </p>
         </div>
       </div>
-
-
 
       {/* Floating Input Bar */}
       <div className="fixed bottom-0 left-0 right-0 flex justify-center p-4 bg-transparent">
@@ -33,7 +32,7 @@ export default function ChatPage() {
                 id="file-upload"
                 type="file"
                 className="hidden"
-                onChange={(e) => console.log(e.target.files)}
+                onChange={() => {}}
               />
               <Button variant="outline" size="icon" asChild>
                 <span>

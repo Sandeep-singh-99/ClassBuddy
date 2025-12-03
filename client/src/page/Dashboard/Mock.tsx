@@ -45,19 +45,19 @@ export default function Mock() {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setQuizCompleted(true);
-       try {
-      const response = await axiosClient.post("/interview-prep/submit-quiz", {
-        name: data.name,
-        description: data.description,
-        questions: data.questions,         
-        score: score,      
-        user_answers: answers,   
-      });
+      try {
+        const response = await axiosClient.post("/interview-prep/submit-quiz", {
+          name: data.name,
+          description: data.description,
+          questions: data.questions,
+          score: score,
+          user_answers: answers,
+        });
 
-      toast.success(response.data.message);
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || error.message);
-    }
+        toast.success(response.data.message);
+      } catch (error: any) {
+        toast.error(error.response?.data?.detail || error.message);
+      }
     }
   };
 
@@ -71,7 +71,7 @@ export default function Mock() {
           <p className="mb-4">{currentQuestion.question}</p>
 
           <div className="flex flex-col space-y-2">
-            {currentQuestion.options.map((opt, i) => (
+            {currentQuestion.options.map((opt: string, i: number) => (
               <label
                 key={i}
                 className={`flex items-center space-x-2 cursor-pointer rounded-lg p-2 border ${
@@ -110,22 +110,18 @@ export default function Mock() {
             Quiz Completed 🎉
           </h2>
           <p className="mb-6 text-center">
-            Your Score:{" "}
-            <span className="font-semibold">
-              {score}
-            </span>{" "}
-            / {questions.length}
+            Your Score: <span className="font-semibold">{score}</span> /{" "}
+            {questions.length}
           </p>
 
           {/* Accordion for explanations */}
           <Accordion type="single" collapsible className="w-full">
-            {questions.map((q, idx) => {
+            {questions.map((q: any, idx: number) => {
               const userAnswer = answers[idx];
-              const correctOptionText = q.options.find((opt) =>
+              const correctOptionText = q.options.find((opt: string) =>
                 opt.startsWith(q.answer)
               );
-              const isCorrect =
-                userAnswer && userAnswer.startsWith(q.answer);
+              const isCorrect = userAnswer && userAnswer.startsWith(q.answer);
 
               return (
                 <AccordionItem
@@ -176,11 +172,12 @@ export default function Mock() {
             })}
           </Accordion>
 
-          
-            <Link to={"/dashboard-panel/interview-prep"} className="text-center mt-6">
+          <Link
+            to={"/dashboard-panel/interview-prep"}
+            className="text-center mt-6"
+          >
             <Button>Dashboard</Button>
           </Link>
-          
         </Card>
       )}
     </div>

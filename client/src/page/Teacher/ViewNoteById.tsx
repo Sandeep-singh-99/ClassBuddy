@@ -3,7 +3,7 @@ import { teachersGetNoteById } from "@/redux/slice/noteSlice";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, AlertCircle } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
 import { BarLoader } from "react-spinners";
 
@@ -22,13 +22,11 @@ export default function ViewNoteById() {
 
   return (
     <div className="max-w-6xl mx-auto py-20">
-      {loading && (
-        <BarLoader width={"100%"} color="gray" className="my-4" />
-      )}
+      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
 
       {error && (
         <div className="flex items-center gap-2 text-red-500">
-          <AlertCircle className="w-5 h-5" /> Error: {error}
+          <CircleAlert className="w-5 h-5" /> Error: {error}
         </div>
       )}
 
