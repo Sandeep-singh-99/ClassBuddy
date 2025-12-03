@@ -1,25 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from typing import TypedDict, Annotated, Dict, List
+import json
+from typing import Annotated, Dict, List, TypedDict
+
+from app.config.db import get_db
+from app.dependencies.redis_client import get_redis_client
+from app.mobile.router.auth import get_current_user_mobile as get_current_user
+from app.models.auth import User, userRole
+from app.models.InterviewPreparation import InterviewPrep
 from app.schemas.interviewpreparation import (
     InterviewPreparationCreate,
+    InterviewPreparationCreateResponse,
     InterviewPreparationResponse,
     InterviewPrepSubmit,
     InterviewResponse,
-    InterviewPreparationCreateResponse,
 )
-from app.mobile.router.auth import get_current_user_mobile as get_current_user
-from app.config.db import get_db
-from app.models.auth import User, userRole
 from dotenv import load_dotenv
-from langgraph.graph import add_messages, StateGraph, END
-from langchain_tavily import TavilySearch
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage, SystemMessage
-import json
-from app.models.InterviewPreparation import InterviewPrep
-from app.dependencies.redis_client import get_redis_client
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_tavily import TavilySearch
+from langgraph.graph import END, StateGraph, add_messages
+from sqlalchemy.orm import Session
 
 load_dotenv()
 
@@ -195,20 +196,6 @@ async def submit_quiz(
         "score": new_entry.score,
         "user_answers": new_entry.user_answers,
     }
-
-
-# @router.get("/get-interview-preps", response_model=List[InterviewResponse])
-# def get_interview_preps(
-#     db: Session = Depends(get_db),
-#     current_user: User = Depends(get_current_user)
-# ):
-#     if current_user.role != userRole.STUDENT:
-#         raise HTTPException(status_code=403, detail="Only students can view their interview preparations.")
-
-
-#     interview_preps = db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id).all()
-
-#     return interview_preps
 
 
 @router.get("/get-interview-preps", response_model=List[InterviewResponse])
