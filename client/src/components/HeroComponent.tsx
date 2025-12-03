@@ -6,6 +6,8 @@ export default function HeroComponent() {
     <section className="relative flex flex-col items-center justify-center min-h-screen text-center pt-26 px-6 overflow-hidden">
       {/* Background Glow Effects - Simplified */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-yellow-300/20 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-20 w-72 h-72 bg-purple-400/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-40 left-20 w-80 h-80 bg-pink-300/20 rounded-full blur-3xl" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
 
       {/* Decorative Grid Overlay */}
