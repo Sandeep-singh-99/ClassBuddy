@@ -1,131 +1,149 @@
-# ClassBuddy
+# ClassBuddy 🎓
 
-ClassBuddy is a full-stack web application designed to enhance classroom collaboration, note sharing, and communication between students and teachers.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7.0-646CFF?logo=vite&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker&logoColor=white)
 
-![screenshot](./screenshot/1756311638435.jpg)
+**ClassBuddy** is a comprehensive full-stack web application designed to revolutionize classroom collaboration. It bridges the gap between students and teachers by facilitating seamless note sharing, real-time communication, and AI-powered learning assistance.
 
-## ✨ Features
-
-### **1. AI-Powered Teacher Notes**
-- Teachers can **generate notes with the help of AI**.
-- Perform **CRUD operations** (Create, Read, Update, Delete) on their notes.
-- Students can **view these notes** if they **join the teacher’s group**.
-- Seamless **note sharing** and **collaboration** within the group.
-
-
-### 💬 **Group Collaboration**
-- Teachers can create groups for their classes.
-- Students can join groups to access shared notes and discussions.
-- Built-in **chat system** for quick communication between teachers and students.
-
-### 🔒 **Secure Authentication**
-- Role-based login system (**Teacher / Student**).
-- **JWT-based authentication** for API protection.
-- Session management via secure tokens.
-
-### ☁️ **Cloud Integration**
-- Media uploads powered by **Cloudinary**.
-- **PostgreSQL (NeonDB)** for scalable cloud database.
-- **Dockerized setup** for easy deployment and reproducibility.
-
-### 🧠 **Agentic AI Workflow**
-- Teachers’ notes are generated using **Gemini 2.5 Flash + Tavily Search**.
-- Integrated through **LangChain** and **LangGraph** for autonomous multi-step reasoning.
-- The system intelligently searches, summarizes, and generates structured Markdown notes.
-
-
-
-## Tech Stack
-
-**Frontend:**
-- React 19 (with TypeScript)
-- Vite
-- Redux Toolkit
-- Tailwind CSS
-- Radix UI
-- Axios
-- React Router
-
-**Backend:**
-- FastAPI (Python)
-- SQLAlchemy
-- PostgreSQL (NeonDB)
-- Uvicorn
-- Cloudinary (for media)
-- Langchain, Langgraph (AI/LLM features)
-- JWT Authentication
-
-**DevOps:**
-- Docker & Docker Compose
+![ClassBuddy Screenshot](./screenshot/Screenshot%202025-12-03%20211554.png)
 
 ---
 
-## Project Structure
+## ✨ Key Features
 
-```
+### 🤖 **AI-Powered Teacher Notes**
+
+- **Intelligent Generation**: Teachers can leverage **Gemini 2.5 Flash** and **Tavily Search** to auto-generate comprehensive study notes.
+- **Agentic Workflow**: Built on **LangChain** and **LangGraph**, the system performs autonomous multi-step reasoning to search, summarize, and structure content.
+- **Smart Management**: Full CRUD capabilities for managing generated notes.
+
+### 🏫 **Classroom Collaboration**
+
+- **Group Dynamics**: Teachers can create dedicated class groups; students join to access exclusive content.
+- **Resource Sharing**: Instantly share notes, assignments, and resources within the group.
+- **Real-time Chat**: Integrated chat system for instant doubts resolution and announcements.
+
+### � **Enterprise-Grade Security**
+
+- **Role-Based Access**: Distinct portals for **Teachers** and **Students** with tailored permissions.
+- **Secure Auth**: Robust **JWT-based authentication** ensures data privacy and secure API access.
+
+### ☁️ **Modern Cloud Infrastructure**
+
+- **Scalable Database**: Powered by **PostgreSQL (NeonDB)** for high availability.
+- **Media Management**: Seamless image and file handling via **Cloudinary**.
+- **Containerized**: Fully **Dockerized** for consistent development and deployment environments.
+
+---
+
+## 🛠️ Tech Stack
+
+### **Frontend**
+
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite 7](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/) & [TanStack Query](https://tanstack.com/query/latest)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/), [Lucide React](https://lucide.dev/)
+- **Charts**: [Recharts](https://recharts.org/)
+
+### **Backend**
+
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) (via NeonDB)
+- **ORM**: [SQLAlchemy](https://www.sqlalchemy.org/)
+- **Migrations**: [Alembic](https://alembic.sqlalchemy.org/)
+- **AI/LLM**: [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/)
+- **Authentication**: JWT (JSON Web Tokens)
+
+### **DevOps**
+
+- **Containerization**: Docker & Docker Compose
+
+---
+
+## 📂 Project Structure
+
+```bash
 ClassBuddy/
-│
-├── client/      # Frontend (React)
-├── server/      # Backend (FastAPI)
-├── docker-compose.yml
+├── client/                 # React 19 Frontend
+│   ├── src/
+│   ├── vite.config.ts
+│   └── package.json
+├── server/                 # FastAPI Backend
+│   ├── app/
+│   ├── alembic/
+│   └── requirements.txt
+├── docker-compose.yml      # Container orchestration
 └── README.md
 ```
 
 ---
 
-## Setup Instructions
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v18+ recommended)
-- Python 3.10+
-- Docker & Docker Compose
+- **Node.js** (v18+ recommended)
+- **Python** (v3.10+)
+- **Docker** & **Docker Compose** (Optional but recommended)
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
-```sh
+```bash
 git clone https://github.com/Sandeep-singh-99/ClassBuddy.git
 cd ClassBuddy
 ```
 
-### 2. Environment Variables
+### 2. Environment Setup
 
-Create a `.env` file in `server/` with the following (example):
+Create a `.env` file in the `server/` directory:
 
 ```env
-DATABASE_URL=your_postgres_url
-JWT_SECRET_KEY=your_jwt_secret
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_cloudinary_key
-CLOUDINARY_API_SECRET=your_cloudinary_secret
-GOOGLE_API_KEY=your_google_api_key
+DATABASE_URL=postgresql://user:password@host/dbname
+JWT_SECRET_KEY=your_super_secret_key
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+GOOGLE_API_KEY=your_gemini_api_key
 TAVILY_API_KEY=your_tavily_api_key
 ```
 
-### 3. Start with Docker (Recommended)
+### 3. Run with Docker (Recommended)
 
-```sh
+The easiest way to start the application is using Docker Compose.
+
+```bash
 docker-compose up --build
 ```
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:8000
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
+- **Backend**: [http://localhost:8000](http://localhost:8000)
 
-### 4. Manual Setup (Development)
+### 4. Manual Setup
 
-#### Backend
+#### Backend (FastAPI)
 
-```sh
+```bash
 cd server
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
+
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-#### Frontend
+#### Frontend (React)
 
-```sh
+```bash
 cd client
 npm install
 npm run dev
@@ -133,17 +151,14 @@ npm run dev
 
 ---
 
-## Usage
+## 🤝 Contributing
 
-- Register/login as a student or teacher.
-- Create or join groups, chat, and share notes.
-- Teachers can upload insights and manage content.
-- AI-powered features for note generation and chat.
+Contributions are welcome! Please follow these steps:
 
----
-
-## License
-
-MIT
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a Pull Request.
 
 ---
