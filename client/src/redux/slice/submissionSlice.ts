@@ -126,19 +126,23 @@ export const fetchStudentAssignmentStats = createAsyncThunk(
   }
 );
 
-
-export const fetchStudentPerformanceStats = createAsyncThunk("submission/fetchStudentPerformanceStats", async (_, thunkApi) => {
-  try {
-    const response = await axiosClient.get("/submissions/student-performance-stats");
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
+export const fetchStudentPerformanceStats = createAsyncThunk(
+  "submission/fetchStudentPerformanceStats",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get(
+        "/submissions/student-performance-stats"
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail || "Fetching notes failed"
         );
       }
+    }
   }
-})
+);
 
 interface SubmissionState {
   loading: boolean;
@@ -146,10 +150,10 @@ interface SubmissionState {
   result: any | null;
   submissionResult?: any | null;
   stats: any | null;
-  studentData: any[] | null;
+  studentData: any | null;
   totalSubmissions: number | null;
   studentAssignmentStats: any | null;
-  ownerAssignmentStats: any[] | null;
+  ownerAssignmentStats: any | null;
   performanceStats: any | null;
 }
 

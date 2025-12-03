@@ -1,21 +1,19 @@
 import { Sparkles, ArrowRight, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-
-
 export default function HeroComponent() {
   return (
     <section className="relative flex flex-col items-center justify-center min-h-screen text-center pt-26 px-6 overflow-hidden">
-      {/* Background Glow Effects */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-yellow-300/30 rounded-full blur-3xl animate-pulse mix-blend-multiply" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-400/30 rounded-full blur-3xl animate-pulse mix-blend-multiply" />
+      {/* Background Glow Effects - Simplified */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-yellow-300/20 rounded-full blur-3xl" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
 
       {/* Decorative Grid Overlay */}
       <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
       {/* Content */}
       <h1 className="text-5xl md:text-7xl font-extrabold mb-6 flex items-center justify-center gap-3 tracking-tight animate-fade-in">
-        <Sparkles className="text-yellow-400 w-12 h-12 animate-bounce" />
+        <Sparkles className="text-yellow-400 w-12 h-12" />
         ClassBuddy
       </h1>
 
