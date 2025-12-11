@@ -12,6 +12,7 @@ import {
   sendMessage,
   setActiveGroup,
   addMessage,
+  clearMessages,
 } from "@/redux/slice/chatSlice";
 
 export default function Chat() {
@@ -31,6 +32,7 @@ export default function Chat() {
   // Sync URL groupId with Redux activeGroup and fetch messages
   useEffect(() => {
     if (groupId) {
+      dispatch(clearMessages()); // Clear previous messages immediately
       if (!activeGroup || activeGroup.id !== groupId) {
         // If groups are loaded, find and set active group
         const group = groups.find((g) => g.id === groupId);
@@ -77,20 +79,27 @@ export default function Chat() {
     };
   }, [groupId, dispatch]);
 
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    if (scrollRef.current) {
-      // Find the scrollable viewport element inside ScrollArea
-      const viewport = scrollRef.current.querySelector(
-        "[data-radix-scroll-area-viewport]"
-      );
-      if (viewport) {
-        // Use setTimeout to ensure DOM has updated
-        setTimeout(() => {
+    const scrollToBottom = () => {
+      if (scrollRef.current) {
+        const viewport = scrollRef.current.querySelector(
+          "[data-radix-scroll-area-viewport]"
+        );
+        if (viewport) {
           viewport.scrollTop = viewport.scrollHeight;
-        }, 100);
+        }
       }
-    }
-  }, [messages]);
+    };
+
+    // Scroll immediately
+    scrollToBottom();
+
+    // Scroll again after a short delay to account for image loading or layout shifts
+    const timeoutId = setTimeout(scrollToBottom, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [messages, activeGroup]); // Also trigger on activeGroup change
 
   const handleSendMessage = () => {
     if (!inputValue.trim() || !groupId) return;
