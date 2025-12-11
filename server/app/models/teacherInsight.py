@@ -26,5 +26,7 @@ class TeacherInsight(Base):
 
     assignments = relationship("Assignment", back_populates="group", cascade="all, delete-orphan")
 
+    messages = relationship("GroupMessage", back_populates="group", cascade="all, delete-orphan")
+
 
 

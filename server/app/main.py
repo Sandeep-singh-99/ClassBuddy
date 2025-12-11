@@ -13,6 +13,7 @@ from app.router.assignment import router as assignment_router
 from app.router.generate_assignment import router as generate_assignment_router
 from app.router.ai_evaluator import router as ai_evaluator_router
 from app.router.submission import router as submission_router
+from app.router.groupMessage import router as group_message_router
 from app.mobile.router.auth import router as mobile_auth_router
 from app.mobile.router.ai_evaluator import router as mobile_ai_evaluator_router
 from app.mobile.router.assignment import router as mobile_assignment_router
@@ -79,6 +80,9 @@ app.include_router(
 )
 app.include_router(ai_evaluator_router, prefix="/ai-evaluator", tags=["AI Evaluator"])
 app.include_router(submission_router, prefix="/submissions", tags=["Submissions"])
+app.include_router(
+    group_message_router, prefix="/group-messages", tags=["Group Messages"]
+)
 app.include_router(mobile_auth_router, prefix="/mobile/auth", tags=["Mobile Auth"])
 app.include_router(
     mobile_ai_evaluator_router,
