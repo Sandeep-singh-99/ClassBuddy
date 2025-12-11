@@ -3,10 +3,11 @@ import { Suspense, lazy } from "react";
 import App from "@/App";
 import RoleProtectedRoute from "@/components/ProtectedRoute/RoleProtectedRoute";
 import NotFound from "@/page/NotFound";
+import ChatHome from "@/page/ChatDashboard/ChatPanel";
 
 // Lazy-loaded pages
 const Home = lazy(() => import("@/page/Home"));
-const Chat = lazy(() => import("@/page/Chat"));
+const Chat = lazy(() => import("@/page/ChatDashboard/Chat"));
 const DashboardPanel = lazy(() => import("@/page/Dashboard/DashboardPanel"));
 const DashboardHome = lazy(() => import("@/page/Dashboard/DashboardHome"));
 const ViewAllTeacher = lazy(() => import("@/page/Dashboard/ViewAllTeacher"));
@@ -47,7 +48,6 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "", element: <Home /> },
-      { path: "chat", element: <Chat /> },
       { path: "view-notes/:noteId", element: <ViewNoteById /> },
       { path: "docs/:docId", element: <DocsById /> },
       { path: "*", element: <NotFound /> },
@@ -106,4 +106,13 @@ export const router = createBrowserRouter([
     ),
     children: [{ path: "", element: <TInsight /> }],
   },
+
+  {
+    path: "chat-panel",
+    element: <ChatHome />,
+    children: [{
+      path: "chat",
+      element: <Chat />
+    }]
+  }
 ]);
