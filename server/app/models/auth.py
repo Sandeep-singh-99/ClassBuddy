@@ -42,4 +42,6 @@ class User(Base):
     assignments = relationship("Assignment", back_populates="owner", cascade="all, delete-orphan")
     submissions = relationship("Submission", back_populates="student", cascade="all, delete-orphan")
 
+    sent_messages = relationship("GroupMessage", back_populates="sender", cascade="all, delete-orphan")
+
 
