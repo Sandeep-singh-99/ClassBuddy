@@ -1,4 +1,4 @@
-import { LayoutDashboard, LogOutIcon } from "lucide-react";
+import { LayoutDashboard, LogOutIcon, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import AuthComponent from "./AuthComponent";
 import { useAppSelector } from "@/hooks/hooks";
@@ -64,6 +64,15 @@ export default function Navbar() {
                         <p>Dashboard</p>
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        to={"/chat"}
+                        className="transition flex gap-2"
+                      >
+                        <MessageCircle />
+                        <p>Chat</p>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={handleLogout}
@@ -81,6 +90,15 @@ export default function Navbar() {
                       >
                         <LayoutDashboard />
                         <p>Dashboard</p>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        to={"/chat"}
+                        className="transition flex gap-2"
+                      >
+                        <MessageCircle />
+                        <p>Chat</p>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem

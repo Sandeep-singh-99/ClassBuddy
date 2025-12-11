@@ -4,12 +4,11 @@ import App from "@/App";
 import RoleProtectedRoute from "@/components/ProtectedRoute/RoleProtectedRoute";
 import NotFound from "@/page/NotFound";
 
-// ✅ Lazy-loaded pages
+// Lazy-loaded pages
 const Home = lazy(() => import("@/page/Home"));
-const Profile = lazy(() => import("@/page/Profile"));
+const Chat = lazy(() => import("@/page/Chat"));
 const DashboardPanel = lazy(() => import("@/page/Dashboard/DashboardPanel"));
 const DashboardHome = lazy(() => import("@/page/Dashboard/DashboardHome"));
-const ChatPage = lazy(() => import("@/page/Dashboard/ChatPage"));
 const ViewAllTeacher = lazy(() => import("@/page/Dashboard/ViewAllTeacher"));
 const Notes = lazy(() => import("@/page/Dashboard/Notes"));
 const InterviewPerPage = lazy(() => import("@/page/Dashboard/InterviewPerPage"));
@@ -48,7 +47,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "", element: <Home /> },
-      { path: "profile", element: <Profile /> },
+      { path: "chat", element: <Chat /> },
       { path: "view-notes/:noteId", element: <ViewNoteById /> },
       { path: "docs/:docId", element: <DocsById /> },
       { path: "*", element: <NotFound /> },
@@ -66,7 +65,6 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "home", element: <DashboardHome /> },
-      { path: "chat", element: <ChatPage /> },
       { path: "view-teachers", element: <ViewAllTeacher /> },
       { path: "notes", element: <Notes /> },
       { path: "interview-prep", element: <InterviewPerPage /> },
