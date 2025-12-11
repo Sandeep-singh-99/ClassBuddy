@@ -66,7 +66,7 @@ export default function Navbar() {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
-                        to={"/chat"}
+                        to={"/chat-panel/chat"}
                         className="transition flex gap-2"
                       >
                         <MessageCircle />
@@ -94,7 +94,7 @@ export default function Navbar() {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
-                        to={"/chat"}
+                        to={"/chat-panel/chat"}
                         className="transition flex gap-2"
                       >
                         <MessageCircle />
