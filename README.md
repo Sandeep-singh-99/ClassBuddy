@@ -1,7 +1,7 @@
 # ClassBuddy 🎓
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.0-646CFF?logo=vite&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi&logoColor=white)
@@ -27,6 +27,14 @@
 - **Resource Sharing**: Instantly share notes, assignments, and resources within the group.
 - **Real-time Chat**: Integrated chat system for instant doubts resolution and announcements.
 
+### 💬 **Real-Time Chat System**
+
+- **High-Performance Architecture**: Built on **Redis Pub/Sub** to handle real-time message broadcasting across multiple instances.
+- **WebSocket Integration**: Uses **FastAPI WebSockets** for low-latency, bi-directional communication.
+- **Reliability**: Messages are persisted in **PostgreSQL** ensuring no data loss, while Redis handles ephemeral real-time delivery.
+- **Smart Caching**: Implements a caching strategy to optimize message retrieval and reduce database load.
+- **Cross-Platform**: Fully synchronized experience between Web and Mobile interfaces.
+
 ### � **Enterprise-Grade Security**
 
 - **Role-Based Access**: Distinct portals for **Teachers** and **Students** with tailored permissions.
@@ -44,7 +52,7 @@
 
 ### **Frontend**
 
-- **Framework**: [React 19](https://react.dev/)
+- **Framework**: [React 18](https://react.dev/)
 - **Build Tool**: [Vite 7](https://vitejs.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
