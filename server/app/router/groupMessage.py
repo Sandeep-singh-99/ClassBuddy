@@ -5,6 +5,7 @@ from fastapi import (
     status,
     WebSocket,
     WebSocketDisconnect,
+    Query,
 )
 from sqlalchemy.orm import Session, joinedload
 from app.config.db import get_db
@@ -31,11 +32,29 @@ from app.utils.socket_manager import manager
 
 # --- Helper for WS Auth ---
 async def get_current_user_ws(
-    websocket: WebSocket, db: Session = Depends(get_db)
+    websocket: WebSocket,
+    token: Optional[str] = None,
+    db: Session = Depends(get_db),
 ) -> Optional[User]:
-    token = websocket.cookies.get("access_token")
+    # 1. Try Query Param (Mobile often uses this)
+    if not token:
+        token = websocket.query_params.get("token")
+
+    # 2. Try Authorization Header (if client supports custom headers in WS handshake)
+    if not token:
+        auth_header = websocket.headers.get("Authorization")
+        if auth_header:
+            scheme, _, param = auth_header.partition(" ")
+            if scheme.lower() == "bearer":
+                token = param
+
+    # 3. Try Cookie (Browser)
+    if not token:
+        token = websocket.cookies.get("access_token")
+
     if not token:
         return None
+
     try:
         payload = decode_access_token(token)
         email = payload.get("sub")
@@ -213,10 +232,13 @@ async def send_message(
 
 @router.websocket("/ws/{group_id}")
 async def websocket_endpoint(
-    websocket: WebSocket, group_id: str, db: Session = Depends(get_db)
+    websocket: WebSocket,
+    group_id: str,
+    db: Session = Depends(get_db),
+    token: Optional[str] = Query(None),
 ):
     # 1. Authenticate
-    user = await get_current_user_ws(websocket, db)
+    user = await get_current_user_ws(websocket, token, db)
     if not user:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
