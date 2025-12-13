@@ -30,6 +30,7 @@ from app.mobile.router.studentInsight import router as mobile_student_insight_ro
 from app.mobile.router.submission import router as mobile_submission_router
 from app.mobile.router.teacherInsight import router as mobile_teacher_insight_router
 from app.mobile.router.groupMessage import router as mobile_group_message_router
+from app.utils.socket_manager import manager
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 from dotenv import load_dotenv
@@ -55,9 +56,15 @@ app.add_middleware(
 
 
 @app.on_event("startup")
-def on_startup():
+async def on_startup():
     print("Creating database tables (if not exist)...")
     Base.metadata.create_all(bind=engine)
+    await manager.start_listener()
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    await manager.stop_listener()
 
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])

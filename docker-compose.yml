@@ -9,11 +9,12 @@ services:
     volumes:
       - ./server:/app
       - /app/__pycache__
+    env_file:
+      - ./server/.env
     environment:
       - PYTHONUNBUFFERED=1
       - WATCHFILES_FORCE_POLLING=true
       - WATCHFILES_POLL_INTERVAL=0.5
-      - REDIS_URL=redis://redis:6379/0
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/app
 
   client:
