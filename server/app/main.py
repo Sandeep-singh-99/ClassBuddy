@@ -29,6 +29,7 @@ from app.mobile.router.notes import router as mobile_notes_router
 from app.mobile.router.studentInsight import router as mobile_student_insight_router
 from app.mobile.router.submission import router as mobile_submission_router
 from app.mobile.router.teacherInsight import router as mobile_teacher_insight_router
+from app.mobile.router.groupMessage import router as mobile_group_message_router
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
 from dotenv import load_dotenv
@@ -125,6 +126,11 @@ app.include_router(
     mobile_teacher_insight_router,
     prefix="/mobile/insights",
     tags=["Mobile Teacher Insights"],
+)
+app.include_router(
+    mobile_group_message_router,
+    prefix="/mobile/group-messages",
+    tags=["Mobile Group Messages"],
 )
 
 
