@@ -221,25 +221,6 @@ export default function Chat() {
       {/* Message Input */}
       <div className="p-4 bg-transparent">
         <div className="flex w-full items-end gap-2 max-w-4xl mx-auto bg-background/80 backdrop-blur-md p-2 rounded-3xl border border-black/30 shadow-lg ring-1 ring-black/5 dark:ring-white/10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full h-10 w-10 text-muted-foreground hover:bg-muted/50"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-            </svg>
-          </Button>
           <Textarea
             placeholder="Type your message..."
             className="min-h-[24px] max-h-[150px] py-3 bg-transparent border-0 focus-visible:ring-0 resize-none shadow-none"

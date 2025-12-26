@@ -52,16 +52,6 @@ export default function HeroComponent() {
           <PlayCircle className="w-5 h-5" /> Learn More
         </Button>
       </div>
-
-      {/* Optional: Add Illustration / Mockup */}
-      {/* <div className="mt-14 relative w-full max-w-4xl">
-        <img
-          src={img1}
-          alt="ClassBuddy Preview"
-          className="rounded-xl shadow-2xl border border-gray-200"
-          loading="lazy"
-        />
-      </div> */}
     </section>
   );
 }
