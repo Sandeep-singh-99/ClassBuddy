@@ -23,16 +23,16 @@ async def verify_redis():
 
     try:
         await client.ping()
-        print("✅ Redis PING Successful")
+        print(" Redis PING Successful")
     except Exception as e:
-        print(f"❌ Redis PING Failed: {e}")
+        print(f" Redis PING Failed: {e}")
         await client.close()
         return
 
     pubsub = client.pubsub()
     channel = "chat:verification_test"
     await pubsub.subscribe(channel)
-    print(f"✅ Subscribed to {channel}")
+    print(f" Subscribed to {channel}")
 
     async def listener():
         print("🎧 Listener started...")
@@ -44,14 +44,14 @@ async def verify_redis():
     listener_task = asyncio.create_task(listener())
 
     await asyncio.sleep(1)
-    print(f"📢 Publishing message to {channel}...")
+    print(f" Publishing message to {channel}...")
     await client.publish(channel, "Hello from Verification Script!")
 
     try:
         await asyncio.wait_for(listener_task, timeout=5)
-        print("✅ Message received successfully!")
+        print(" Message received successfully!")
     except asyncio.TimeoutError:
-        print("❌ Timeout waiting for message.")
+        print(" Timeout waiting for message.")
 
     await client.close()
 
