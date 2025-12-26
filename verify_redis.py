@@ -35,10 +35,10 @@ async def verify_redis():
     print(f" Subscribed to {channel}")
 
     async def listener():
-        print("🎧 Listener started...")
+        print("Listener started...")
         async for message in pubsub.listen():
             if message["type"] == "message":
-                print(f"📩 Received: {message['data']}")
+                print(f"Received: {message['data']}")
                 break  # Exit after receiving one message
 
     listener_task = asyncio.create_task(listener())
