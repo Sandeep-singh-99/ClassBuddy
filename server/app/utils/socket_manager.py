@@ -76,9 +76,9 @@ class ConnectionManager:
         Continuously listens for messages on subscribed Redis channels
         and broadcasts them to local WebSockets.
         """
+        print("🎧 Listening to Redis Pub/Sub...")
         while True:
             try:
-                print("🎧 Listening to Redis Pub/Sub...")
                 async for message in self.pubsub.listen():
                     if message["type"] == "message":
                         # print(f"📩 Redis Message Received: {message}")
@@ -112,7 +112,8 @@ class ConnectionManager:
 
             # Check if task was cancelled to exit loop
             try:
-                await asyncio.sleep(0.1)
+                # Add a small sleep to prevent tight loop if listen returns immediately
+                await asyncio.sleep(1)
             except asyncio.CancelledError:
                 break
 
