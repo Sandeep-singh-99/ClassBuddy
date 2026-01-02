@@ -15,7 +15,7 @@ export const InterviewPrepCreate = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching interview prep failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching interview prep failed"
         );
       }
     }
@@ -33,7 +33,7 @@ export const GetAllInterviewPrep = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching interview prep failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching interview prep failed"
         );
       }
     }

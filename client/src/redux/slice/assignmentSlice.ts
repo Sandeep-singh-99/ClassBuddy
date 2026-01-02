@@ -13,7 +13,7 @@ export const fetchAssignments = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Registration failed"
+          error.response?.data?.detail ?? error.message ?? "Registration failed"
         );
       }
     }
@@ -31,7 +31,7 @@ export const fetchAssignmentById = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Registration failed"
+          error.response?.data?.detail ?? error.message ?? "Registration failed"
         );
       }
     }
@@ -55,7 +55,7 @@ export const CreateAssignment = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Registration failed"
+          error.response?.data?.detail ?? error.message ?? "Registration failed"
         );
       }
     }
@@ -73,7 +73,7 @@ export const GenerateAssignmentById = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Registration failed"
+          error.response?.data?.detail ?? error.message ?? "Registration failed"
         );
       }
     }
@@ -91,7 +91,7 @@ export const DeleteAssignment = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Registration failed"
+          error.response?.data?.detail ?? error.message ?? "Registration failed"
         );
       }
     }

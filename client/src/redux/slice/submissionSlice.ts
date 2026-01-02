@@ -15,7 +15,7 @@ export const SubmitSubmission = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -31,7 +31,7 @@ export const fetchSubmissionResult = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -49,7 +49,7 @@ export const fetchAssignmentStats = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -67,7 +67,7 @@ export const fetchAllStudentSubmissions = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -83,7 +83,7 @@ export const totalSubmission = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -101,7 +101,7 @@ export const studentSubmissionStats = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -119,7 +119,7 @@ export const fetchStudentAssignmentStats = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -137,7 +137,7 @@ export const fetchStudentPerformanceStats = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }

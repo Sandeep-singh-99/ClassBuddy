@@ -17,7 +17,7 @@ export const DocsUpload = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Generating notes failed"
+          error.response?.data?.detail ?? error.message ?? "Generating notes failed"
         );
       }
     }
@@ -31,7 +31,7 @@ export const DocsFetch = createAsyncThunk("docs/fetch", async (_, thunkApi) => {
   } catch (error) {
     if (error instanceof AxiosError) {
       return thunkApi.rejectWithValue(
-        error.response?.data?.detail || "Generating notes failed"
+        error.response?.data?.detail ?? error.message ?? "Generating notes failed"
       );
     }
   }
@@ -46,7 +46,7 @@ export const DocsFetchById = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Generating notes failed"
+          error.response?.data?.detail ?? error.message ?? "Generating notes failed"
         );
       }
     }
@@ -64,7 +64,7 @@ export const DocsStudentFetch = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Generating notes failed"
+          error.response?.data?.detail ?? error.message ?? "Generating notes failed"
         );
       }
     }
@@ -78,7 +78,7 @@ export const DocsDelete = createAsyncThunk("docs/delete", async (docId: string, 
   } catch (error) {
     if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Generating notes failed"
+          error.response?.data?.detail ?? error.message ?? "Generating notes failed"
         );
       }
   }
