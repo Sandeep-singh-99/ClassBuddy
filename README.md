@@ -57,7 +57,7 @@
 - **Build Tool**: [Vite 7](https://vitejs.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/) & [TanStack Query](https://tanstack.com/query/latest)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
 - **UI Components**: [Radix UI](https://www.radix-ui.com/), [Lucide React](https://lucide.dev/)
 - **Charts**: [Recharts](https://recharts.org/)
 
