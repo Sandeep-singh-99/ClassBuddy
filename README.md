@@ -39,6 +39,7 @@
 
 - **Role-Based Access**: Distinct portals for **Teachers** and **Students** with tailored permissions.
 - **Secure Auth**: Robust **JWT-based authentication** ensures data privacy and secure API access.
+- **Rate Limiting**: Implemented **SlowAPI** based rate limiting to prevent abuse and ensure fair usage.
 
 ### ☁️ **Modern Cloud Infrastructure**
 
