@@ -13,7 +13,7 @@ export const viewAllTeacher = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching teachers failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching teachers failed"
         );
       }
     }
@@ -37,7 +37,7 @@ export const joinTeacherGroup = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Joining teacher group failed"
+          error.response?.data?.detail ?? error.message ?? "Joining teacher group failed"
         );
       }
     }
@@ -55,7 +55,7 @@ export const JoinedCheckStatus = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Checking joined status failed"
+          error.response?.data?.detail ?? error.message ?? "Checking joined status failed"
         );
       }
     }
@@ -70,7 +70,7 @@ export const GroupJoinStudents = createAsyncThunk("teacher/group-join-students",
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       return thunkApi.rejectWithValue(
-        error.response?.data?.detail || "Fetching group joined students failed"
+        error.response?.data?.detail ?? error.message ?? "Fetching group joined students failed"
       );
     }
   }
@@ -87,7 +87,7 @@ export const generateNotes = createAsyncThunk("teacher/generate-notes", async (t
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       return thunkApi.rejectWithValue(
-        error.response?.data?.detail || "Generating notes failed"
+        error.response?.data?.detail ?? error.message ?? "Generating notes failed"
       );
     }
   }
@@ -105,7 +105,7 @@ export const saveNotes = createAsyncThunk("teacher/save-notes", async (formData:
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       return thunkApi.rejectWithValue(
-        error.response?.data?.detail || "Saving notes failed"
+        error.response?.data?.detail ?? error.message ?? "Saving notes failed"
       );
     }
   }
@@ -126,7 +126,7 @@ export const updateNotes = createAsyncThunk("teacher/update-notes", async (data:
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       return thunkApi.rejectWithValue(
-        error.response?.data?.detail || "Updating notes failed"
+        error.response?.data?.detail ?? error.message ?? "Updating notes failed"
       );
     }
   }

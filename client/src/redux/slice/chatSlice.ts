@@ -58,7 +58,7 @@ export const fetchGroups = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         return rejectWithValue(
-          error.response.data.detail || "Failed to fetch groups"
+          error.response.data.detail ?? error.message ?? "Failed to fetch groups"
         );
       }
       return rejectWithValue("An unexpected error occurred");
@@ -78,7 +78,7 @@ export const fetchMessages = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         return rejectWithValue(
-          error.response.data.detail || "Failed to fetch messages"
+          error.response.data.detail ?? error.message ?? "Failed to fetch messages"
         );
       }
       return rejectWithValue("An unexpected error occurred");
@@ -102,7 +102,7 @@ export const sendMessage = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         return rejectWithValue(
-          error.response.data.detail || "Failed to send message"
+          error.response.data.detail ?? error.message ?? "Failed to send message"
         );
       }
       return rejectWithValue("An unexpected error occurred");

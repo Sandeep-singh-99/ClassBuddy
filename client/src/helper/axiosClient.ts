@@ -6,3 +6,13 @@ export const axiosClient = axios.create({
   baseURL: VITE_API_URL,
   withCredentials: true,
 });
+
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 429) {
+      error.message = error.response?.data?.detail || "Too many requests. Please try again later.";
+    }
+    return Promise.reject(error);
+  }
+)

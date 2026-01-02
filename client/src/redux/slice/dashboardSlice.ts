@@ -24,7 +24,7 @@ export const GenerateDashboardData = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Generating notes failed"
+          error.response?.data?.detail ?? error.message ?? "Generating notes failed"
         );
       }
     }
@@ -40,7 +40,7 @@ export const FetchDashboardData = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching dashboard data failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching dashboard data failed"
         );
       }
     }

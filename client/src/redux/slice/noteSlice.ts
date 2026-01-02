@@ -13,7 +13,7 @@ export const teacherNotes = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching notes failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching notes failed"
         );
       }
     }
@@ -29,7 +29,7 @@ export const teachersGetNoteById = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail || "Fetching note by ID failed"
+          error.response?.data?.detail ?? error.message ?? "Fetching note by ID failed"
         );
       }
     }
@@ -43,7 +43,7 @@ export const deleteNoteById = createAsyncThunk("notes/delete-note-by-id", async 
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       return thunkApi.rejectWithValue(
-        error.response?.data?.detail || "Deleting note by ID failed"
+        error.response?.data?.detail ?? error.message ?? "Deleting note by ID failed"
       );
     }
   }
@@ -56,7 +56,7 @@ export const studentJoinGroupNote = createAsyncThunk("notes/student-join-group-n
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       return thunkApi.rejectWithValue(
-        error.response?.data?.detail || "Joining group note failed"
+        error.response?.data?.detail ?? error.message ?? "Joining group note failed"
       );
     }  
   }
