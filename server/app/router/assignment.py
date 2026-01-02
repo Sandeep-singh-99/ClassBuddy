@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Form, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Form, Query, Request
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
@@ -15,13 +15,16 @@ from app.models.auth import userRole
 from app.dependencies.dependencies import get_db, get_current_user
 from app.models.teacherInsight import TeacherInsight
 from sqlalchemy.orm import joinedload
+from app.core.rate_limiter import limiter
 
 
 router = APIRouter()
 
 
 @router.post("/create-assignment", response_model=AssignmentBase)
+@limiter.limit("10/minute")
 async def create_assignment(
+    request: Request,
     title: str = Form(...),
     description: str = Form(...),
     due_date: datetime = Form(...),
@@ -72,7 +75,9 @@ async def create_assignment(
 
 
 @router.get("/assignments", response_model=List[AssignmentBase])
+@limiter.limit("10/minute")
 async def get_assignments(
+    request: Request,
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     if not current_user:
@@ -103,7 +108,9 @@ async def get_assignments(
 @router.get(
     "/get-assignment-viewById/{assignment_id}", response_model=AssignmentResponse
 )
+@limiter.limit("10/minute")
 async def get_assignment(
+    request: Request,
     assignment_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -156,7 +163,9 @@ async def get_assignment(
 
 
 @router.delete("/delete-assignment/{assignment_id}", response_model=AssignmentResponse)
+@limiter.limit("10/minute")
 async def delete_assignment(
+    request: Request,
     assignment_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
