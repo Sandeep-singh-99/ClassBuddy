@@ -4,7 +4,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 
-
 export const register = createAsyncThunk(
   "auth/register",
   async (formData: FormData, thunkApi) => {
@@ -26,21 +25,26 @@ export const register = createAsyncThunk(
   }
 );
 
-export const login = createAsyncThunk("auth/login", async (formData: FormData, thunkApi) => {
-  try {
-    const response = await axiosClient.post(`/auth/login`, formData, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      withCredentials: true,
-    });
-    return response.data;
-  } catch (error: unknown) {
-    if (error instanceof AxiosError) {
-      return thunkApi.rejectWithValue(error.response?.data?.detail ?? error.message ?? "Login failed");
+export const login = createAsyncThunk(
+  "auth/login",
+  async (formData: FormData, thunkApi) => {
+    try {
+      const response = await axiosClient.post(`/auth/login`, formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ?? error.message ?? "Login failed"
+        );
+      }
     }
   }
-});
+);
 
 export const checkAuth = createAsyncThunk(
   "auth/checkAuth",
@@ -65,13 +69,19 @@ export const checkAuth = createAsyncThunk(
 
 export const logout = createAsyncThunk("auth/logout", async (_, thunkApi) => {
   try {
-    const response = await axiosClient.post(`/auth/logout`, {}, {
-      withCredentials: true,
-    });
+    const response = await axiosClient.post(
+      `/auth/logout`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
-      return thunkApi.rejectWithValue(error.response?.data?.detail ?? error.message ?? "Logout failed");
+      return thunkApi.rejectWithValue(
+        error.response?.data?.detail ?? error.message ?? "Logout failed"
+      );
     }
   }
 });
