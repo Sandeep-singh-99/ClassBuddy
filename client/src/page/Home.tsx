@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import HeroComponent from "@/components/HeroComponent";
+import RateLimitBanner from "@/components/RateLimitBanner";
 
 const FeaturesComponents = lazy(
   () => import("@/components/FeaturesComponents")
@@ -12,6 +13,7 @@ const FAQSection = lazy(() => import("@/components/FAQSection"));
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white text-gray-900">
+      <RateLimitBanner />
       <HeroComponent />
 
       <Suspense
