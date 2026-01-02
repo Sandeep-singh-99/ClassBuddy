@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, File, Form, status
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, File, Form, status, Request
 from sqlalchemy.orm import Session, joinedload
 from app.config.db import get_db
 from app.schemas.auth import UserCreate, UserLogin, UserResponse, UserOut, userRole
@@ -10,11 +10,14 @@ from app.schemas.teacherInsight import TeacherInsightResponse, TeacherInsightBas
 from app.utils.utils import hash_password, verify_password, create_access_token
 from app.dependencies.dependencies import get_current_user
 from app.utils.cloudinary import upload_image, delete_image
+from app.core.rate_limiter import limiter
 
 router = APIRouter()
 
 @router.post("/register", response_model=UserResponse)
+@limiter.limit("10/minute")
 async def register(
+    request: Request,
     response: Response,
     full_name: str = Form(...),
     email: str = Form(...),
@@ -66,7 +69,9 @@ async def register(
 
 
 @router.post("/login")
+@limiter.limit("10/minute")
 def login(
+    request: Request,
     response: Response,
     email: str = Form(...),
     password: str = Form(...),
@@ -91,12 +96,14 @@ def login(
 
 
 @router.get("/me", response_model=UserResponse)
-def read_users_me(current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def read_users_me(request: Request, current_user: User = Depends(get_current_user)):
     return current_user
 
 
 @router.post("/logout", response_model=UserOut)
-def logout(response: Response, current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def logout(request: Request, response: Response, current_user: User = Depends(get_current_user)):
     # response.delete_cookie("access_token")
     response.delete_cookie(
            key="access_token",
@@ -108,7 +115,9 @@ def logout(response: Response, current_user: User = Depends(get_current_user)):
 
 
 @router.get("/student/notes", response_model=TeacherNotesResponse)
+@limiter.limit("10/minute")
 def get_group_notes_for_student(
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

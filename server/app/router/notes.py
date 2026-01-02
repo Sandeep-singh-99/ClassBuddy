@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Form
+from fastapi import APIRouter, Depends, HTTPException, status, Form, Request
 from sqlalchemy.orm import Session
 from app.config.db import get_db
 from app.models.auth import User, userRole
@@ -10,13 +10,16 @@ from app.schemas.notes import NotesCreate, NotesResponse, EditNotes, NoteBaseRes
 from app.models.notes import Note
 from app.models.teacherInsight import TeacherInsight
 from datetime import datetime
+from app.core.rate_limiter import limiter
 
 
 router = APIRouter()
 
 
 @router.post("/create-note", response_model=NotesResponse)
+@limiter.limit("10/minute")
 def create_note(
+    request: Request,
     title: str = Form(...),
     content: str = Form(...),
     db: Session = Depends(get_db),
@@ -54,7 +57,9 @@ def create_note(
     return new_note
 
 @router.get("/teacher-get-notes", response_model=TeacherNotesResponse)
+@limiter.limit("10/minute")
 def get_teacher_notes(
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -76,7 +81,8 @@ def get_teacher_notes(
 
 
 @router.get("/{note_id}", response_model=NotesResponse)
-def get_note_by_id(note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def get_note_by_id(request: Request, note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     
@@ -89,7 +95,8 @@ def get_note_by_id(note_id: str, db: Session = Depends(get_db), current_user: Us
 
 
 @router.delete("/delete-note/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_note(note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def delete_note(request: Request, note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != userRole.TEACHER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete notes")
     
@@ -105,7 +112,9 @@ def delete_note(note_id: str, db: Session = Depends(get_db), current_user: User 
 
 
 @router.put("/edit-note/{note_id}", response_model=NotesResponse)
+@limiter.limit("10/minute")
 def edit_note(
+    request: Request,
     note_id: str,
     note_data: EditNotes,
     db: Session = Depends(get_db),

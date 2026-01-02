@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form, Request
 from sqlalchemy.orm import Session, joinedload
 from typing import List
 from app.schemas.docsupload import DocsUploadResponse, DocsBase
@@ -11,12 +11,14 @@ from app.utils.cloudinary import upload_image, delete_image
 from app.schemas.notes import TeacherNotesResponse
 from app.models.notes import Note
 from app.models.teacherInsight import TeacherInsight
+from app.core.rate_limiter import limiter
 
 
 router = APIRouter()
 
 @router.post("/upload-doc", response_model=DocsBase)
-def upload_doc(filename: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != userRole.TEACHER:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -51,13 +53,15 @@ def upload_doc(filename: str = Form(...), file: UploadFile = File(...), db: Sess
 
 
 @router.get("/my-docs", response_model=List[DocsBase])
-def get_my_docs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     docs = db.query(DocsUpload).filter(DocsUpload.owner_id == current_user.id).all()
     docs.sort(key=lambda x: x.updated_at, reverse=True)
     return docs
 
 @router.get("/my-docs/{doc_id}", response_model=DocsBase)
-def get_my_doc(doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def get_my_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     
@@ -70,7 +74,8 @@ def get_my_doc(doc_id: str, db: Session = Depends(get_db), current_user: User = 
 
 
 @router.get("/teacher-notes-with-docs", response_model=DocsUploadResponse)
-def get_teacher_notes_with_docs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def get_teacher_notes_with_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     
@@ -97,7 +102,8 @@ def get_teacher_notes_with_docs(db: Session = Depends(get_db), current_user: Use
 
 
 @router.delete("/delete-doc/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_doc(doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def delete_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     

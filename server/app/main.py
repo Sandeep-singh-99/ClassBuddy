@@ -36,9 +36,15 @@ from app.models import auth, notes, teacherInsight
 from dotenv import load_dotenv
 import os
 
+from slowapi.errors import RateLimitExceeded
+from app.core.rate_limiter import limiter, rate_limit_exceeded_handler
+
 load_dotenv()
 
 app = FastAPI()
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 
 origins = os.getenv("CORS_ORIGINS", "").split(",")
 

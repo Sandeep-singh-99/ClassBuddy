@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
@@ -15,6 +15,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 import json
 import re
+from app.core.rate_limiter import limiter
 
 load_dotenv()
 
@@ -124,7 +125,9 @@ router = APIRouter()
 @router.post(
     "/generate-question/{assignment_id}", response_model=AssignmentQuestionResponse
 )
+@limiter.limit("10/minute")
 async def generate_question(
+    request: Request,
     assignment_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),

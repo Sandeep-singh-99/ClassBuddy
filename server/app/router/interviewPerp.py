@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from typing import TypedDict, Annotated, Dict, List
 from app.schemas.interviewpreparation import InterviewPreparationCreate, InterviewPreparationResponse, InterviewPrepSubmit, InterviewResponse, InterviewPreparationCreateResponse
@@ -14,6 +14,7 @@ import json
 from app.models.InterviewPreparation import InterviewPrep
 from app.dependencies.redis_client import get_redis_client
 from fastapi.encoders import jsonable_encoder
+from app.core.rate_limiter import limiter
 
 load_dotenv()
 
@@ -106,7 +107,9 @@ graph = workflow.compile()
 router = APIRouter()
 
 @router.post("/create-interview-prep", response_model=InterviewPreparationCreateResponse)
+@limiter.limit("10/minute")
 def create_interview_prep(
+    request: Request,
     interview_prep: InterviewPreparationCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -132,7 +135,8 @@ def create_interview_prep(
 
 
 @router.post("/submit-quiz")
-async def submit_quiz(submission: InterviewPreparationResponse, redis_client = Depends(get_redis_client), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+async def submit_quiz(request: Request, submission: InterviewPreparationResponse, redis_client = Depends(get_redis_client), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(status_code=403, detail="Only students can submit quizzes.")
     
@@ -165,25 +169,10 @@ async def submit_quiz(submission: InterviewPreparationResponse, redis_client = D
     }
 
 
-
-
-# @router.get("/get-interview-preps", response_model=List[InterviewResponse])
-# def get_interview_preps(
-#     db: Session = Depends(get_db),
-#     current_user: User = Depends(get_current_user)
-# ):
-#     if current_user.role != userRole.STUDENT:
-#         raise HTTPException(status_code=403, detail="Only students can view their interview preparations.")
-
-    
-#     interview_preps = db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id).all()
-
-#     return interview_preps
-
-
-
 @router.get("/get-interview-preps", response_model=List[InterviewResponse])
+@limiter.limit("10/minute")
 def get_interview_preps(
+    request: Request,
     db: Session = Depends(get_db),
     redis_client = Depends(get_redis_client),
     current_user: User = Depends(get_current_user)
