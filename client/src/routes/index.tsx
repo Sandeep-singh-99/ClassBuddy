@@ -12,13 +12,19 @@ const DashboardPanel = lazy(() => import("@/page/Dashboard/DashboardPanel"));
 const DashboardHome = lazy(() => import("@/page/Dashboard/DashboardHome"));
 const ViewAllTeacher = lazy(() => import("@/page/Dashboard/ViewAllTeacher"));
 const Notes = lazy(() => import("@/page/Dashboard/Notes"));
-const InterviewPerPage = lazy(() => import("@/page/Dashboard/InterviewPerPage"));
+const InterviewPerPage = lazy(
+  () => import("@/page/Dashboard/InterviewPerPage")
+);
 const Mock = lazy(() => import("@/page/Dashboard/Mock"));
 const DocView = lazy(() => import("@/page/Dashboard/DocView"));
 const CareerDashboard = lazy(() => import("@/page/Dashboard/CareerDashboard"));
 const Assignment = lazy(() => import("@/page/Dashboard/Assignment"));
-const AssignmentViewById = lazy(() => import("@/page/Dashboard/AssignmentViewById"));
-const AssignmentDetails = lazy(() => import("@/page/Dashboard/AssignmentDetails"));
+const AssignmentViewById = lazy(
+  () => import("@/page/Dashboard/AssignmentViewById")
+);
+const AssignmentDetails = lazy(
+  () => import("@/page/Dashboard/AssignmentDetails")
+);
 
 // Teacher
 const TDashboard = lazy(() => import("@/page/Teacher/TDashboard"));
@@ -29,11 +35,16 @@ const UpdatedNote = lazy(() => import("@/page/Teacher/UpdatedNote"));
 const TAssignment = lazy(() => import("@/page/Teacher/TAssignment"));
 const Docs = lazy(() => import("@/page/Teacher/Docs"));
 const DocsById = lazy(() => import("@/page/Teacher/DocsById"));
-const TAssignmentViewById = lazy(() => import("@/page/Teacher/TAssignmentViewById"));
+const TAssignmentViewById = lazy(
+  () => import("@/page/Teacher/TAssignmentViewById")
+);
 
 // Insights
 const InsightHome = lazy(() => import("@/page/Teacher/Insight/InsightHome"));
 const TInsight = lazy(() => import("@/page/Teacher/Insight/TInsight"));
+
+// Skeletons
+import DashboardSkeleton from "@/components/skeletons/DashboardSkeleton";
 
 // Notes and view pages
 const ViewNoteById = lazy(() => import("@/page/Teacher/ViewNoteById"));
@@ -42,7 +53,11 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <Suspense fallback={<div className="text-center py-20 text-gray-400">Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className="text-center py-20 text-gray-400">Loading...</div>
+        }
+      >
         <App />
       </Suspense>
     ),
@@ -58,7 +73,7 @@ export const router = createBrowserRouter([
     path: "dashboard-panel",
     element: (
       <RoleProtectedRoute allowedRoles={["student"]}>
-        <Suspense fallback={<div className="text-center py-20 text-gray-400">Loading Dashboard...</div>}>
+        <Suspense fallback={<DashboardSkeleton />}>
           <DashboardPanel />
         </Suspense>
       </RoleProtectedRoute>
@@ -73,7 +88,10 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <CareerDashboard /> },
       { path: "assignments", element: <Assignment /> },
       { path: "assignments/:assignmentId", element: <AssignmentViewById /> },
-      { path: "assignments-details/:assignmentId", element: <AssignmentDetails /> },
+      {
+        path: "assignments-details/:assignmentId",
+        element: <AssignmentDetails />,
+      },
     ],
   },
 
@@ -81,7 +99,7 @@ export const router = createBrowserRouter([
     path: "t-dashboard",
     element: (
       <RoleProtectedRoute allowedRoles={["teacher"]}>
-        <Suspense fallback={<div className="text-center py-20 text-gray-400">Loading Teacher Dashboard...</div>}>
+        <Suspense fallback={<DashboardSkeleton />}>
           <TDashboard />
         </Suspense>
       </RoleProtectedRoute>
@@ -100,7 +118,7 @@ export const router = createBrowserRouter([
   {
     path: "t-insights",
     element: (
-      <Suspense fallback={<div className="text-center py-20 text-gray-400">Loading Insights...</div>}>
+      <Suspense fallback={<DashboardSkeleton />}>
         <InsightHome />
       </Suspense>
     ),
@@ -110,9 +128,11 @@ export const router = createBrowserRouter([
   {
     path: "chat-panel",
     element: <ChatHome />,
-    children: [{
-      path: "chat",
-      element: <Chat />
-    }]
-  }
+    children: [
+      {
+        path: "chat",
+        element: <Chat />,
+      },
+    ],
+  },
 ]);

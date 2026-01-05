@@ -10,29 +10,25 @@ const FAQSection = lazy(() => import("@/components/FAQSection"));
 
 // bg-[#0c1729] text-white
 
+import FeatureSkeleton from "@/components/skeletons/FeatureSkeleton";
+import TestimonialSkeleton from "@/components/skeletons/TestimonialSkeleton";
+import FAQSkeleton from "@/components/skeletons/FAQSkeleton";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white text-gray-900">
       <RateLimitBanner />
       <HeroComponent />
 
-      <Suspense
-        fallback={<div className="text-center py-10">Loading features...</div>}
-      >
+      <Suspense fallback={<FeatureSkeleton />}>
         <FeaturesComponents />
       </Suspense>
 
-      <Suspense
-        fallback={
-          <div className="text-center py-10">Loading testimonials...</div>
-        }
-      >
+      <Suspense fallback={<TestimonialSkeleton />}>
         <Testimonials />
       </Suspense>
 
-      <Suspense
-        fallback={<div className="text-center py-10">Loading FAQs...</div>}
-      >
+      <Suspense fallback={<FAQSkeleton />}>
         <FAQSection />
       </Suspense>
     </main>

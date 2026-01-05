@@ -5,7 +5,6 @@ import {
   studentSubmissionStats,
 } from "@/redux/slice/submissionSlice";
 import { useEffect, Suspense, lazy } from "react";
-import { Loader2 } from "lucide-react";
 import ProfileCard from "@/components/ProfileCard";
 import { toast } from "react-toastify";
 
@@ -17,6 +16,10 @@ const AssignmentPerformanceStats = lazy(
   () => import("@/components/AssignmentPerformanceStats")
 );
 const AssignmentLists = lazy(() => import("@/components/AssignmentLists"));
+
+import AssignmentListSkeleton from "@/components/skeletons/AssignmentListSkeleton";
+import PerformanceStatsSkeleton from "@/components/skeletons/PerformanceStatsSkeleton";
+import AssignmentChartSkeleton from "@/components/skeletons/AssignmentChartSkeleton";
 
 export default function DashboardHome() {
   const dispatch = useAppDispatch();
@@ -42,9 +45,10 @@ export default function DashboardHome() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[400px] text-gray-400">
-        <Loader2 className="animate-spin w-6 h-6 text-indigo-400 mb-2" />
-        <p>Loading your stats...</p>
+      <div className="space-y-6 mx-auto w-full max-w-6xl p-6">
+        <AssignmentListSkeleton />
+        <PerformanceStatsSkeleton />
+        <AssignmentChartSkeleton />
       </div>
     );
   }
@@ -80,37 +84,16 @@ export default function DashboardHome() {
 
       {/* Main Content Section */}
       <div className="space-y-6 mx-auto w-full max-w-6xl">
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center h-40 text-gray-400">
-              <Loader2 className="animate-spin w-5 h-5 mr-2" />
-              Loading assignments...
-            </div>
-          }
-        >
+        <Suspense fallback={<AssignmentListSkeleton />}>
           <AssignmentLists />
         </Suspense>
 
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center h-40 text-gray-400">
-              <Loader2 className="animate-spin w-5 h-5 mr-2" />
-              Loading performance...
-            </div>
-          }
-        >
+        <Suspense fallback={<PerformanceStatsSkeleton />}>
           <AssignmentPerformanceStats />
         </Suspense>
 
         {studentAssignmentStats ? (
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center h-40 text-gray-400">
-                <Loader2 className="animate-spin w-5 h-5 mr-2" />
-                Loading chart...
-              </div>
-            }
-          >
+          <Suspense fallback={<AssignmentChartSkeleton />}>
             <AssignmentStatsChart
               data={studentAssignmentStats.completion_over_time || []}
               totalCompleted={studentAssignmentStats.total_submissions || 0}
