@@ -121,6 +121,11 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 GOOGLE_API_KEY=your_gemini_api_key
 TAVILY_API_KEY=your_tavily_api_key
+REDIS_HOST=your_redis_host
+REDIS_PORT=your_redis_port
+REDIS_USER=your_redis_user
+REDIS_PASSWORD=your_redis_password
+CORS_ORIGINS=your_cors_origins
 ```
 
 ### 3. Run with Docker (Recommended)
