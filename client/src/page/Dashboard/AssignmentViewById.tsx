@@ -68,7 +68,7 @@ export default function AssignmentViewById() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-red-950/30 text-red-400 border border-red-800 rounded-lg max-w-5xl mx-auto">
+      <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg max-w-5xl mx-auto">
         <AlertCircle className="w-5 h-5" />
         <span className="text-sm font-medium">Error: {error}</span>
       </div>
@@ -77,7 +77,7 @@ export default function AssignmentViewById() {
 
   if (!currentAssignment) {
     return (
-      <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-yellow-900/30 text-yellow-400 border border-yellow-700 rounded-lg max-w-5xl mx-auto">
+      <div className="flex items-center justify-center gap-2 p-4 mt-8 bg-muted text-muted-foreground border border-border rounded-lg max-w-5xl mx-auto">
         <AlertCircle className="w-5 h-5" />
         <span className="text-sm font-medium">No Assignment Found</span>
       </div>
@@ -90,22 +90,19 @@ export default function AssignmentViewById() {
 
   return (
     <>
-      <div
-        className="max-w-6xl mx-auto p-8 space-y-8 text-gray-200"
-        data-color-mode="dark"
-      >
+      <div className="max-w-6xl mx-auto p-8 space-y-8 text-foreground">
         {/* Assignment Header */}
-        <Card className="p-6 rounded-xl bg-zinc-900 border border-zinc-800 shadow-md">
+        <Card className="p-6 rounded-xl bg-card border border-border shadow-md">
           <CardContent>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-foreground">
               {currentAssignment.title}
             </h1>
-            <p className="mt-2 text-gray-400">
+            <p className="mt-2 text-muted-foreground">
               {currentAssignment.description}
             </p>
-            <p className="text-sm mt-3 text-gray-500">
+            <p className="text-sm mt-3 text-muted-foreground">
               Due:{" "}
-              <span className="font-medium text-gray-300">
+              <span className="font-medium text-foreground">
                 {new Date(currentAssignment.due_date).toLocaleString()}
               </span>
             </p>
@@ -114,12 +111,12 @@ export default function AssignmentViewById() {
 
         {/* Questions */}
         {questions.length === 0 ? (
-          <div className="flex items-center justify-center gap-2 p-4 bg-yellow-900/30 text-yellow-400 border border-yellow-700 rounded-lg">
+          <div className="flex items-center justify-center gap-2 p-4 bg-muted text-muted-foreground border border-border rounded-lg">
             <AlertCircle className="w-5 h-5" />
             <span className="text-sm font-medium">No Questions Found</span>
           </div>
         ) : (
-          <Card className="bg-zinc-900 border border-zinc-800 space-y-5">
+          <Card className="bg-card border border-border space-y-5">
             {questions.map((q: any, index: number) => {
               const questionText =
                 typeof q === "string" ? q : q?.question || "Untitled question";
@@ -133,21 +130,21 @@ export default function AssignmentViewById() {
               return (
                 <CardContent
                   key={q?.id || index}
-                  className="p-6 rounded-xl hover:bg-zinc-800/40 transition-all"
+                  className="p-6 rounded-xl hover:bg-muted/50 transition-all"
                 >
-                  <h2 className="font-semibold text-gray-100 mb-3">
+                  <h2 className="font-semibold text-foreground mb-3">
                     Question {index + 1}
                   </h2>
 
-                  <div className="rounded-md mb-4 bg-zinc-800/50 border border-zinc-700">
+                  <div className="rounded-md mb-4 bg-muted/30 border border-border">
                     <MDEditor.Markdown
                       source={questionText}
-                      className="rounded-md text-gray-100 p-2"
+                      className="rounded-md text-foreground p-2"
                     />
                   </div>
 
                   {!submitted ? (
-                    <div data-color-mode="dark">
+                    <div>
                       <MDEditor
                         value={studentAnswer}
                         onChange={(val) => handleAnswerChange(index, val)}
@@ -156,20 +153,20 @@ export default function AssignmentViewById() {
                       />
                     </div>
                   ) : (
-                    <div className="rounded-md p-4 bg-zinc-800/60 border border-zinc-700">
-                      <h3 className="text-gray-300 font-semibold mb-2">
+                    <div className="rounded-md p-4 bg-muted/30 border border-border">
+                      <h3 className="text-foreground font-semibold mb-2">
                         Your Answer:
                       </h3>
                       <MDEditor.Markdown
                         source={studentAnswer}
-                        className="text-gray-100"
+                        className="text-foreground"
                       />
-                      <h3 className="text-gray-300 font-semibold mt-3 mb-2">
+                      <h3 className="text-foreground font-semibold mt-3 mb-2">
                         AI Graded Answer:
                       </h3>
                       <MDEditor.Markdown
                         source={gradedAnswer || "N/A"}
-                        className="text-gray-100"
+                        className="text-foreground"
                       />
                     </div>
                   )}
@@ -188,14 +185,14 @@ export default function AssignmentViewById() {
                   {submissionState.loading ? "Submitting..." : "Submit Answers"}
                 </Button>
               ) : (
-                <div className="rounded-md p-4 bg-green-950/40 border border-green-700">
-                  <h3 className="font-semibold text-green-300 mb-2">
+                <div className="rounded-md p-4 bg-green-500/10 border border-green-500/20">
+                  <h3 className="font-semibold text-green-600 mb-2">
                     Submission Feedback:
                   </h3>
-                  <p className="text-gray-200">
+                  <p className="text-foreground">
                     Total Marks: {submissionState.result?.total_marks}
                   </p>
-                  <p className="text-gray-200 mt-2">
+                  <p className="text-foreground mt-2">
                     {submissionState.result?.final_feedback}
                   </p>
                 </div>

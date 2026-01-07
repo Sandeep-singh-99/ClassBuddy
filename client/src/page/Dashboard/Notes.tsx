@@ -13,7 +13,7 @@ export default function Notes() {
 
   useEffect(() => {
     if (notes.length === 0) {
-    dispatch(studentJoinGroupNote());
+      dispatch(studentJoinGroupNote());
     }
   }, [dispatch, notes.length]);
 
@@ -24,14 +24,12 @@ export default function Notes() {
       </h1>
 
       {/* Loading */}
-      {loading && (
-        <BarLoader width={"100%"} color="gray" className="my-4" />
-      )}
+      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
 
       {/* Error */}
 
       {error && (
-        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
           <AlertCircle className="w-5 h-5" />
           <span className="text-sm font-medium">Error: {error}</span>
         </div>
@@ -52,7 +50,7 @@ export default function Notes() {
                 </h2>
               </div>
               {/* Content Preview / Click Hint */}
-              <p className="text-gray-600 text-sm line-clamp-3">
+              <p className="text-muted-foreground text-sm line-clamp-3">
                 Click on this card to view the full content of the note.
               </p>
 

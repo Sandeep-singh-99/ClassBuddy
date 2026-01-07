@@ -19,13 +19,13 @@ export default function Testimonials() {
   ];
 
   return (
-    <section className="py-20 px-6 bg-white relative overflow-hidden">
+    <section className="py-20 px-6 bg-background relative overflow-hidden">
       {/* Section Heading */}
       <div className="text-center max-w-2xl mx-auto mb-14">
         <h2 className="text-4xl md:text-5xl tracking-wider p-4 font-extrabold  bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 to-orange-600">
           What Students Say
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-muted-foreground text-lg">
           Loved by learners & educators. Here’s how ClassBuddy is making a
           difference.
         </p>
@@ -36,18 +36,18 @@ export default function Testimonials() {
         {testimonials.map((t, i) => (
           <Card
             key={i}
-            className="bg-gray-50 border border-gray-200 rounded-xl shadow-lg hover:shadow-yellow-400/20 hover:scale-[1.02] transition-transform duration-300"
+            className="bg-card border border-border rounded-xl shadow-lg hover:shadow-yellow-400/20 hover:scale-[1.02] transition-transform duration-300"
           >
             <CardContent className="p-8 text-center flex flex-col items-center">
               {/* Fake Avatar Placeholder (optional) */}
-              <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center mb-4">
                 <span className="text-yellow-600 font-bold text-xl">
                   {t.name[0]}
                 </span>
               </div>
 
               {/* Quote */}
-              <p className="text-gray-700 italic mb-6 leading-relaxed">
+              <p className="text-muted-foreground italic mb-6 leading-relaxed">
                 “{t.quote}”
               </p>
 

@@ -42,13 +42,13 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="py-20 bg-gray-50 text-gray-900">
+    <section id="faq" className="py-20 bg-muted/30 text-foreground">
       <div className="max-w-3xl mx-auto px-6">
         {/* Section Heading */}
         <h2 className="text-4xl font-bold text-center mb-4">
           Frequently Asked Questions
         </h2>
-        <p className="text-gray-600 text-center mb-12">
+        <p className="text-muted-foreground text-center mb-12">
           Here are some common questions about how ClassBuddy works for teachers
           and students.
         </p>
@@ -58,14 +58,14 @@ export default function FAQSection() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-gray-200 bg-white rounded-xl overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
+              className="border border-border bg-card rounded-xl overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
             >
               {/* Question Row */}
               <button
                 onClick={() => toggleFAQ(index)}
                 className="w-full flex justify-between items-center px-4 py-4 text-left focus:outline-none"
               >
-                <span className="text-lg font-medium text-gray-800">
+                <span className="text-lg font-medium text-foreground">
                   {faq.question}
                 </span>
                 {openIndex === index ? (
@@ -77,7 +77,7 @@ export default function FAQSection() {
 
               {/* Answer Section */}
               <div
-                className={`px-4 pb-4 text-gray-600 transition-all duration-300 ease-in-out ${
+                className={`px-4 pb-4 text-muted-foreground transition-all duration-300 ease-in-out ${
                   openIndex === index
                     ? "max-h-40 opacity-100"
                     : "max-h-0 opacity-0 overflow-hidden"

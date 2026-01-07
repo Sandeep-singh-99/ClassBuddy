@@ -2,12 +2,12 @@ import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-50 border-t border-gray-200 text-gray-600">
+    <footer className="bg-muted/30 border-t border-border text-muted-foreground">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
         {/* Brand Section */}
         <div className="md:col-span-2">
-          <h3 className="text-xl font-bold text-gray-900 mb-3">ClassBuddy</h3>
-          <p className="text-gray-600 mb-4 text-sm">
+          <h3 className="text-xl font-bold text-foreground mb-3">ClassBuddy</h3>
+          <p className="text-muted-foreground mb-4 text-sm">
             Your AI-powered study companion – helping students learn smarter,
             faster, and effortlessly.
           </p>
@@ -46,7 +46,7 @@ export default function Footer() {
 
         {/* Links */}
         <div>
-          <h4 className="text-gray-900 font-semibold mb-3">Product</h4>
+          <h4 className="text-foreground font-semibold mb-3">Product</h4>
           <ul className="space-y-2 text-sm">
             <li>
               <a href="#" className="hover:text-yellow-500 transition-colors">
@@ -89,9 +89,10 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-200 text-center py-6 text-sm text-gray-500">
+      <div className="border-t border-border text-center py-6 text-sm text-muted-foreground">
         © {new Date().getFullYear()}{" "}
-        <span className="text-gray-900">ClassBuddy</span>. All rights reserved.
+        <span className="text-foreground">ClassBuddy</span>. All rights
+        reserved.
       </div>
     </footer>
   );

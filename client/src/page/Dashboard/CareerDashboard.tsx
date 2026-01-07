@@ -55,7 +55,7 @@ export default function CareerDashboard() {
         <div className="flex justify-end pt-20">
           <GenerateDashboardBtn />
         </div>
-        <div className="flex items-center justify-center gap-2 p-4 my-4 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+        <div className="flex items-center justify-center gap-2 p-4 my-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
           <AlertCircle className="w-5 h-5" />
           <span className="text-sm font-medium">Error: {error}</span>
         </div>
@@ -68,7 +68,7 @@ export default function CareerDashboard() {
         <div className="flex justify-end pt-20">
           <GenerateDashboardBtn />
         </div>
-        <div className="flex items-center justify-center gap-2 p-4 my-4 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg">
+        <div className="flex items-center justify-center gap-2 p-4 my-4 bg-primary/10 text-primary border border-primary/20 rounded-lg">
           <AlertCircle className="w-5 h-5" />
           <span className="text-sm font-medium">
             No insights found. Generate your first insight!

@@ -100,7 +100,7 @@ export default function DashboardHome() {
             />
           </Suspense>
         ) : (
-          <div className="flex items-center justify-center h-[400px] text-gray-500">
+          <div className="flex items-center justify-center h-[400px] text-muted-foreground">
             No stats available yet 📉
           </div>
         )}
