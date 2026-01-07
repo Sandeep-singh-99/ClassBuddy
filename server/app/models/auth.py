@@ -44,4 +44,4 @@ class User(Base):
 
     sent_messages = relationship("GroupMessage", back_populates="sender", cascade="all, delete-orphan")
 
-
+    student_subscriptions = relationship("StudentSubscription", back_populates="user", cascade="all, delete-orphan")

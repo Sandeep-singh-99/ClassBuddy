@@ -28,5 +28,8 @@ class TeacherInsight(Base):
 
     messages = relationship("GroupMessage", back_populates="group", cascade="all, delete-orphan")
 
+    plans = relationship("SubscriptionPlan", back_populates="group", cascade="all, delete-orphan")
+
+    student_subscriptions = relationship("StudentSubscription", back_populates="group", cascade="all, delete-orphan")
 
 
