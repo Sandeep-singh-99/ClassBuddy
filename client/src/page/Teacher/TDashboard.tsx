@@ -8,22 +8,22 @@ export default function TDashboard() {
   return (
     <SidebarProvider>
       <TSideBar />
-      <div className="w-full p-5 bg-gradient-to-b from-white via-gray-50 to-white">
+      <div className="w-full p-5 bg-background text-foreground">
         <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
         <AppHeader />
         <Outlet />
       </div>
     </SidebarProvider>
-  )
+  );
 }
