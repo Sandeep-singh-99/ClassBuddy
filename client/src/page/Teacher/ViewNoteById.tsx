@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CircleAlert } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
 import { BarLoader } from "react-spinners";
+import { useTheme } from "@/components/theme-provider";
 
 export default function ViewNoteById() {
   const { noteId } = useParams<{ noteId: string }>();
@@ -13,6 +14,8 @@ export default function ViewNoteById() {
   const { loading, error, currentNote } = useAppSelector(
     (state) => state.notes
   );
+
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (noteId) {
@@ -33,7 +36,7 @@ export default function ViewNoteById() {
       {currentNote && (
         <Card className="shadow-md">
           <CardContent>
-            <div data-color-mode="light">
+            <div data-color-mode={theme}>
               <MDEditor.Markdown
                 source={currentNote.content}
                 className="min-h-[400px] p-2"
