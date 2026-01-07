@@ -16,7 +16,7 @@ import FAQSkeleton from "@/components/skeletons/FAQSkeleton";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white text-gray-900">
+    <main className="min-h-screen bg-gradient-to-b from-background via-muted/50 to-background text-foreground">
       <RateLimitBanner />
       <HeroComponent />
 

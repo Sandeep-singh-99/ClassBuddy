@@ -19,7 +19,7 @@ export default function HeroComponent() {
         ClassBuddy
       </h1>
 
-      <p className="text-lg md:text-2xl text-gray-600 max-w-2xl mx-auto mb-6 leading-relaxed">
+      <p className="text-lg md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-6 leading-relaxed">
         Meet your{" "}
         <span className="text-yellow-600 font-bold">
           AI-powered study companion
@@ -30,7 +30,7 @@ export default function HeroComponent() {
         effortlessly.
       </p>
 
-      <p className="text-sm text-gray-500 max-w-xl mx-auto mb-10">
+      <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-10">
         Trusted by{" "}
         <span className="text-yellow-600 font-bold">10,000+ students </span>
         worldwide to make studying smarter, faster and more engaging.
@@ -47,7 +47,7 @@ export default function HeroComponent() {
         <Button
           size="lg"
           variant="outline"
-          className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 px-8 py-6 text-lg flex items-center gap-2 shadow-sm"
+          className="border-border bg-background text-muted-foreground hover:bg-accent hover:text-foreground px-8 py-6 text-lg flex items-center gap-2 shadow-sm"
         >
           <PlayCircle className="w-5 h-5" /> Learn More
         </Button>

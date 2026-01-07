@@ -29,18 +29,17 @@ export default function ViewAllTeacher() {
   }, [dispatch, teachers]);
 
   if (loading) {
-    return <BarLoader width={"100%"} color="gray" className="my-4" />
+    return <BarLoader width={"100%"} color="gray" className="my-4" />;
   }
-
 
   return (
     <div className="p-10">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100 tracking-tight">
+      <h1 className="text-3xl font-bold mb-8 text-foreground tracking-tight">
         View All Teachers
       </h1>
 
       {error && (
-        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
           <AlertCircle className="w-5 h-5" />
           <span className="text-sm font-medium">Error: {error}</span>
         </div>
@@ -50,9 +49,9 @@ export default function ViewAllTeacher() {
         {teachers.map((teacher) => (
           <Card
             key={teacher.id}
-            className="border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl
+            className="border border-border shadow-md hover:shadow-xl
             rounded-3xl overflow-hidden transition-all duration-300
-            bg-white dark:bg-gray-900 group"
+            bg-card group"
           >
             {/* Group Cover Image */}
             <CardHeader className="p-0 relative">
@@ -62,8 +61,8 @@ export default function ViewAllTeacher() {
                 className="w-full h-44 object-fill transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90
-                text-gray-800 dark:text-gray-100
+                className="absolute top-4 right-4 bg-background/90
+                text-foreground
                 px-3 py-1 text-xs font-semibold rounded-full shadow"
               >
                 {teacher.group_name}
@@ -77,13 +76,13 @@ export default function ViewAllTeacher() {
                   <img
                     src={teacher.owner.image_url}
                     alt={teacher.owner.full_name}
-                    className="w-14 h-14 rounded-full border-2 border-gray-200 dark:border-gray-700 shadow-sm object-cover"
+                    className="w-14 h-14 rounded-full border-2 border-border shadow-sm object-cover"
                   />
                 ) : (
                   <div
-                    className="w-14 h-14 rounded-full border-2 border-gray-200 dark:border-gray-700
+                    className="w-14 h-14 rounded-full border-2 border-border
                     flex items-center justify-center
-                    bg-gray-100 dark:bg-gray-800"
+                    bg-muted"
                   >
                     <User
                       className="text-gray-500 dark:text-gray-400"
@@ -93,15 +92,15 @@ export default function ViewAllTeacher() {
                 )}
 
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-gray-100 text-base">
+                  <p className="font-semibold text-foreground text-base">
                     {teacher.owner.full_name}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {teacher.owner.email}
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
+              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
                 {teacher.group_des}
               </p>
 
@@ -110,9 +109,9 @@ export default function ViewAllTeacher() {
                   className={`w-full flex items-center justify-center gap-2 text-sm py-2 px-4 rounded-xl transition-colors duration-300 ${
                     joinedStatus[teacher.id]
                       ? "bg-green-600 text-white cursor-not-allowed"
-                      : "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90"
                   }`}
-                  disabled={joinedStatus[teacher.id]} 
+                  disabled={joinedStatus[teacher.id]}
                   onClick={(e) => {
                     e.preventDefault();
                     joinGroup(teacher?.id);

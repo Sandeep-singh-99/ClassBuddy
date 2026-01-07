@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ModeToggle } from "./mode-toggle";
 
 export default function Navbar() {
   const dispatch = useAppDispatch();
@@ -31,7 +32,7 @@ export default function Navbar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200"
+      className="fixed top-0 left-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border"
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
@@ -41,81 +42,85 @@ export default function Navbar() {
         >
           ClassBuddy
         </Link>
-        {user ? (
-          <div className="flex items-center gap-4 text-gray-700">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <img
-                  src={user.image_url}
-                  alt={user.full_name}
-                  className="w-8 h-8 rounded-full object-cover cursor-pointer"
-                  loading="lazy"
-                />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="" align="end" sideOffset={5}>
-                {user.role === "teacher" ? (
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <Link
-                        to={"/t-dashboard/home"}
-                        className="transition flex gap-2"
+
+        <div className="flex items-center gap-4">
+          <ModeToggle />
+          {user ? (
+            <div className="flex items-center gap-4 text-foreground">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <img
+                    src={user.image_url}
+                    alt={user.full_name}
+                    className="w-8 h-8 rounded-full object-cover cursor-pointer"
+                    loading="lazy"
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="" align="end" sideOffset={5}>
+                  {user.role === "teacher" ? (
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Link
+                          to={"/t-dashboard/home"}
+                          className="transition flex gap-2"
+                        >
+                          <LayoutDashboard />
+                          <p>Dashboard</p>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link
+                          to={"/chat-panel/chat"}
+                          className="transition flex gap-2"
+                        >
+                          <MessageCircle />
+                          <p>Chat</p>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={handleLogout}
                       >
-                        <LayoutDashboard />
-                        <p>Dashboard</p>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link
-                        to={"/chat-panel/chat"}
-                        className="transition flex gap-2"
+                        <LogOutIcon />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  ) : (
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Link
+                          to={"/dashboard-panel/home"}
+                          className="transition flex gap-2"
+                        >
+                          <LayoutDashboard />
+                          <p>Dashboard</p>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link
+                          to={"/chat-panel/chat"}
+                          className="transition flex gap-2"
+                        >
+                          <MessageCircle />
+                          <p>Chat</p>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={handleLogout}
                       >
-                        <MessageCircle />
-                        <p>Chat</p>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={handleLogout}
-                    >
-                      <LogOutIcon />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                ) : (
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <Link
-                        to={"/dashboard-panel/home"}
-                        className="transition flex gap-2"
-                      >
-                        <LayoutDashboard />
-                        <p>Dashboard</p>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link
-                        to={"/chat-panel/chat"}
-                        className="transition flex gap-2"
-                      >
-                        <MessageCircle />
-                        <p>Chat</p>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={handleLogout}
-                    >
-                      <LogOutIcon />
-                      <p>Logout</p>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ) : (
-          <AuthComponent />
-        )}
+                        <LogOutIcon />
+                        <p>Logout</p>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <AuthComponent />
+          )}
+        </div>
       </div>
     </nav>
   );

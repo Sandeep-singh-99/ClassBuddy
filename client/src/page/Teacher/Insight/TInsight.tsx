@@ -45,7 +45,7 @@ export default function TInsight() {
     if (files && files[0]) {
       const file = files[0];
       try {
-        const imageUrl = URL.createObjectURL(file); 
+        const imageUrl = URL.createObjectURL(file);
         setFormData((prevData) => ({
           ...prevData,
           imageUrl,
@@ -117,7 +117,7 @@ export default function TInsight() {
   }, [user, navigate]);
 
   return (
-    <div className="flex text-white pt-36 pb-8">
+    <div className="flex text-foreground pt-36 pb-8">
       <div className="flex justify-center w-full">
         <Card className="w-[600px] mx-auto">
           <CardHeader>

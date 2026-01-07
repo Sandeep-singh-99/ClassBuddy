@@ -85,7 +85,7 @@ export default function TNotes() {
       {/* Loading State */}
       {loading && (
         <div>
-          <p className="mt-6 text-center text-gray-500">
+          <p className="mt-6 text-center text-muted-foreground">
             Generating notes, please wait...
           </p>
         </div>
@@ -121,7 +121,7 @@ export default function TNotes() {
       {/* Default state */}
       {!loading && !visible && (
         <div>
-          <p className="mt-6 text-center text-gray-400">
+          <p className="mt-6 text-center text-muted-foreground">
             No notes generated yet. Please enter a title and click "Generate
             Notes".
           </p>

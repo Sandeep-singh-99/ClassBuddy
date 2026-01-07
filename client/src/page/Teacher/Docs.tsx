@@ -26,9 +26,7 @@ export default function Docs() {
       <div className="flex justify-end">
         <DocsForm />
       </div>
-      {
-        loading &&  <BarLoader width={"100%"} color="gray" className="my-4" />
-      }
+      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {docs.map((doc) => (
           <Card
@@ -42,7 +40,7 @@ export default function Docs() {
                 </h2>
                 <DocsDeleteBtn docId={doc.id} />
               </div>
-              <p className="text-gray-600 text-sm line-clamp-3">
+              <p className="text-muted-foreground text-sm line-clamp-3">
                 Click on this card to view the full content of the note.
               </p>
               <Link

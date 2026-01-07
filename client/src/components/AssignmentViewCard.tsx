@@ -45,17 +45,17 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="text-sm text-gray-600 flex items-center justify-between">
+      <CardContent className="text-sm text-muted-foreground flex items-center justify-between">
         <span
           className={
             isPastDue
-              ? "text-red-500 font-medium"
+              ? "text-destructive font-medium"
               : "text-green-600 font-medium"
           }
         >
           {isPastDue ? "Deadline passed" : getTimeLeft()}
         </span>
-        <span className="text-xs text-white">
+        <span className="text-xs text-muted-foreground">
           {dueDate.toLocaleDateString(undefined, {
             day: "numeric",
             month: "short",
@@ -65,28 +65,33 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
       </CardContent>
 
       <CardFooter className="flex justify-end">
-       {
-        !isPastDue ? (
-           <Link
-          key={assignment.id}
-          to={`/dashboard-panel/assignments/${assignment.id}`}
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            className="hover:scale-[1.02] transition-transform"
+        {!isPastDue ? (
+          <Link
+            key={assignment.id}
+            to={`/dashboard-panel/assignments/${assignment.id}`}
           >
-            View Assignment
-          </Button>
-        </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="hover:scale-[1.02] transition-transform"
+            >
+              View Assignment
+            </Button>
+          </Link>
         ) : (
-          <Link key={assignment.id} to={`/dashboard-panel/assignments-details/${assignment.id}`}>
-            <Button variant={"outline"} size={"sm"} className="hover:scale-[1.02] transition-transform">
+          <Link
+            key={assignment.id}
+            to={`/dashboard-panel/assignments-details/${assignment.id}`}
+          >
+            <Button
+              variant={"outline"}
+              size={"sm"}
+              className="hover:scale-[1.02] transition-transform"
+            >
               View Details
             </Button>
           </Link>
-        )
-       }
+        )}
       </CardFooter>
     </Card>
   );
