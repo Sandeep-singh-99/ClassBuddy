@@ -17,6 +17,7 @@ import {
   FolderOpen,
   ClipboardList,
   Sparkles,
+  DollarSignIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -45,6 +46,11 @@ const MenuOptions = [
     title: "Assignments",
     url: "/t-dashboard/assignments",
     icon: <ClipboardList />,
+  },
+  {
+    title: "Payment",
+    url: "/t-dashboard/payment",
+    icon: <DollarSignIcon />,
   },
 ];
 
