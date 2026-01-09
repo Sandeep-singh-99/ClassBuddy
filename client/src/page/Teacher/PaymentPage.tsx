@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CreateSubscriptionDialog } from "./components/CreateSubscriptionDialog";
 import {
   Card,
@@ -10,6 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { GroupJoinStudents } from "@/redux/slice/tSlice";
+import { createSubscriptionPlan } from "@/services/subscriptionService";
+import { toast } from "react-toastify";
+import { differenceInDays, parseISO } from "date-fns";
 
 interface Plan {
   id: string;
@@ -20,17 +25,61 @@ interface Plan {
 
 export default function PaymentPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
+  const dispatch = useAppDispatch();
+  const { teachers } = useAppSelector((state) => state.teachers);
+  const [loading, setLoading] = useState(false);
 
-  const handleSavePlan = (planData: {
+  useEffect(() => {
+    // Fetch teachers (groups) if not already available
+    if (teachers.length === 0) {
+      dispatch(GroupJoinStudents());
+    }
+  }, [dispatch, teachers.length]);
+
+  const handleSavePlan = async (planData: {
     name: string;
     amount: string;
     validity: string;
   }) => {
-    const newPlan: Plan = {
-      id: Math.random().toString(36).substr(2, 9),
-      ...planData,
-    };
-    setPlans((prev) => [...prev, newPlan]);
+    if (teachers.length === 0) {
+      toast.error("No group found to create plan for.");
+      return;
+    }
+
+    const groupId = teachers[0].id;
+    const validityDate = parseISO(planData.validity);
+    const today = new Date();
+    const validityDays = differenceInDays(validityDate, today);
+
+    if (validityDays <= 0) {
+      toast.error("Validity date must be in the future.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await createSubscriptionPlan(groupId, {
+        plan_name: planData.name,
+        amount: Number(planData.amount),
+        validity_days: validityDays,
+      });
+
+      // Map API response back to local Plan format for display
+      const newPlan: Plan = {
+        id: response.id,
+        name: response.plan_name,
+        amount: response.amount.toString(),
+        validity: planData.validity, // Keep the original date string for display
+      };
+
+      setPlans((prev) => [...prev, newPlan]);
+      toast.success("Subscription plan created successfully!");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to create subscription plan.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

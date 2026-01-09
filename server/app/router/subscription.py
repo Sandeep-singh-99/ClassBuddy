@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib, hmac
 
 from app.config.db import get_db
@@ -18,19 +18,52 @@ from app.config.config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
 
 router = APIRouter()
 
-@router.post("/group/{group_id}/plan")
-def create_plan(group_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user), data: CreatePlanSchema = Depends(CreatePlanSchema)):
+
+@router.post("/group/{group_id}/plan", status_code=status.HTTP_201_CREATED)
+def create_plan(
+    group_id: str,
+    data: CreatePlanSchema,  
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    plan_count = (
+        db.query(SubscriptionPlan)
+        .filter(SubscriptionPlan.group_id == group_id)
+        .count()
+    )
+
+    if plan_count >= 3:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only 3 subscription plans are allowed per group",
+        )
+
     plan = SubscriptionPlan(
         group_id=group_id,
         plan_name=data.plan_name,
         amount=data.amount,
         validity_days=data.validity_days,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
+
     db.add(plan)
     db.commit()
     db.refresh(plan)
+
+    return plan
+
+
+@router.get("/get-own-plan")
+def get_plan(
+    group_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    plan = db.get(SubscriptionPlan, group_id)
+    if not plan:
+        raise HTTPException(404, "Plan not found")
     return plan
     
 
