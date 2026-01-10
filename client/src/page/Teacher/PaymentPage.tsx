@@ -1,33 +1,26 @@
 import { useState, useEffect } from "react";
 import { CreateSubscriptionDialog } from "./components/CreateSubscriptionDialog";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { GroupJoinStudents } from "@/redux/slice/tSlice";
 import { createSubscriptionPlan } from "@/services/subscriptionService";
 import { toast } from "react-toastify";
 import { differenceInDays, parseISO } from "date-fns";
-
-interface Plan {
-  id: string;
-  name: string;
-  amount: string;
-  validity: string;
-}
+import { fetchSubscription, addPlan } from "@/redux/slice/subscriptionSlice";
+import { SubscriptionCard } from "./components/SubscriptionCard";
+import type { IPlan } from "@/types/subscription";
 
 export default function PaymentPage() {
-  const [plans, setPlans] = useState<Plan[]>([]);
   const dispatch = useAppDispatch();
   const { teachers } = useAppSelector((state) => state.teachers);
+  const { plans, loading: plansLoading } = useAppSelector(
+    (state) => state.subscription
+  );
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchSubscription());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     // Fetch teachers (groups) if not already available
@@ -46,7 +39,8 @@ export default function PaymentPage() {
       return;
     }
 
-    const groupId = teachers[0].id;
+    const group = teachers[0];
+    const groupId = group.id;
     const validityDate = parseISO(planData.validity);
     const today = new Date();
     const validityDays = differenceInDays(validityDate, today);
@@ -65,14 +59,17 @@ export default function PaymentPage() {
       });
 
       // Map API response back to local Plan format for display
-      const newPlan: Plan = {
+      const newPlan: IPlan = {
         id: response.id,
-        name: response.plan_name,
-        amount: response.amount.toString(),
-        validity: planData.validity, // Keep the original date string for display
+        group_id: response.group_id,
+        group_name: group.group_name || "",
+        plan_name: response.plan_name,
+        amount: response.amount,
+        validity_days: response.validity_days,
+        created_at: response.created_at,
       };
 
-      setPlans((prev) => [...prev, newPlan]);
+      dispatch(addPlan(newPlan));
       toast.success("Subscription plan created successfully!");
     } catch (error: any) {
       console.error(error);
@@ -96,7 +93,11 @@ export default function PaymentPage() {
         <CreateSubscriptionDialog onSave={handleSavePlan} />
       </div>
 
-      {plans.length === 0 ? (
+      {plansLoading && plans.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-muted-foreground">Loading plans...</p>
+        </div>
+      ) : plans.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-muted-foreground">
             No subscription plans created yet.
@@ -105,24 +106,7 @@ export default function PaymentPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
-            <Card key={plan.id} className="flex flex-col">
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>
-                  Valid until {new Date(plan.validity).toLocaleDateString()}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1">
-                <div className="text-3xl font-bold">${plan.amount}</div>
-                <div className="flex items-center mt-4 text-sm text-muted-foreground">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  <span>Expires on {plan.validity}</span>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full">Edit Plan</Button>
-              </CardFooter>
-            </Card>
+            <SubscriptionCard key={plan.id} plan={plan} />
           ))}
         </div>
       )}

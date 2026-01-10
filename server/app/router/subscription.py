@@ -124,6 +124,12 @@ def delete_subscription_plan(
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found or not yours")
 
+    if plan.student_subscriptions:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete plan with active subscriptions"
+        )
+
     delete_plan(db, plan)
 
     return {"message": "Plan deleted successfully"}
