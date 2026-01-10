@@ -10,11 +10,13 @@ from app.models.student_subscription import StudentSubscription
 from app.schemas.subscription import (
     CreatePlanSchema, CreateOrderSchema, VerifyPaymentSchema, PlanOut
 )
-
+from app.schemas.plan import TeacherPlanResponse, UpdatePlanSchema
+from app.schemas.auth import userRole
 from app.services.razorpay_services import client
 from app.dependencies.dependencies import get_current_user
 from app.models.auth import User
 from app.config.config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
+from app.services.plan import get_teacher_plans, get_plan_owned_by_teacher, delete_plan
 
 router = APIRouter()
 
@@ -55,16 +57,76 @@ def create_plan(
     return plan
 
 
-@router.get("/get-own-plan")
-def get_plan(
-    group_id: str,
+@router.get("/me")
+def get_my_created_plans(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    plan = db.get(SubscriptionPlan, group_id)
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=403, detail="Only teachers can access plans")
+
+    rows = get_teacher_plans(db, current_user.id)
+
+    result = []
+    for plan, group in rows:
+        result.append(
+            TeacherPlanResponse(
+                id=plan.id,
+                group_id=group.id,
+                group_name=group.group_name,
+                plan_name=plan.plan_name,
+                amount=plan.amount,
+                validity_days=plan.validity_days,
+                created_at=plan.created_at,
+            )
+        )
+
+    return result
+
+
+@router.put("/{plan_id}")
+def update_plan(
+    plan_id: str,
+    data: UpdatePlanSchema,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=403, detail="Only teachers can update plans")
+
+    plan = get_plan_owned_by_teacher(db, plan_id, current_user.id)
     if not plan:
-        raise HTTPException(404, "Plan not found")
-    return plan
+        raise HTTPException(status_code=404, detail="Plan not found or not yours")
+
+    if data.plan_name is not None:
+        plan.plan_name = data.plan_name
+    if data.amount is not None:
+        plan.amount = data.amount
+    if data.validity_days is not None:
+        plan.validity_days = data.validity_days
+
+    db.commit()
+    db.refresh(plan)
+
+    return {"message": "Plan updated successfully"}
+
+
+@router.delete("/{plan_id}")
+def delete_subscription_plan(
+    plan_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=403, detail="Only teachers can delete plans")
+
+    plan = get_plan_owned_by_teacher(db, plan_id, current_user.id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found or not yours")
+
+    delete_plan(db, plan)
+
+    return {"message": "Plan deleted successfully"}
     
 
 @router.post("/create-order")
