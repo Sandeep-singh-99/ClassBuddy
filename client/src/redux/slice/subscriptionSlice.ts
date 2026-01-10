@@ -22,6 +22,27 @@ export const fetchSubscription = createAsyncThunk(
   }
 );
 
+export const createSubscriptionPlan = createAsyncThunk(
+  "subscription/createPlan",
+  async ({ groupID, data }: { groupID: string; data: any }, thunkApi) => {
+    try {
+      const response = await axiosClient.post(
+        `/subscription/group/${groupID}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ??
+            error.message ??
+            "Creating plan failed"
+        );
+      }
+    }
+  }
+);
+
 export const updateSubscriptionPlan = createAsyncThunk(
   "subscription/updatePlan",
   async (

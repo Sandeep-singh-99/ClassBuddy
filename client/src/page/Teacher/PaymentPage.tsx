@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { CreateSubscriptionDialog } from "./components/CreateSubscriptionDialog";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { GroupJoinStudents } from "@/redux/slice/tSlice";
-import { createSubscriptionPlan } from "@/services/subscriptionService";
-import { toast } from "react-toastify";
-import { differenceInDays, parseISO } from "date-fns";
-import { fetchSubscription, addPlan } from "@/redux/slice/subscriptionSlice";
+import {
+  fetchSubscription,
+  createSubscriptionPlan,
+} from "@/redux/slice/subscriptionSlice";
 import { SubscriptionCard } from "./components/SubscriptionCard";
-import type { IPlan } from "@/types/subscription";
+import type { ISubscription } from "@/types/subscription";
 
 export default function PaymentPage() {
   const dispatch = useAppDispatch();
@@ -15,15 +15,12 @@ export default function PaymentPage() {
   const { plans, loading: plansLoading } = useAppSelector(
     (state) => state.subscription
   );
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSubscription());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    // Fetch teachers (groups) if not already available
     if (teachers.length === 0) {
       dispatch(GroupJoinStudents());
     }
@@ -34,49 +31,18 @@ export default function PaymentPage() {
     amount: string;
     validity: string;
   }) => {
-    if (teachers.length === 0) {
-      toast.error("No group found to create plan for.");
-      return;
-    }
+    if (teachers.length === 0) return;
 
-    const group = teachers[0];
-    const groupId = group.id;
-    const validityDate = parseISO(planData.validity);
-    const today = new Date();
-    const validityDays = differenceInDays(validityDate, today);
+    const groupID = teachers[0].id; // Assuming the first group is the target
+    const payload = {
+      ...planData,
+      plan_name: planData.name,
+      amount: Number(planData.amount),
+      validity: planData.validity,
+    };
 
-    if (validityDays <= 0) {
-      toast.error("Validity date must be in the future.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await createSubscriptionPlan(groupId, {
-        plan_name: planData.name,
-        amount: Number(planData.amount),
-        validity_days: validityDays,
-      });
-
-      // Map API response back to local Plan format for display
-      const newPlan: IPlan = {
-        id: response.id,
-        group_id: response.group_id,
-        group_name: group.group_name || "",
-        plan_name: response.plan_name,
-        amount: response.amount,
-        validity_days: response.validity_days,
-        created_at: response.created_at,
-      };
-
-      dispatch(addPlan(newPlan));
-      toast.success("Subscription plan created successfully!");
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message || "Failed to create subscription plan.");
-    } finally {
-      setLoading(false);
-    }
+    await dispatch(createSubscriptionPlan({ groupID, data: payload }));
+    dispatch(fetchSubscription()); // Refresh list
   };
 
   return (
