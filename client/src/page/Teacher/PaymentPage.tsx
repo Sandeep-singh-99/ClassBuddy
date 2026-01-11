@@ -1,17 +1,13 @@
 import { useEffect } from "react";
 import { CreateSubscriptionDialog } from "./components/CreateSubscriptionDialog";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { GroupJoinStudents } from "@/redux/slice/tSlice";
 import {
   fetchSubscription,
-  createSubscriptionPlan,
 } from "@/redux/slice/subscriptionSlice";
 import { SubscriptionCard } from "./components/SubscriptionCard";
-import type { ISubscription } from "@/types/subscription";
 
 export default function PaymentPage() {
   const dispatch = useAppDispatch();
-  const { teachers } = useAppSelector((state) => state.teachers);
   const { plans, loading: plansLoading } = useAppSelector(
     (state) => state.subscription
   );
@@ -19,31 +15,7 @@ export default function PaymentPage() {
   useEffect(() => {
     dispatch(fetchSubscription());
   }, []);
-
-  useEffect(() => {
-    if (teachers.length === 0) {
-      dispatch(GroupJoinStudents());
-    }
-  }, [dispatch, teachers.length]);
-
-  const handleSavePlan = async (planData: {
-    name: string;
-    amount: string;
-    validity: string;
-  }) => {
-    if (teachers.length === 0) return;
-
-    const groupID = teachers[0].id; // Assuming the first group is the target
-    const payload = {
-      ...planData,
-      plan_name: planData.name,
-      amount: Number(planData.amount),
-      validity: planData.validity,
-    };
-
-    await dispatch(createSubscriptionPlan({ groupID, data: payload }));
-    dispatch(fetchSubscription()); // Refresh list
-  };
+  
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -56,7 +28,7 @@ export default function PaymentPage() {
             Manage and create subscription plans for your students.
           </p>
         </div>
-        <CreateSubscriptionDialog onSave={handleSavePlan} />
+        <CreateSubscriptionDialog />
       </div>
 
       {plansLoading && plans.length === 0 ? (
