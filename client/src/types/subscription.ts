@@ -11,9 +11,15 @@ export interface ISubscription {
 export interface IPlan {
   id: string;
   group_id: string;
-  group_name: string;
+  group_name?: string;
   plan_name: string;
   amount: number;
   validity_days: number;
-  created_at: string;
+  created_at?: string;
+}
+
+export interface ICreatePlan {
+  plan_name: string;
+  amount: number;
+  validity_days: number;
 }

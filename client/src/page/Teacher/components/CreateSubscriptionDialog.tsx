@@ -11,31 +11,46 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAppDispatch } from "@/hooks/hooks";
+import { createSubscriptionPlan } from "@/redux/slice/subscriptionSlice";
+import type { ICreatePlan } from "@/types/subscription";
+import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+import type { AxiosError } from "axios";
 
-interface CreateSubscriptionDialogProps {
-  onSave: (plan: { name: string; amount: string; validity: string }) => void;
-}
-
-export function CreateSubscriptionDialog({
-  onSave,
-}: CreateSubscriptionDialogProps) {
+export function CreateSubscriptionDialog() {
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    amount: "",
-    validity: "",
+  const [formData, setFormData] = useState<ICreatePlan>({
+    plan_name: "",
+    amount: 0,
+    validity_days: 0,
   });
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-    setOpen(false);
-    setFormData({ name: "", amount: "", validity: "" });
+    setLoading(true);
+    try {
+      setOpen(false);
+      const response = await dispatch(createSubscriptionPlan(formData)).unwrap();
+      setFormData({ plan_name: "", amount: 0, validity_days: 0 });
+      toast.success(response.message);
+      setLoading(false);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ detail: string }>;
+      const errorMessage =
+        axiosError.response?.data?.detail || "Invalid Credentials";
+      toast.error(errorMessage);
+      setOpen(true);
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,13 +69,13 @@ export function CreateSubscriptionDialog({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+              <Label htmlFor="plan_name" className="text-right">
                 Plan Name
               </Label>
               <Input
-                id="name"
-                name="name"
-                value={formData.name}
+                id="plan_name"
+                name="plan_name"
+                value={formData.plan_name}
                 onChange={handleChange}
                 placeholder="e.g. Gold Plan"
                 className="col-span-3"
@@ -83,14 +98,14 @@ export function CreateSubscriptionDialog({
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="validity" className="text-right">
-                Validity Date
+              <Label htmlFor="validity_days" className="text-right">
+                Validity Days
               </Label>
               <Input
-                id="validity"
-                name="validity"
-                type="date"
-                value={formData.validity}
+                id="validity_days"
+                name="validity_days"
+                type="number"
+                value={formData.validity_days}
                 onChange={handleChange}
                 className="col-span-3"
                 required
@@ -98,7 +113,10 @@ export function CreateSubscriptionDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save changes
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

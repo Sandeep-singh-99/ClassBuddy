@@ -1,5 +1,5 @@
 import { axiosClient } from "@/helper/axiosClient";
-import type { ISubscription, IPlan } from "@/types/subscription";
+import type { ISubscription, IPlan, ICreatePlan } from "@/types/subscription";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -24,12 +24,9 @@ export const fetchSubscription = createAsyncThunk(
 
 export const createSubscriptionPlan = createAsyncThunk(
   "subscription/createPlan",
-  async ({ groupID, data }: { groupID: string; data: any }, thunkApi) => {
+  async (data: ICreatePlan, thunkApi) => {
     try {
-      const response = await axiosClient.post(
-        `/subscription/group/${groupID}`,
-        data
-      );
+      const response = await axiosClient.post(`/subscription/plan`, data);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
