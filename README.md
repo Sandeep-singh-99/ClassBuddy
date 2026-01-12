@@ -10,6 +10,7 @@
 **ClassBuddy** is a comprehensive full-stack web application designed to revolutionize classroom collaboration. It bridges the gap between students and teachers by facilitating seamless note sharing, real-time communication, and AI-powered learning assistance.
 
 ![ClassBuddy Screenshot](./screenshot/Screenshot%202025-12-03%20211554.png)
+![ClassBuddy Screenshot](./screenshot/Screenshot%202026-01-12%20135330.png)
 
 ---
 
