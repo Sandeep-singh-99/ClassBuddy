@@ -26,6 +26,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import {
   updateSubscriptionPlan,
   deleteSubscriptionPlan,
+  fetchSubscription,
 } from "@/redux/slice/subscriptionSlice";
 import { toast } from "react-toastify";
 import {
@@ -56,8 +57,9 @@ export const SubscriptionCard = ({ plan }: SubscriptionCardProps) => {
 
   const handleDelete = async () => {
     try {
-      await dispatch(deleteSubscriptionPlan(plan.id)).unwrap();
-      toast.success("Plan deleted successfully");
+      const response = await dispatch(deleteSubscriptionPlan(plan.id)).unwrap();
+      toast.success(response.message);
+      dispatch(fetchSubscription());
     } catch (error: any) {
       toast.error(error || "Failed to delete plan");
     }
@@ -66,14 +68,15 @@ export const SubscriptionCard = ({ plan }: SubscriptionCardProps) => {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      await dispatch(
+      const response = await dispatch(
         updateSubscriptionPlan({
-          planId: plan.id,
+          plan_id: plan.id,
           data: editFormData,
         })
       ).unwrap();
-      toast.success("Plan updated successfully");
+      toast.success(response.message);
       setIsEditDialogOpen(false);
+      dispatch(fetchSubscription());
     } catch (error: any) {
       toast.error(error || "Failed to update plan");
     } finally {

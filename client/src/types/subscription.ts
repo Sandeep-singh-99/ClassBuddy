@@ -15,7 +15,7 @@ export interface IPlan {
   plan_name: string;
   amount: number;
   validity_days: number;
-  created_at?: string;
+  created_at: string;
 }
 
 export interface ICreatePlan {
