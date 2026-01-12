@@ -43,12 +43,12 @@ export const createSubscriptionPlan = createAsyncThunk(
 export const updateSubscriptionPlan = createAsyncThunk(
   "subscription/updatePlan",
   async (
-    { planId, data }: { planId: string; data: Partial<IPlan> },
+    { plan_id, data }: { plan_id: string; data: Partial<IPlan> },
     thunkApi
   ) => {
     try {
-      await axiosClient.put(`/subscription/${planId}`, data);
-      return { planId, data };
+      const response = await axiosClient.put(`/subscription/${plan_id}`, data);
+      return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
@@ -63,10 +63,10 @@ export const updateSubscriptionPlan = createAsyncThunk(
 
 export const deleteSubscriptionPlan = createAsyncThunk(
   "subscription/deletePlan",
-  async (planId: string, thunkApi) => {
+  async (plan_id: string, thunkApi) => {
     try {
-      await axiosClient.delete(`/subscription/${planId}`);
-      return planId;
+      const response = await axiosClient.delete(`/subscription/${plan_id}`);
+      return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
