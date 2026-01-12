@@ -46,6 +46,7 @@ const TInsight = lazy(() => import("@/page/Teacher/Insight/TInsight"));
 // Skeletons
 import DashboardSkeleton from "@/components/skeletons/DashboardSkeleton";
 import PaymentPage from "@/page/Teacher/PaymentPage";
+import Payment from "@/page/Dashboard/Payment";
 
 // Notes and view pages
 const ViewNoteById = lazy(() => import("@/page/Teacher/ViewNoteById"));
@@ -93,6 +94,7 @@ export const router = createBrowserRouter([
         path: "assignments-details/:assignmentId",
         element: <AssignmentDetails />,
       },
+      { path: "payments", element: <Payment /> },
     ],
   },
 

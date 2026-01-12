@@ -23,3 +23,19 @@ export interface ICreatePlan {
   amount: number;
   validity_days: number;
 }
+
+export interface IStudentGroupSubscription {
+  teacher: {
+    id: string;
+    name: string;
+    email: string;
+    image_url?: string;
+  };
+  group: {
+    id: string;
+    name: string;
+    description: string;
+    image_url?: string;
+  };
+  plans: IPlan[];
+}

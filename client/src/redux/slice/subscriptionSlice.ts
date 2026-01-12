@@ -1,5 +1,10 @@
 import { axiosClient } from "@/helper/axiosClient";
-import type { ISubscription, IPlan, ICreatePlan } from "@/types/subscription";
+import type {
+  ISubscription,
+  IPlan,
+  ICreatePlan,
+  IStudentGroupSubscription,
+} from "@/types/subscription";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -79,11 +84,30 @@ export const deleteSubscriptionPlan = createAsyncThunk(
   }
 );
 
+export const fetchStudentSubscriptionPlans = createAsyncThunk(
+  "subscription/studentPlans",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get("/subscription/student/plans");
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ??
+            error.message ??
+            "Fetching student plans failed"
+        );
+      }
+    }
+  }
+);
+
 interface SubscriptionState {
   loading: boolean;
   error: string | null;
   subscription: ISubscription | null;
   plans: IPlan[];
+  studentGroups: IStudentGroupSubscription[];
 }
 
 const initialState: SubscriptionState = {
@@ -91,6 +115,7 @@ const initialState: SubscriptionState = {
   error: null,
   subscription: null,
   plans: [],
+  studentGroups: [],
 };
 
 const subscriptionSlice = createSlice({
@@ -135,6 +160,23 @@ const subscriptionSlice = createSlice({
       if (action.payload) {
         state.plans = state.plans.filter((p) => p.id !== action.payload);
       }
+    });
+
+    // Fetch Student Plans
+    builder.addCase(fetchStudentSubscriptionPlans.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      fetchStudentSubscriptionPlans.fulfilled,
+      (state, action: PayloadAction<IStudentGroupSubscription[]>) => {
+        state.loading = false;
+        state.studentGroups = action.payload;
+      }
+    );
+    builder.addCase(fetchStudentSubscriptionPlans.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
     });
   },
 });

@@ -10,6 +10,7 @@ import {
   LineChart,
   ClipboardList,
   Sparkles,
+  DollarSignIcon,
 } from "lucide-react";
 
 
@@ -49,6 +50,11 @@ const MenuOptions = [
     url: "/dashboard-panel/assignments",
     icon: <ClipboardList />,
   },
+  {
+    title: "Payments",
+    url: "/dashboard-panel/payments",
+    icon: <DollarSignIcon />,
+  }
 ];
 
 

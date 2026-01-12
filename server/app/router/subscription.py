@@ -146,6 +146,54 @@ def delete_subscription_plan(
     return {"message": "Plan deleted successfully"}
 
 
+@router.get("/student/plans")
+def get_all_plans(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=403, detail="Only students can access plans")
+
+    groups = (
+        db.query(TeacherInsight)
+        .filter(TeacherInsight.members.any(id=current_user.id))
+        .all()
+    )
+
+    if not groups:
+        return []
+
+    result = []
+    for group in groups:
+        teacher = db.query(User).filter(User.id == group.user_id).first()
+        if not teacher:
+            continue
+
+        plans = (
+            db.query(SubscriptionPlan)
+            .filter(SubscriptionPlan.group_id == group.id)
+            .all()
+        )
+
+        result.append(
+            {
+                "teacher": {
+                    "id": teacher.id,
+                    "name": teacher.full_name,
+                    "email": teacher.email,
+                    "image_url": teacher.image_url,
+                },
+                "group": {
+                    "id": group.id,
+                    "name": group.group_name,
+                    "image_url": group.image_url,
+                },
+                "plans": plans,
+            }
+        )
+
+    return result
+
+
 @router.post("/create-order")
 def create_order(
     db: Session = Depends(get_db),
