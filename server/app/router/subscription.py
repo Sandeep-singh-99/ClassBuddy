@@ -196,9 +196,9 @@ def get_all_plans(
 
 @router.post("/create-order")
 def create_order(
+    data: CreateOrderSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    data: CreateOrderSchema = Depends(CreateOrderSchema),
 ):
     plan = db.get(SubscriptionPlan, data.plan_id)
     if not plan:
@@ -212,7 +212,11 @@ def create_order(
         }
     )
 
-    return {"order": order}
+    return {
+        "key": RAZORPAY_KEY_ID,
+        "amount": order["amount"],
+        "order_id": order["id"],
+    }
 
 
 @router.post("/verify-payment")
