@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import type { IPlan } from "@/types/subscription";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CalendarDays } from "lucide-react";
+import BuyPlanButton from "./BuyPlanButton";
 
 interface SubscriptionPlansDialogProps {
   plans: IPlan[];
@@ -43,7 +44,7 @@ export function SubscriptionPlansDialog({
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4">
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-2">
             {plans.length === 0 ? (
               <div className="text-center text-gray-500 py-8">
                 No active subscription plans available for this group.
@@ -90,9 +91,7 @@ export function SubscriptionPlansDialog({
                     </div>
                   </CardContent>
                   <div className="p-6 pt-0">
-                    <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
-                      Subscribe Now
-                    </Button>
+                    <BuyPlanButton plan_id={plan.id} amount={plan.amount} planName={plan.plan_name} />
                   </div>
                 </Card>
               ))
