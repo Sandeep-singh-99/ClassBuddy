@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { fetchStudentSubscriptionPlans } from "@/redux/slice/subscriptionSlice";
-import { StudentGroupCard } from "./components/StudentGroupCard";
+import { StudentGroupCard } from "../../components/StudentGroupCard";
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
