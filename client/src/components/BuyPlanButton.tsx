@@ -2,6 +2,8 @@ import { loadRazorpay } from "@/helper/loadRazorPay";
 import { Button } from "./ui/button";
 import { toast } from "react-toastify";
 import { createOrder } from "@/services/payment";
+import { axiosClient } from "@/helper/axiosClient";
+import { useAppSelector } from "@/hooks/hooks";
 
 type Props = {
   plan_id: string;
@@ -10,6 +12,8 @@ type Props = {
 };
 
 export default function BuyPlanButton({ plan_id, amount, planName }: Props) {
+  const { user } = useAppSelector((state) => state.auth);
+
   const handlePayment = async (e: React.MouseEvent) => {
     e.preventDefault();
     const response = await loadRazorpay();
@@ -21,9 +25,9 @@ export default function BuyPlanButton({ plan_id, amount, planName }: Props) {
 
     const order = await createOrder(plan_id);
 
-    // 2️⃣ open checkout
+    // open checkout
     const options = {
-      key: order.key, // public key
+      key: order.key,
       amount: order.amount,
       currency: "INR",
       name: "ClassBuddy",
@@ -31,24 +35,20 @@ export default function BuyPlanButton({ plan_id, amount, planName }: Props) {
       order_id: order.order_id,
 
       handler: async function (response: any) {
-        // 3️⃣ verify payment backend
-        await fetch("/subscription/verify-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-            plan_id: plan_id,
-          }),
+        // verify payment backend
+        await axiosClient.post("/subscription/verify-payment", {
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+          plan_id: plan_id,
         });
 
         toast.success("Payment successful 🎉");
       },
 
       prefill: {
-        name: "Akash Yadav",
-        email: "akash@gmail.com",
+        name: user?.full_name,
+        email: user?.email,
       },
 
       theme: {
@@ -59,6 +59,8 @@ export default function BuyPlanButton({ plan_id, amount, planName }: Props) {
     const rzp = new (window as any).Razorpay(options);
     rzp.open();
   };
+
+
   return (
     <Button
       onClick={handlePayment}
