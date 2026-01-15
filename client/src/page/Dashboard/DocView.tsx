@@ -1,10 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { DocsStudentFetch } from "@/redux/slice/docsSlice";
-import { AlertCircle, File } from "lucide-react";
+import { AlertCircle, File, FileIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarLoader } from "react-spinners";
+
 export default function DocView() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function DocView() {
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-        <File className="w-7 h-7 text-blue-600" /> Documents
+        <FileIcon className="w-7 h-7 text-blue-600" /> Documents
       </h1>
 
       {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
@@ -45,12 +46,12 @@ export default function DocView() {
         {docs.map((doc) => (
           <Card
             key={doc.id}
-            className="rounded-xl shadow-sm border border-border/50 hover:shadow-[0_0_25px_rgba(59,130,246,0.15)] hover:border-blue-500/20 transition-all duration-300 cursor-pointer group"
+            className="rounded-xl shadow border-2 border-border/50 bg-card text-card-foreground hover:shadow-[0_0_25px_rgba(59,130,246,0.15)] dark:hover:shadow-[0_0_25px_rgba(37,99,235,0.2)] hover:border-blue-500/20 dark:border-border dark:bg-card/50 transition-all duration-300 cursor-pointer group"
             onClick={() => navigate(`/docs/${doc.id}`)}
           >
             <CardContent className="p-5 flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                <File className="w-5 h-5 text-blue-500 transition-colors" />
+                <File className="w-5 h-5 text-blue-500 dark:text-blue-400 transition-colors" />
                 <h2 className="text-lg font-semibold text-foreground transition-colors flex-1 line-clamp-1">
                   {doc.filename || "Untitled Document"}
                 </h2>
@@ -62,10 +63,10 @@ export default function DocView() {
                   className="w-8 h-8 rounded-full object-cover border"
                 />
                 <div>
-                  <p className="text-sm font-medium text-gray-200">
+                  <p className="text-sm font-medium text-card-foreground">
                     {doc.owner.full_name}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {new Date(doc.created_at).toLocaleDateString()}
                   </p>
                 </div>
