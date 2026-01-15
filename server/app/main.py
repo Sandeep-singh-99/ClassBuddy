@@ -32,6 +32,7 @@ from app.mobile.router.studentInsight import router as mobile_student_insight_ro
 from app.mobile.router.submission import router as mobile_submission_router
 from app.mobile.router.teacherInsight import router as mobile_teacher_insight_router
 from app.mobile.router.groupMessage import router as mobile_group_message_router
+from app.mobile.router.subscription import router as mobile_subscription_router
 from app.utils.socket_manager import manager
 from app.config.db import Base, engine
 from app.models import auth, notes, teacherInsight
@@ -149,6 +150,11 @@ app.include_router(
     mobile_group_message_router,
     prefix="/mobile/group-messages",
     tags=["Mobile Group Messages"],
+)
+app.include_router(
+    mobile_subscription_router,
+    prefix="/mobile/subscription",
+    tags=["Mobile Subscription"],
 )
 
 
