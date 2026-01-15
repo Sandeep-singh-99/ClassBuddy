@@ -12,6 +12,7 @@ from app.schemas.notes import TeacherNotesResponse
 from app.models.notes import Note
 from app.models.teacherInsight import TeacherInsight
 from app.core.rate_limiter import limiter
+from app.dependencies.require_active_subscription import check_active_subscription
 
 
 router = APIRouter()
@@ -52,7 +53,7 @@ def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = F
     return new_doc
 
 
-@router.get("/my-docs", response_model=List[DocsBase])
+@router.get("/my-docs", response_model=List[DocsBase], dependencies=[Depends(check_active_subscription)])
 @limiter.limit("10/minute")
 def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     docs = db.query(DocsUpload).filter(DocsUpload.owner_id == current_user.id).all()
@@ -73,7 +74,7 @@ def get_my_doc(request: Request, doc_id: str, db: Session = Depends(get_db), cur
     return docs
 
 
-@router.get("/teacher-notes-with-docs", response_model=DocsUploadResponse)
+@router.get("/teacher-notes-with-docs", response_model=DocsUploadResponse, dependencies=[Depends(check_active_subscription)])
 @limiter.limit("10/minute")
 def get_teacher_notes_with_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
