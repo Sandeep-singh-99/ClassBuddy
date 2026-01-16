@@ -42,9 +42,6 @@ export default function PaymentPage() {
 
       <PaymentStats stats={stats} />
 
-      {/* Analytics Section */}
-      <SubscriptionAnalytics analytics={analytics} />
-
       {plansLoading && plans.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-muted-foreground">Loading plans...</p>
@@ -62,6 +59,9 @@ export default function PaymentPage() {
           ))}
         </div>
       )}
+
+      {/* Analytics Section */}
+      <SubscriptionAnalytics analytics={analytics} />
     </div>
   );
 }
