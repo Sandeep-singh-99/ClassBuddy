@@ -18,7 +18,7 @@ export default function DocView() {
   }, [dispatch, docs.length]);
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-6 flex items-center gap-2">
         <FileIcon className="w-7 h-7 text-blue-600" /> Documents
       </h1>

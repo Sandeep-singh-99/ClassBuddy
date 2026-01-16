@@ -3,9 +3,13 @@ export interface ISubscription {
   group_id: string;
   plan_id: string;
   amount: number;
+  start_date: string;
   valid_till: string;
+  is_active: boolean;
   razorpay_order_id: string;
   razorpay_payment_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface IPlan {
@@ -38,4 +42,12 @@ export interface IStudentGroupSubscription {
     image_url?: string;
   };
   plans: IPlan[];
+  subscription: ISubscription | null;
+}
+
+
+export interface ITeacherSubscriptionStats {
+  paid_students: number;
+  total_students: number;
+  total_earnings: number;
 }
