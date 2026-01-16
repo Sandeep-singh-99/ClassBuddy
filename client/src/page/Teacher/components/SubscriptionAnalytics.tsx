@@ -1,12 +1,9 @@
-import React from "react";
 import {
   ComposedChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Line,
-  Tooltip,
   Legend,
   ResponsiveContainer,
 } from "recharts";
@@ -20,7 +17,6 @@ import {
 import {
   type ChartConfig,
   ChartContainer,
-  ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
