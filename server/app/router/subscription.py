@@ -319,3 +319,74 @@ def get_teacher_subscription_stats(
         "paid_students": paid_students_count,
         "total_earnings": total_earnings,
     }
+
+
+@router.get("/teacher/analytics")
+def get_teacher_subscription_analytics(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(
+            status_code=403, detail="Only teachers can access subscription analytics"
+        )
+
+    # 1. Get Teacher's Group
+    group = (
+        db.query(TeacherInsight)
+        .filter(TeacherInsight.user_id == current_user.id)
+        .first()
+    )
+
+    if not group:
+        return {"plan_earnings": [], "monthly_trends": []}
+
+    # 2. Earnings per Plan (For Pie/Bar Chart)
+    # Group by plan_name
+    earnings_query = (
+        db.query(
+            SubscriptionPlan.plan_name,
+            func.sum(StudentSubscription.amount).label("total_amount"),
+        )
+        .join(StudentSubscription, SubscriptionPlan.id == StudentSubscription.plan_id)
+        .filter(StudentSubscription.group_id == group.id)
+        .group_by(SubscriptionPlan.plan_name)
+        .all()
+    )
+
+    plan_earnings = [
+        {"name": row.plan_name, "value": row.total_amount} for row in earnings_query
+    ]
+
+    # 3. Monthly Trends (For Line/Area Chart)
+    # Fetch all subscriptions and aggregate in Python to handle dates easily
+    subs = (
+        db.query(
+            StudentSubscription.created_at,
+            StudentSubscription.amount,
+            SubscriptionPlan.plan_name,
+        )
+        .join(SubscriptionPlan, StudentSubscription.plan_id == SubscriptionPlan.id)
+        .filter(StudentSubscription.group_id == group.id)
+        .order_by(StudentSubscription.created_at)
+        .all()
+    )
+
+    # Process into daily buckets for date-wise trends
+    # Structure: [{"name": "2024-01-01", "Plan A": 100, "Plan B": 200}, ...]
+    daily_map = {}
+
+    for sub in subs:
+        date_key = sub.created_at.strftime("%Y-%m-%d")
+
+        if date_key not in daily_map:
+            daily_map[date_key] = {"name": date_key}
+
+        if sub.plan_name not in daily_map[date_key]:
+            daily_map[date_key][sub.plan_name] = 0
+
+        daily_map[date_key][sub.plan_name] += sub.amount
+
+    # Convert map to list
+    trends = list(daily_map.values())
+
+    return {"plan_earnings": plan_earnings, "monthly_trends": trends}

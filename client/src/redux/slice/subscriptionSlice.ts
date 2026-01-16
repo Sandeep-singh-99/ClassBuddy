@@ -5,6 +5,7 @@ import type {
   ICreatePlan,
   IStudentGroupSubscription,
   ITeacherSubscriptionStats,
+  ITeacherAnalytics,
 } from "@/types/subscription";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
@@ -103,21 +104,41 @@ export const fetchStudentSubscriptionPlans = createAsyncThunk(
   }
 );
 
-export const teacherSubscriptionStats = createAsyncThunk("subscription/stats", async ( _ , thunkApi) => {
-  try {
-    const response = await axiosClient.get("/subscription/teacher/stats");
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
+export const teacherSubscriptionStats = createAsyncThunk(
+  "subscription/stats",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get("/subscription/teacher/stats");
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           error.response?.data?.detail ??
             error.message ??
             "Fetching stats failed"
         );
       }
+    }
   }
-})
+);
 
+export const fetchSubscriptionAnalytics = createAsyncThunk(
+  "subscription/analytics",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get("/subscription/teacher/analytics");
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ??
+            error.message ??
+            "Fetching analytics failed"
+        );
+      }
+    }
+  }
+);
 
 interface SubscriptionState {
   loading: boolean;
@@ -125,6 +146,7 @@ interface SubscriptionState {
   subscription: ISubscription | null;
   plans: IPlan[];
   stats: ITeacherSubscriptionStats | null;
+  analytics: ITeacherAnalytics | null;
   studentGroups: IStudentGroupSubscription[];
 }
 
@@ -134,6 +156,7 @@ const initialState: SubscriptionState = {
   subscription: null,
   plans: [],
   stats: null,
+  analytics: null,
   studentGroups: [],
 };
 
@@ -198,6 +221,7 @@ const subscriptionSlice = createSlice({
       state.error = action.payload as string;
     });
 
+    // Fetch Stats
     builder.addCase(teacherSubscriptionStats.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -210,6 +234,23 @@ const subscriptionSlice = createSlice({
       }
     );
     builder.addCase(teacherSubscriptionStats.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Fetch Analytics
+    builder.addCase(fetchSubscriptionAnalytics.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      fetchSubscriptionAnalytics.fulfilled,
+      (state, action: PayloadAction<ITeacherAnalytics>) => {
+        state.loading = false;
+        state.analytics = action.payload;
+      }
+    );
+    builder.addCase(fetchSubscriptionAnalytics.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
