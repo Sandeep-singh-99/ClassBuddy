@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
       {/* <HelmetProvider> */}
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <RouterProvider router={router} />
         </ThemeProvider>
       {/* </HelmetProvider> */}
