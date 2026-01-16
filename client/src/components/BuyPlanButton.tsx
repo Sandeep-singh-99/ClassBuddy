@@ -7,11 +7,10 @@ import { useAppSelector } from "@/hooks/hooks";
 
 type Props = {
   plan_id: string;
-  amount: number;
   planName: string;
 };
 
-export default function BuyPlanButton({ plan_id, amount, planName }: Props) {
+export default function BuyPlanButton({ plan_id, planName }: Props) {
   const { user } = useAppSelector((state) => state.auth);
 
   const handlePayment = async (e: React.MouseEvent) => {
