@@ -3,19 +3,24 @@ import { CreateSubscriptionDialog } from "./components/CreateSubscriptionDialog"
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import {
   fetchSubscription,
+  teacherSubscriptionStats,
 } from "@/redux/slice/subscriptionSlice";
 import { SubscriptionCard } from "./components/SubscriptionCard";
 
+import { PaymentStats } from "./components/PaymentStats";
+
 export default function PaymentPage() {
   const dispatch = useAppDispatch();
-  const { plans, loading: plansLoading } = useAppSelector(
-    (state) => state.subscription
-  );
+  const {
+    plans,
+    loading: plansLoading,
+    stats,
+  } = useAppSelector((state) => state.subscription);
 
   useEffect(() => {
     dispatch(fetchSubscription());
+    dispatch(teacherSubscriptionStats());
   }, []);
-  
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -30,6 +35,8 @@ export default function PaymentPage() {
         </div>
         <CreateSubscriptionDialog />
       </div>
+
+      <PaymentStats stats={stats} />
 
       {plansLoading && plans.length === 0 ? (
         <div className="text-center py-10">

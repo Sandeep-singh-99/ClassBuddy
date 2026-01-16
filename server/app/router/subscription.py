@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from datetime import datetime, timedelta, timezone
 import hashlib, hmac
 
@@ -12,6 +13,7 @@ from app.schemas.subscription import (
     CreateOrderSchema,
     VerifyPaymentSchema,
     PlanOut,
+    StudentSubscriptionOut,
 )
 from app.schemas.plan import TeacherPlanResponse, UpdatePlanSchema
 from app.schemas.auth import userRole
@@ -174,6 +176,16 @@ def get_all_plans(
             .all()
         )
 
+        subscription = (
+            db.query(StudentSubscription)
+            .filter(
+                StudentSubscription.group_id == group.id,
+                StudentSubscription.user_id == current_user.id,
+                StudentSubscription.is_active == True,
+            )
+            .first()
+        )
+
         result.append(
             {
                 "teacher": {
@@ -188,6 +200,11 @@ def get_all_plans(
                     "image_url": group.image_url,
                 },
                 "plans": plans,
+                "subscription": (
+                    StudentSubscriptionOut.model_validate(subscription)
+                    if subscription
+                    else None
+                ),
             }
         )
 
@@ -252,3 +269,53 @@ def verify_payment(
     db.commit()
 
     return {"message": "Subscription activated"}
+
+
+@router.get("/teacher/stats")
+def get_teacher_subscription_stats(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(
+            status_code=403, detail="Only teachers can access subscription stats"
+        )
+
+    # 1. Get Teacher's Group
+    group = (
+        db.query(TeacherInsight)
+        .filter(TeacherInsight.user_id == current_user.id)
+        .first()
+    )
+
+    if not group:
+        return {"total_students": 0, "paid_students": 0, "total_earnings": 0}
+
+    # 2. Total Students (Members of the group)
+    # Since members is a relationship, we can use len() or a count query on the association table
+    # Using len(group.members) might be inefficient for large groups, but okay for MVP.
+    # Better to query count if possible, but relationship loading works.
+    total_students = len(group.members)
+
+    # 3. Paid Students (Active Subscriptions)
+    paid_students_count = (
+        db.query(StudentSubscription)
+        .filter(
+            StudentSubscription.group_id == group.id,
+            StudentSubscription.is_active == True,
+        )
+        .count()
+    )
+
+    # 4. Total Earnings
+    total_earnings_result = (
+        db.query(func.sum(StudentSubscription.amount))
+        .filter(StudentSubscription.group_id == group.id)
+        .scalar()
+    )
+    total_earnings = total_earnings_result if total_earnings_result else 0
+
+    return {
+        "total_students": total_students,
+        "paid_students": paid_students_count,
+        "total_earnings": total_earnings,
+    }
