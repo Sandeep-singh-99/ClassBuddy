@@ -4,10 +4,12 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import {
   fetchSubscription,
   teacherSubscriptionStats,
+  fetchSubscriptionAnalytics, // Import Thunk
 } from "@/redux/slice/subscriptionSlice";
 import { SubscriptionCard } from "./components/SubscriptionCard";
 
 import { PaymentStats } from "./components/PaymentStats";
+import { SubscriptionAnalytics } from "./components/SubscriptionAnalytics"; // Import Analytics
 
 export default function PaymentPage() {
   const dispatch = useAppDispatch();
@@ -15,11 +17,13 @@ export default function PaymentPage() {
     plans,
     loading: plansLoading,
     stats,
+    analytics, // Select analytics
   } = useAppSelector((state) => state.subscription);
 
   useEffect(() => {
     dispatch(fetchSubscription());
     dispatch(teacherSubscriptionStats());
+    dispatch(fetchSubscriptionAnalytics()); // Dispatch Thunk
   }, []);
 
   return (
@@ -37,6 +41,9 @@ export default function PaymentPage() {
       </div>
 
       <PaymentStats stats={stats} />
+
+      {/* Analytics Section */}
+      <SubscriptionAnalytics analytics={analytics} />
 
       {plansLoading && plans.length === 0 ? (
         <div className="text-center py-10">

@@ -318,3 +318,75 @@ def get_teacher_subscription_stats(
         "paid_students": paid_students_count,
         "total_earnings": total_earnings,
     }
+
+
+@router.get("/teacher/analytics")
+def get_teacher_subscription_analytics(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(
+            status_code=403, detail="Only teachers can access subscription analytics"
+        )
+
+    # 1. Get Teacher's Group
+    group = (
+        db.query(TeacherInsight)
+        .filter(TeacherInsight.user_id == current_user.id)
+        .first()
+    )
+
+    if not group:
+        return {"plan_earnings": [], "monthly_trends": []}
+
+    # 2. Earnings per Plan (For Pie/Bar Chart)
+    # Group by plan_name
+    earnings_query = (
+        db.query(
+            SubscriptionPlan.plan_name,
+            func.sum(StudentSubscription.amount).label("total_amount"),
+            func.count(StudentSubscription.id).label("total_count"),
+        )
+        .join(StudentSubscription, SubscriptionPlan.id == StudentSubscription.plan_id)
+        .filter(StudentSubscription.group_id == group.id)
+        .group_by(SubscriptionPlan.plan_name)
+        .all()
+    )
+
+    plan_earnings = [
+        {"name": row.plan_name, "value": row.total_amount, "count": row.total_count}
+        for row in earnings_query
+    ]
+
+    # 3. Monthly Trends (For Line/Area Chart)
+    # Fetch all subscriptions and aggregate in Python to handle dates easily
+    subs = (
+        db.query(
+            StudentSubscription.created_at,
+            StudentSubscription.amount,
+            SubscriptionPlan.plan_name,
+        )
+        .join(SubscriptionPlan, StudentSubscription.plan_id == SubscriptionPlan.id)
+        .filter(StudentSubscription.group_id == group.id)
+        .order_by(StudentSubscription.created_at)
+        .all()
+    )
+
+    # Process into monthly buckets
+    monthly_map = {}
+
+    for sub in subs:
+        month_key = sub.created_at.strftime("%b")  # e.g., "Jan", "Feb"
+
+        if month_key not in monthly_map:
+            monthly_map[month_key] = {"name": month_key}
+
+        if sub.plan_name not in monthly_map[month_key]:
+            monthly_map[month_key][sub.plan_name] = 0
+
+        monthly_map[month_key][sub.plan_name] += sub.amount
+
+    # Convert map to list
+    monthly_trends = list(monthly_map.values())
+
+    return {"plan_earnings": plan_earnings, "monthly_trends": monthly_trends}

@@ -45,9 +45,19 @@ export interface IStudentGroupSubscription {
   subscription: ISubscription | null;
 }
 
-
 export interface ITeacherSubscriptionStats {
   paid_students: number;
   total_students: number;
   total_earnings: number;
+}
+
+export interface IPlanEarnings {
+  name: string;
+  value: number;
+  count: number;
+}
+
+export interface ITeacherAnalytics {
+  plan_earnings: IPlanEarnings[];
+  monthly_trends: any[]; // Using any[] for now as shape is dynamic based on plan names
 }
