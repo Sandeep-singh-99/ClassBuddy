@@ -42,6 +42,13 @@
 - **Secure Auth**: Robust **JWT-based authentication** ensures data privacy and secure API access.
 - **Rate Limiting**: Implemented **SlowAPI** based rate limiting to prevent abuse and ensure fair usage.
 
+### 💰 **Teacher Monetization & Subscriptions**
+
+- **Custom Plans**: Teachers can create and manage subscription plans (up to 3) for their groups.
+- **Secure Payments**: Integrated **Razorpay** payment gateway for seamless and secure transaction processing.
+- **Earnings Dashboard**: Detailed analytics on earnings and subscription trends for teachers.
+- **Subscription Management**: Students can view, subscribe, and manage their active subscriptions.
+
 ### ☁️ **Modern Cloud Infrastructure**
 
 - **Scalable Database**: Powered by **PostgreSQL (NeonDB)** for high availability.
@@ -70,6 +77,7 @@
 - **Migrations**: [Alembic](https://alembic.sqlalchemy.org/)
 - **AI/LLM**: [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/)
 - **Authentication**: JWT (JSON Web Tokens)
+- **Payment Gateway**: [Razorpay](https://razorpay.com/)
 
 ### **DevOps**
 
