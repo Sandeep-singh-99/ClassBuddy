@@ -91,7 +91,7 @@ export function SubscriptionPlansDialog({
                     </div>
                   </CardContent>
                   <div className="p-6 pt-0">
-                    <BuyPlanButton plan_id={plan.id} amount={plan.amount} planName={plan.plan_name} />
+                    <BuyPlanButton plan_id={plan.id} planName={plan.plan_name} />
                   </div>
                 </Card>
               ))
