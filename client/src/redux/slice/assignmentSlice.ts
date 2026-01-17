@@ -20,6 +20,22 @@ export const fetchAssignments = createAsyncThunk(
   }
 );
 
+export const fetchTeacherAssignments = createAsyncThunk(
+  "assignments/fetchTeacherAssignments",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get("/assignments/teacher-get-own-assignment");
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ?? error.message ?? "Registration failed"
+        );
+      }
+    }
+  }
+);
+
 export const fetchAssignmentById = createAsyncThunk(
   "assignments/fetchById",
   async (id: string, thunkApi) => {
@@ -208,6 +224,27 @@ const assignmentSlice = createSlice({
 
     builder.addCase(DeleteAssignment.rejected, (state, action) => {
       state.loading = false;
+      state.error = action.payload as string;
+    });
+
+
+    builder.addCase(fetchTeacherAssignments.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    builder.addCase(
+      fetchTeacherAssignments.fulfilled,
+      (state, action: PayloadAction<IAssignment[]>) => {
+        state.assignments = action.payload;
+        state.loading = false;
+        state.error = null;
+      }
+    );
+
+    builder.addCase(fetchTeacherAssignments.rejected, (state, action) => {
+      state.loading = false;
+      state.assignments = [];
       state.error = action.payload as string;
     });
   },

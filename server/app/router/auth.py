@@ -11,6 +11,8 @@ from app.utils.utils import hash_password, verify_password, create_access_token
 from app.dependencies.dependencies import get_current_user
 from app.utils.cloudinary import upload_image, delete_image
 from app.core.rate_limiter import limiter
+from app.dependencies.require_active_subscription import check_active_subscription
+
 
 router = APIRouter()
 
@@ -114,7 +116,7 @@ def logout(request: Request, response: Response, current_user: User = Depends(ge
     return current_user
 
 
-@router.get("/student/notes", response_model=TeacherNotesResponse)
+@router.get("/student/notes", response_model=TeacherNotesResponse, dependencies=[Depends(check_active_subscription)])
 @limiter.limit("10/minute")
 def get_group_notes_for_student(
     request: Request,
@@ -124,6 +126,9 @@ def get_group_notes_for_student(
     # Ensure only authenticated users can access
     if not current_user:
         raise HTTPException(status_code=401, detail="Authentication required")
+    
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=403, detail="Only students can view notes")
 
     # Fetch student with their groups
     student = db.query(User).options(joinedload(User.groups)).filter(User.id == current_user.id).first()

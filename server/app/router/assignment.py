@@ -16,7 +16,7 @@ from app.dependencies.dependencies import get_db, get_current_user
 from app.models.teacherInsight import TeacherInsight
 from sqlalchemy.orm import joinedload
 from app.core.rate_limiter import limiter
-
+from app.dependencies.require_active_subscription import check_active_subscription
 
 router = APIRouter()
 
@@ -74,7 +74,7 @@ async def create_assignment(
     return new_assignment
 
 
-@router.get("/assignments", response_model=List[AssignmentBase])
+@router.get("/assignments", response_model=List[AssignmentBase], dependencies=[Depends(check_active_subscription)])
 @limiter.limit("10/minute")
 async def get_assignments(
     request: Request,
@@ -86,12 +86,13 @@ async def get_assignments(
             detail="not authorized to view assignments",
         )
 
-    if current_user.role == userRole.TEACHER:
-        assignments = (
-            db.query(Assignment).filter(Assignment.owner_id == current_user.id).all()
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can view assignments",
         )
-    else:
-        assignments = (
+
+    assignments = (
             db.query(Assignment)
             .join(TeacherInsight, Assignment.group_id == TeacherInsight.id)
             .join(group_members, TeacherInsight.id == group_members.c.group_id)
@@ -100,7 +101,24 @@ async def get_assignments(
             .all()
         )
 
-        assignments.sort(key=lambda x: x.created_at, reverse=True)
+    assignments.sort(key=lambda x: x.created_at, reverse=True)
+
+    return assignments
+
+@router.get("/teacher-get-own-assignment", response_model=List[AssignmentBase])
+@limiter.limit("10/minute")
+async def get_teacher_assignments(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not current_user or current_user.role != userRole.TEACHER:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="not authorized to view assignments",
+        )
+
+    assignments = db.query(Assignment).filter(Assignment.owner_id == current_user.id).all()
 
     return assignments
 

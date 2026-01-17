@@ -56,6 +56,12 @@ def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = F
 @router.get("/my-docs", response_model=List[DocsBase])
 @limiter.limit("10/minute")
 def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    
+    if current_user.role != userRole.TEACHER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view this resource")
+    
     docs = db.query(DocsUpload).filter(DocsUpload.owner_id == current_user.id).all()
     docs.sort(key=lambda x: x.updated_at, reverse=True)
     return docs
