@@ -2,7 +2,7 @@ import { AlertCircle, BookOpenText } from "lucide-react";
 import AssignmentForm from "./components/AssignmentForm";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { useEffect } from "react";
-import { fetchAssignments } from "@/redux/slice/assignmentSlice";
+import { fetchTeacherAssignments } from "@/redux/slice/assignmentSlice";
 import { BarLoader } from "react-spinners";
 import AssignmentCard from "./components/AssignmentCard";
 
@@ -14,7 +14,7 @@ export default function TAssignment() {
   );
 
   useEffect(() => {
-    dispatch(fetchAssignments());
+    dispatch(fetchTeacherAssignments());
   }, [dispatch]);
 
   return (
