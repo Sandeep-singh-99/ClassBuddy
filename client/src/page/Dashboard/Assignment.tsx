@@ -27,7 +27,7 @@ export default function Assignment() {
       {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
 
       {error && (
-        <div className="flex items-center justify-center gap-2 p-4 my-6 bg-red-50 text-red-600 border border-red-200 rounded-lg">
+        <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
           <AlertCircle className="w-5 h-5" />
           <span className="text-sm font-medium">Error: {error}</span>
         </div>
