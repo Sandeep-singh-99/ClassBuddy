@@ -42,6 +42,7 @@ import os
 from slowapi.errors import RateLimitExceeded
 from app.core.rate_limiter import limiter, rate_limit_exceeded_handler
 
+
 load_dotenv()
 
 app = FastAPI()
@@ -76,6 +77,11 @@ async def on_shutdown():
     await manager.stop_listener()
 
 
+from app.router.inngest_route import inngest_api
+
+app.include_router(inngest_api)
+
+
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(chat_with_pdf, prefix="/pdf", tags=["PDF Chat"])
 app.include_router(
@@ -102,9 +108,6 @@ app.include_router(
 )
 app.include_router(subscription_router, prefix="/subscription", tags=["Subscription"])
 
-from app.router.inngest_route import inngest_api
-
-app.include_router(inngest_api)
 
 # Mobile APIs
 app.include_router(mobile_auth_router, prefix="/mobile/auth", tags=["Mobile Auth"])
