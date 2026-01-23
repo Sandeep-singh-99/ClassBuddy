@@ -102,7 +102,7 @@ load_dotenv()
 
 # graph = workflow.compile()
 
-# router = APIRouter()
+router = APIRouter()
 
 
 # @router.post("/generate-industry-insight", response_model=StudentInsightResponse)
@@ -164,17 +164,20 @@ load_dotenv()
 
 
 @router.post("/generate-industry-insight")
-def generate_industry_insight(
+async def generate_industry_insight(
     industry: str = Form(...),
     current_user = Depends(get_current_user),
 ):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(403, "Only students allowed")
 
-    inngest.send(
-        name="student/industry.generate",
-        data={"industry": industry, "user_id": current_user.id},
-    )
+    await inngest.send({
+        "name": "student/industry.generate",
+        "data": {
+            "industry": industry,
+            "user_id": current_user.id,
+        },
+    })
 
     return {
         "status": "processing",

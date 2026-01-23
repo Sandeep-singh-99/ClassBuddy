@@ -77,9 +77,9 @@ async def on_shutdown():
     await manager.stop_listener()
 
 
-from app.router.inngest_route import inngest_api
+from app.router.inngest_route import router as inngest_router
 
-app.include_router(inngest_api)
+app.include_router(inngest_router, prefix="/api")
 
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
