@@ -102,6 +102,10 @@ app.include_router(
 )
 app.include_router(subscription_router, prefix="/subscription", tags=["Subscription"])
 
+from app.router.inngest_route import inngest_api
+
+app.include_router(inngest_api)
+
 # Mobile APIs
 app.include_router(mobile_auth_router, prefix="/mobile/auth", tags=["Mobile Auth"])
 app.include_router(
