@@ -1,6 +1,6 @@
 from typing import TypedDict, Annotated
 from langgraph.graph import StateGraph, END, add_messages
-from langchain_tavily import tavily_search
+from langchain_tavily import TavilySearch
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 from dotenv import load_dotenv
@@ -14,7 +14,7 @@ class State(TypedDict):
     getIndustry: Annotated[list, add_messages]
 
 
-search_tool = tavily_search(max_results=4)
+search_tool = TavilySearch(max_results=4)
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
@@ -23,7 +23,7 @@ llm = ChatGoogleGenerativeAI(
 )
 
 
-def tavily_search_tool(state: State):
+def tavily_search_node(state: State):
     topic = state["industry"][-1].content
     results = search_tool.invoke({"query": topic})
 
@@ -64,11 +64,11 @@ def generate_industry_node(state: State):
     return {
         "industry": state["industry"],
         "research": state["research"],
-        "getIndustry": [HumanMessage(content=response.content.split())],
+        "getIndustry": [HumanMessage(content=response.content.strip())],
     }
 
 workflow = StateGraph(State)
-workflow.add_node("search", tavily_search_tool)
+workflow.add_node("search", tavily_search_node)
 workflow.add_node("generate", generate_industry_node)
 workflow.set_entry_point("search")
 workflow.add_edge("search", "generate")
