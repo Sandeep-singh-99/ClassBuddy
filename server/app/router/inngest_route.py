@@ -5,8 +5,11 @@ from app.inngest.cron_student_insight import cron_update_student_insights
 
 router = APIRouter()
 
-@router.post("/inngest")
-async def inngest_handler(request: dict):
+from fastapi import Request
+
+
+@router.api_route("/inngest", methods=["GET", "POST", "PUT"])
+async def inngest_handler(request: Request):
     return await inngest.serve(
         request,
         functions=[
