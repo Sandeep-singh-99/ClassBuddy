@@ -38,15 +38,15 @@
 #     return {"status": "triggered", "count": len(events)}
 
 
-
 from app.core.inngest import inngest_client
 from app.config.db import SessionLocal
 from app.models.studentInsight import StudentInsight
 import inngest
 
+
 @inngest_client.create_function(
     fn_id="cron-update-student-insights",
-    trigger=inngest.TriggerCron(cron="0 9 * * 0"), # Sunday 9 AM UTC
+    trigger=[{"cron": "0 9 * * 0"}],  # Sunday 9 AM UTC
 )
 async def cron_update_student_insights(ctx: inngest.Context, step: inngest.Step):
     def fetch():
