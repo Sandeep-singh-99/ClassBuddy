@@ -6,17 +6,12 @@ import inngest.fast_api
 
 router = APIRouter()
 
-from fastapi import Request
-
-
-@router.api_route("/inngest", methods=["GET", "POST", "PUT"])
-async def inngest_handler(request: Request):
-    return await inngest.fast_api.serve(
-        request,
-        functions=[
-            generate_student_insight,
-            cron_update_student_insights,
-        ],
-    )
-
-
+inngest.fast_api.serve(
+    router,
+    client=inngest_client,
+    functions=[
+        generate_student_insight,
+        # cron_update_student_insights,
+    ],
+    serve_path="/api/inngest",
+)
