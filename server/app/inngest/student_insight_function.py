@@ -2,19 +2,20 @@ import json
 from datetime import datetime
 from sqlalchemy.orm import Session
 from inngest import Step
-from app.core.inngest import inngest
+from app.core.inngest import inngest_client
 from app.config.db import SessionLocal
 from app.models.studentInsight import StudentInsight
 from app.dependencies.redis_client import get_redis_client
 from langchain_core.messages import HumanMessage
 from app.ai.industry_graph import industry_graph
+import inngest
 
 
-@inngest.create_function(
+@inngest_client.create_function(
     fn_id="generate-student-industry-insight",
     trigger={"event": "student/industry.generate"},
 )
-def generate_student_insight(ctx, step: Step):
+def generate_student_insight(ctx: inngest.Context, step: inngest.Step):
     data = ctx.event.data
     industry = data["industry"]
     user_id = data["user_id"]
