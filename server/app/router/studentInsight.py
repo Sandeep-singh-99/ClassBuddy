@@ -16,7 +16,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from app.dependencies.redis_client import get_redis_client
 import json
 from datetime import datetime
-from app.core.inngest import inngest
+from app.core.inngest import inngest_client
 from inngest import Event
 
 load_dotenv()
@@ -32,7 +32,7 @@ async def generate_industry_insight(
     if current_user.role != userRole.STUDENT:
         raise HTTPException(403, "Only students allowed")
 
-    await inngest.send(
+    await inngest_client.send(
         [
             Event(
                 name="student/industry.generate",

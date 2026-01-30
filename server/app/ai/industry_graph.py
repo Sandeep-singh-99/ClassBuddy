@@ -67,6 +67,7 @@ def generate_industry_node(state: State):
         "getIndustry": [HumanMessage(content=response.content.strip())],
     }
 
+
 workflow = StateGraph(State)
 workflow.add_node("search", tavily_search_node)
 workflow.add_node("generate", generate_industry_node)
