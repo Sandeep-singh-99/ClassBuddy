@@ -69,7 +69,6 @@
 #         db.close()
 
 
-
 import json
 from datetime import datetime
 from sqlalchemy.orm import Session
@@ -80,6 +79,7 @@ from app.models.studentInsight import StudentInsight
 from app.dependencies.redis_client import get_redis_client
 from langchain_core.messages import HumanMessage
 from app.ai.industry_graph import industry_graph
+
 
 @inngest_client.create_function(
     fn_id="generate-student-industry-insight",
@@ -92,13 +92,22 @@ async def generate_student_insight(ctx: inngest.Context, step: inngest.Step):
 
     # 1. Run the AI Graph
     async def run_ai_research():
-        state = {
-            "industry": [HumanMessage(content=industry)],
-            "research": [],
-            "getIndustry": [],
-        }
-        result = industry_graph.invoke(state)
-        return json.loads(result["getIndustry"][-1].content)
+        try:
+            print(f"Starting AI research for industry: {industry}")
+            state = {
+                "industry": [HumanMessage(content=industry)],
+                "research": [],
+                "getIndustry": [],
+            }
+            result = industry_graph.invoke(state)
+            print("AI research completed successfully")
+            return json.loads(result["getIndustry"][-1].content)
+        except Exception as e:
+            print(f"Error in AI research: {str(e)}")
+            import traceback
+
+            traceback.print_exc()
+            raise e
 
     insight_data = await step.run("ai-industry-research", run_ai_research)
 
@@ -106,10 +115,14 @@ async def generate_student_insight(ctx: inngest.Context, step: inngest.Step):
     async def sync_to_db():
         db: Session = SessionLocal()
         try:
-            insight = db.query(StudentInsight).filter(
-                StudentInsight.user_id == user_id,
-                StudentInsight.industry == industry,
-            ).first()
+            insight = (
+                db.query(StudentInsight)
+                .filter(
+                    StudentInsight.user_id == user_id,
+                    StudentInsight.industry == industry,
+                )
+                .first()
+            )
 
             if insight:
                 for key, value in insight_data.items():
@@ -133,7 +146,7 @@ async def generate_student_insight(ctx: inngest.Context, step: inngest.Step):
     async def clear_cache():
         redis = get_redis_client()
         redis.delete(f"student_insights:{user_id}")
-    
+
     await step.run("clear-redis-cache", clear_cache)
 
     return {"status": "success", "user_id": user_id}
