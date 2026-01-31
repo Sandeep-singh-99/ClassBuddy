@@ -49,6 +49,12 @@
 - **Earnings Dashboard**: Detailed analytics on earnings and subscription trends for teachers.
 - **Subscription Management**: Students can view, subscribe, and manage their active subscriptions.
 
+### ⚡ **Serverless Queue & Background Jobs**
+
+- **Event-Driven Architecture**: Uses **Inngest** for reliable background job processing and event-driven workflows.
+- **Automated Insights**: Scheduled cron jobs and event triggers to generate student and teacher insights asynchronously.
+- **Robust Error Handling**: Automatic retries and failure management for critical background tasks.
+
 ### ☁️ **Modern Cloud Infrastructure**
 
 - **Scalable Database**: Powered by **PostgreSQL (NeonDB)** for high availability.
@@ -76,6 +82,7 @@
 - **ORM**: [SQLAlchemy](https://www.sqlalchemy.org/)
 - **Migrations**: [Alembic](https://alembic.sqlalchemy.org/)
 - **AI/LLM**: [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/)
+- **Background Jobs**: [Inngest](https://www.inngest.com/)
 - **Authentication**: JWT (JSON Web Tokens)
 - **Payment Gateway**: [Razorpay](https://razorpay.com/)
 
@@ -135,6 +142,8 @@ REDIS_PORT=your_redis_port
 REDIS_USER=your_redis_user
 REDIS_PASSWORD=your_redis_password
 CORS_ORIGINS=your_cors_origins
+INNGEST_SIGNING_KEY=your_inngest_signing_key # Optional for local dev
+INNGEST_DEV=1 # Set to 1 for local development
 ```
 
 ### 3. Run with Docker (Recommended)
@@ -162,6 +171,13 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 uvicorn app.main:app --reload
+```
+
+#### Inngest Dev Server (For Background Jobs)
+
+```bash
+# In a separate terminal
+npx inngest-cli@latest dev
 ```
 
 #### Frontend (React)
