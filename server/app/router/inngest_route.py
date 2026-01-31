@@ -7,11 +7,10 @@ import inngest.fast_api
 router = APIRouter()
 
 inngest.fast_api.serve(
-    router,
+    app=router,
     client=inngest_client,
     functions=[
         generate_student_insight,
-        # cron_update_student_insights,
     ],
     serve_path="/api/inngest",
 )
