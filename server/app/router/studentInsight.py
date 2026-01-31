@@ -28,9 +28,26 @@ router = APIRouter()
 async def generate_industry_insight(
     industry: str = Form(...),
     current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(403, "Only students allowed")
+
+    existing_insight = (
+        db.query(StudentInsight)
+        .filter(
+            StudentInsight.user_id == current_user.id,
+            StudentInsight.industry == industry
+        )
+        .first()
+    )
+
+    if existing_insight:
+        # Option A: Return a 400 error
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Insights for {industry} already exist for this account."
+        )
 
     await inngest_client.send(
         [

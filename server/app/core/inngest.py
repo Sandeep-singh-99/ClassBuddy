@@ -1,13 +1,14 @@
-import inngest
-from dotenv import load_dotenv
 import os
+from inngest import Inngest
+from dotenv import load_dotenv
 
 load_dotenv()
 
-inngest_client = inngest.Inngest(
-    app_id="classbuddy-api",
-    event_key=os.getenv("INNGEST_EVENT_KEY"),
-    is_production=os.getenv("INNGEST_DEV") != "1",
-)
+is_dev = os.getenv("INNGEST_DEV") == "1"
 
-# Force reload for env update
+inngest_client = Inngest(
+    app_id="classbuddy-api",
+    # Local dev usually doesn't need the signing key
+    signing_key=os.getenv("INNGEST_SIGNING_KEY") if not is_dev else None,
+    is_production=not is_dev
+)
