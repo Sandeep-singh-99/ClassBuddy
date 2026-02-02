@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -39,14 +40,15 @@ export function CreateSubscriptionDialog() {
     setLoading(true);
     try {
       setOpen(false);
-      const response = await dispatch(createSubscriptionPlan(formData)).unwrap();
+      const response = await dispatch(
+        createSubscriptionPlan(formData),
+      ).unwrap();
       setFormData({ plan_name: "", amount: 0, validity_days: 0 });
       toast.success(response.message);
       setLoading(false);
     } catch (error) {
-      const axiosError = error as AxiosError<{ detail: string }>;
       const errorMessage =
-        axiosError.response?.data?.detail || "Invalid Credentials";
+        typeof error === "string" ? error : "Failed to create plan";
       toast.error(errorMessage);
       setOpen(true);
       setLoading(false);
@@ -113,6 +115,16 @@ export function CreateSubscriptionDialog() {
             </div>
           </div>
           <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                onClick={() => {
+                  setFormData({ plan_name: "", amount: 0, validity_days: 0 });
+                }}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save changes
