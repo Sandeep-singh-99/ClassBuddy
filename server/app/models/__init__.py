@@ -1,4 +1,4 @@
-from app.models.auth import User
+from app.models.auth import User, userRole
 from app.models.teacherInsight import TeacherInsight
 from app.models.studentInsight import StudentInsight
 from app.models.notes import Note

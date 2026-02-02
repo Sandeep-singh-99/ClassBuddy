@@ -1,18 +1,16 @@
 from fastapi import APIRouter, Depends, status, Form, File, HTTPException
 from sqlalchemy.orm import Session
 from typing import TypedDict, Annotated, Dict, List
-from app.schemas.studentInsight import StudentInsightResponse, StudentInsightCreate
-from app.mobile.router.auth import get_current_user_mobile as get_current_user
-from app.config.db import get_db
-from app.models.auth import User, userRole
-from app.schemas.auth import UserResponse
-from app.models.studentInsight import StudentInsight
+from app.schemas import studentInsight as student_insight_schema, auth as auth_schema
+from app.mobile.router import auth as mobile_auth
+from app.config import db
+from app.models import auth, StudentInsight, User, userRole
 from dotenv import load_dotenv
 from langgraph.graph import add_messages, StateGraph, END
 from langchain_tavily import TavilySearch
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
-from app.dependencies.redis_client import get_redis_client
+from app.dependencies import redis_client
 import json
 from datetime import datetime
 
@@ -105,11 +103,14 @@ graph = workflow.compile()
 router = APIRouter()
 
 
-@router.post("/generate-industry-insight", response_model=StudentInsightResponse)
+@router.post(
+    "/generate-industry-insight",
+    response_model=student_insight_schema.StudentInsightResponse,
+)
 def generate_industry_insight(
     industry: str = Form(..., description="The industry to generate insights for."),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    current_user: User = Depends(mobile_auth.get_current_user_mobile),
+    db_session: Session = Depends(db.get_db),
 ):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(
@@ -151,11 +152,11 @@ def generate_industry_insight(
             recommend_skills=insight_data.get("recommend_skills", []),
             user_id=current_user.id,
         )
-        db.add(new_insight)
-        db.commit()
-        db.refresh(new_insight)
+        db_session.add(new_insight)
+        db_session.commit()
+        db_session.refresh(new_insight)
     except Exception as e:
-        db.rollback()
+        db_session.rollback()
         raise HTTPException(
             status_code=500, detail=f"Failed to save industry insights: {str(e)}"
         )
@@ -163,11 +164,13 @@ def generate_industry_insight(
     return new_insight
 
 
-@router.get("/my-insights", response_model=StudentInsightResponse)
+@router.get(
+    "/my-insights", response_model=student_insight_schema.StudentInsightResponse
+)
 def get_my_insights(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-    redis_client=Depends(get_redis_client),
+    current_user: User = Depends(mobile_auth.get_current_user_mobile),
+    db_session: Session = Depends(db.get_db),
+    redis=Depends(redis_client.get_redis_client),
 ):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(
@@ -177,12 +180,12 @@ def get_my_insights(
 
     cache_key = f"student_insights:{current_user.id}"
 
-    cached_data = redis_client.get(cache_key)
+    cached_data = redis.get(cache_key)
     if cached_data:
         return json.loads(cached_data)
 
     insights = (
-        db.query(StudentInsight)
+        db_session.query(StudentInsight)
         .filter(StudentInsight.user_id == current_user.id)
         .first()
     )
@@ -193,13 +196,15 @@ def get_my_insights(
             detail="No industry insights found for the current user.",
         )
 
-    insights_data = StudentInsightResponse.from_orm(insights).dict()
+    insights_data = student_insight_schema.StudentInsightResponse.from_orm(
+        insights
+    ).dict()
     if not insights_data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No industry insights found for the current user.",
         )
 
-    redis_client.set(cache_key, json.dumps(insights_data, default=str), ex=3600)
+    redis.set(cache_key, json.dumps(insights_data, default=str), ex=3600)
 
     return insights_data
