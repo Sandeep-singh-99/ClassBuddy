@@ -49,7 +49,6 @@ class InterviewResponse(BaseModel):
     questions: Optional[List[Dict]] = None
     score: int
     user_answers: Union[Dict[str, str], str] = {}
-    status: str
     user_id: str
     created_at: datetime
     updated_at: datetime
@@ -62,5 +61,5 @@ class InterviewPreparationAsyncResponse(BaseModel):
     id: str
     name: str
     description: str
-    status: str
+    questions: List[Question]
     message: str

@@ -15,13 +15,6 @@ import uuid
 import enum
 from datetime import datetime
 
-
-class InterviewPrepStatus(str, enum.Enum):
-    GENERATING = "GENERATING"
-    READY = "READY"
-    SUBMITTED = "SUBMITTED"
-
-
 class InterviewPrep(Base):
     __tablename__ = "interviewpreps"
 
@@ -31,7 +24,6 @@ class InterviewPrep(Base):
     questions = Column(JSON, nullable=True)
     score = Column(Integer, nullable=False, default=0)
     user_answers = Column(JSON, nullable=False, default=dict)
-    status = Column(Enum(InterviewPrepStatus), default=InterviewPrepStatus.GENERATING)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

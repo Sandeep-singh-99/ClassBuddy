@@ -15,7 +15,7 @@ from app.models.auth import User, userRole
 from dotenv import load_dotenv
 from app.core.inngest import inngest_client
 import inngest
-from app.models.InterviewPreparation import InterviewPrep, InterviewPrepStatus
+from app.models.InterviewPreparation import InterviewPrep
 import uuid
 from datetime import datetime
 import json
@@ -46,7 +46,6 @@ async def create_interview_prep(
     new_entry = InterviewPrep(
         name=interview_prep.name,
         description=interview_prep.description,
-        status=InterviewPrepStatus.GENERATING,
         user_id=current_user.id,
         questions=[],
     )
@@ -70,7 +69,7 @@ async def create_interview_prep(
         "id": new_entry.id,
         "name": new_entry.name,
         "description": new_entry.description,
-        "status": new_entry.status,
+        "questions": new_entry.questions,
         "message": "Interview preparation started. Check back shortly.",
     }
 
@@ -100,16 +99,12 @@ async def submit_quiz(
     if not query:
         raise HTTPException(status_code=404, detail="Interview preparation not found.")
 
-    if query.status == InterviewPrepStatus.SUBMITTED:
-        raise HTTPException(status_code=400, detail="Quiz already submitted.")
-
     # Invalidate cache
     cache_key = f"interview_preps:{current_user.id}"
     redis_client.delete(cache_key)
 
     query.score = submission.score
     query.user_answers = submission.user_answers
-    query.status = InterviewPrepStatus.SUBMITTED
     query.updated_at = datetime.utcnow()
 
     db.commit()
@@ -119,23 +114,21 @@ async def submit_quiz(
         "message": "Quiz submitted successfully",
         "quiz_id": query.id,
         "score": query.score,
-        "status": query.status,
     }
-
 
 @router.get("/get-interview-preps", response_model=List[InterviewResponse])
 @limiter.limit("10/minute")
 def get_interview_preps(
     request: Request,
     db: Session = Depends(get_db),
-    redis_client=Depends(get_redis_client),
-    current_user: User = Depends(get_current_user),
+    redis_client = Depends(get_redis_client),
+    current_user: User = Depends(get_current_user)
 ):
     # Role check
     if current_user.role != userRole.STUDENT:
         raise HTTPException(
-            status_code=403,
-            detail="Only students can view their interview preparations.",
+            status_code=403, 
+            detail="Only students can view their interview preparations."
         )
 
     # Create unique cache key per user
@@ -154,13 +147,11 @@ def get_interview_preps(
     interview_preps = (
         db.query(InterviewPrep)
         .filter(InterviewPrep.user_id == current_user.id)
-        .order_by(InterviewPrep.created_at.desc())
         .all()
     )
 
     # Encode and cache result for 2 minutes
     encoded_data = jsonable_encoder(interview_preps)
     redis_client.set(cache_key, json.dumps(encoded_data))
-    redis_client.expire(cache_key, 120)
 
     return interview_preps
