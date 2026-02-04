@@ -31,9 +31,9 @@ export default function QuizFormComponents() {
 
 
     try {
-       await dispatch(InterviewPrepCreate({ name: title, description })).unwrap();
+       const result = await dispatch(InterviewPrepCreate({ name: title, description })).unwrap();
         toast.success("Quiz created successfully!");
-         navigate("/dashboard-panel/mock");
+         navigate(`/dashboard-panel/mock/${result.id}`);
     } catch (error) {
       toast.error("Failed to create quiz. Please try again.");
     }

@@ -85,7 +85,7 @@ export const router = createBrowserRouter([
       { path: "view-teachers", element: <ViewAllTeacher /> },
       { path: "notes", element: <Notes /> },
       { path: "interview-prep", element: <InterviewPerPage /> },
-      { path: "mock", element: <Mock /> },
+      { path: "mock/:id", element: <Mock /> },
       { path: "docs", element: <DocView /> },
       { path: "dashboard", element: <CareerDashboard /> },
       { path: "assignments", element: <Assignment /> },
