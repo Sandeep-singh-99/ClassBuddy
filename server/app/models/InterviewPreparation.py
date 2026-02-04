@@ -1,9 +1,25 @@
-from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime, Table, ForeignKey, JSON
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Enum,
+    Integer,
+    String,
+    DateTime,
+    Table,
+    ForeignKey,
+    JSON,
+)
 from sqlalchemy.orm import relationship
 from ..config.db import Base
 import uuid
 import enum
 from datetime import datetime
+
+
+class InterviewPrepStatus(str, enum.Enum):
+    GENERATING = "GENERATING"
+    READY = "READY"
+    SUBMITTED = "SUBMITTED"
 
 
 class InterviewPrep(Base):
@@ -12,9 +28,10 @@ class InterviewPrep(Base):
     id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     name = Column(String, index=True, nullable=True)
     description = Column(String, nullable=True)
-    questions = Column(JSON, nullable=False)
+    questions = Column(JSON, nullable=True)
     score = Column(Integer, nullable=False, default=0)
     user_answers = Column(JSON, nullable=False, default=dict)
+    status = Column(Enum(InterviewPrepStatus), default=InterviewPrepStatus.GENERATING)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
