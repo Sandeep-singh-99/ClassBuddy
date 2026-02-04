@@ -69,10 +69,42 @@ async def create_interview_prep(
         "id": new_entry.id,
         "name": new_entry.name,
         "description": new_entry.description,
-        "questions": new_entry.questions,
         "message": "Interview preparation started. Check back shortly.",
     }
 
+@router.get("/get-interview-question/{id}")
+@limiter.limit("10/minute")
+async def get_interview_question(
+    id: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(
+            status_code=403,
+            detail="Only students can view interview questions.",
+        )
+
+    # Find the existing record by ID
+    query = (
+        db.query(InterviewPrep)
+        .filter(
+            InterviewPrep.id == id,
+            InterviewPrep.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not query:
+        raise HTTPException(status_code=404, detail="Interview preparation not found.")
+
+    return {
+        "id": query.id,
+        "name": query.name,
+        "description": query.description,
+        "questions": query.questions,
+    }
 
 @router.post("/submit-quiz")
 @limiter.limit("10/minute")

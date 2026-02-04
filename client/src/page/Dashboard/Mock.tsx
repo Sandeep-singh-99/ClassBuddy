@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,18 +7,28 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { axiosClient } from "@/helper/axiosClient";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { GetInterviewQuestion } from "@/redux/slice/interviewSlice";
 
 export default function Mock() {
   const { data } = useAppSelector((state) => state.interview);
+  const dispatch = useAppDispatch();
+
+  const { id } = useParams();
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(GetInterviewQuestion(id));
+    }
+  }, [dispatch, id]);
 
   if (!data || !data.questions) {
     return <div>No quiz data available</div>;
@@ -119,7 +129,7 @@ export default function Mock() {
             {questions.map((q: any, idx: number) => {
               const userAnswer = answers[idx];
               const correctOptionText = q.options.find((opt: string) =>
-                opt.startsWith(q.answer)
+                opt.startsWith(q.answer),
               );
               const isCorrect = userAnswer && userAnswer.startsWith(q.answer);
 

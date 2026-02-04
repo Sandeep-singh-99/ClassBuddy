@@ -40,6 +40,19 @@ export const GetAllInterviewPrep = createAsyncThunk(
   }
 );
 
+export const GetInterviewQuestion = createAsyncThunk("interview/getInterviewQuestion", async (id: string, thunkApi) => {
+  try {
+    const response = await axiosClient.get(`/interview-prep/get-interview-question/${id}`);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ?? error.message ?? "Fetching interview question failed"
+        );
+      }
+  }
+})
+
 interface InterviewPrepState {
   loading: boolean;
   error: string | null;
@@ -92,7 +105,24 @@ const interviewSlice = createSlice({
           state.loading = false;
           state.error = action.payload;
         }
-      );
+      )
+      .addCase(GetInterviewQuestion.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        GetInterviewQuestion.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.data = action.payload;
+        }
+      )
+      .addCase(
+        GetInterviewQuestion.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = action.payload;
+        }
+      )
   },
 });
 
