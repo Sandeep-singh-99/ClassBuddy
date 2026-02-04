@@ -2,11 +2,13 @@ from pydantic import BaseModel, Field
 from typing import Dict, Union, Optional, List
 from datetime import datetime
 
+
 class Question(BaseModel):
     question: str
     options: List[str]
     answer: str
     explanation: str
+
 
 class InterviewPreparationCreate(BaseModel):
     name: str = Field(..., examples=["Technical Interview Prep"])
@@ -18,6 +20,7 @@ class InterviewPreparationCreateResponse(BaseModel):
     description: str = Field(..., examples=["Preparation for technical interviews"])
     questions: List[Question]
 
+
 class InterviewPrepSubmit(BaseModel):
     id: str
     score: int
@@ -25,6 +28,7 @@ class InterviewPrepSubmit(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class InterviewPreparationResponse(BaseModel):
     name: str
@@ -42,12 +46,21 @@ class InterviewResponse(BaseModel):
     id: str
     name: str
     description: str
-    questions: List[Dict]
+    questions: Optional[List[Dict]] = None
     score: int
     user_answers: Union[Dict[str, str], str] = {}
+    status: str
     user_id: str
     created_at: datetime
     updated_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class InterviewPreparationAsyncResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    status: str
+    message: str
