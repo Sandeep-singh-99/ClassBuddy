@@ -48,6 +48,7 @@ async def create_interview_prep(
         description=interview_prep.description,
         user_id=current_user.id,
         questions=[],
+        status="generating",
     )
     db.add(new_entry)
     db.commit()
@@ -69,8 +70,10 @@ async def create_interview_prep(
         "id": new_entry.id,
         "name": new_entry.name,
         "description": new_entry.description,
+        "status": new_entry.status,
         "message": "Interview preparation started. Check back shortly.",
     }
+
 
 @router.get("/get-interview-question/{id}")
 @limiter.limit("10/minute")
@@ -105,6 +108,7 @@ async def get_interview_question(
         "description": query.description,
         "questions": query.questions,
     }
+
 
 @router.post("/submit-quiz")
 @limiter.limit("10/minute")
@@ -148,19 +152,20 @@ async def submit_quiz(
         "score": query.score,
     }
 
+
 @router.get("/get-interview-preps", response_model=List[InterviewResponse])
 @limiter.limit("10/minute")
 def get_interview_preps(
     request: Request,
     db: Session = Depends(get_db),
-    redis_client = Depends(get_redis_client),
-    current_user: User = Depends(get_current_user)
+    redis_client=Depends(get_redis_client),
+    current_user: User = Depends(get_current_user),
 ):
     # Role check
     if current_user.role != userRole.STUDENT:
         raise HTTPException(
-            status_code=403, 
-            detail="Only students can view their interview preparations."
+            status_code=403,
+            detail="Only students can view their interview preparations.",
         )
 
     # Create unique cache key per user
@@ -169,17 +174,17 @@ def get_interview_preps(
     # Try fetching from Redis
     cached_data = redis_client.get(cache_key)
     if cached_data:
-        data = json.loads(cached_data)
-        if isinstance(data, list) and all(isinstance(item, dict) for item in data):
-            return [InterviewResponse(**d) for d in data]
-        # If corrupted cache, delete it
-        redis_client.delete(cache_key)
+        try:
+            data = json.loads(cached_data)
+            if isinstance(data, list) and all(isinstance(item, dict) for item in data):
+                return [InterviewResponse(**d) for d in data]
+        except Exception:
+            # If corrupted cache or schema mismatch, delete it
+            redis_client.delete(cache_key)
 
     # Fetch from DB
     interview_preps = (
-        db.query(InterviewPrep)
-        .filter(InterviewPrep.user_id == current_user.id)
-        .all()
+        db.query(InterviewPrep).filter(InterviewPrep.user_id == current_user.id).all()
     )
 
     # Encode and cache result for 2 minutes

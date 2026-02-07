@@ -36,12 +36,29 @@ async def generate_interview_questions(ctx: inngest.Context):
             )
             if interview_prep:
                 interview_prep.questions = quiz_json["questions"]
+                interview_prep.status = "completed"
                 interview_prep.updated_at = datetime.utcnow()
                 session.commit()
                 return True
             return False
 
-    success = await ctx.step.run("db-update-questions", update_db)
+    try:
+        success = await ctx.step.run("db-update-questions", update_db)
+    except Exception as e:
+
+        def update_error():
+            with db.SessionLocal() as session:
+                interview_prep = (
+                    session.query(InterviewPrep)
+                    .filter(InterviewPrep.id == interview_prep_id)
+                    .first()
+                )
+                if interview_prep:
+                    interview_prep.status = "error"
+                    session.commit()
+
+        await ctx.step.run("db-update-error", update_error)
+        raise e
 
     return {
         "status": "success",
