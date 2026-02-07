@@ -57,9 +57,7 @@ export default function Mock() {
       setQuizCompleted(true);
       try {
         const response = await axiosClient.post("/interview-prep/submit-quiz", {
-          name: data.name,
-          description: data.description,
-          questions: data.questions,
+          id: data.id,
           score: score,
           user_answers: answers,
         });

@@ -35,6 +35,7 @@ class InterviewPreparationResponse(BaseModel):
     description: str
     questions: List[Question]
     score: int
+    status: str = "completed"
     user_answers: Dict[Union[int, str], str]
     user_id: Optional[str] = None
 
@@ -48,6 +49,7 @@ class InterviewResponse(BaseModel):
     description: str
     questions: Optional[List[Dict]] = None
     score: int
+    status: str = "completed"
     user_answers: Union[Dict[str, str], str] = {}
     user_id: str
     created_at: datetime
@@ -61,5 +63,6 @@ class InterviewPreparationAsyncResponse(BaseModel):
     id: str
     name: str
     description: str
-    questions: List[Question]
+    questions: Optional[List[Question]] = None
+    status: str = "generating"
     message: str

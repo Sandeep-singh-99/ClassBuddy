@@ -43,18 +43,42 @@ export default function QuizList() {
               data.map((quiz: any) => (
                 <Card
                   key={quiz.id}
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => setSelectedQuiz(quiz)}
+                  className={`cursor-pointer transition-colors ${
+                    quiz.status === "generating"
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-muted/50"
+                  }`}
+                  onClick={() => {
+                    if (quiz.status === "completed" || !quiz.status) {
+                      setSelectedQuiz(quiz);
+                    }
+                  }}
                 >
                   <CardHeader>
-                    <CardTitle className="text-2xl">{quiz.name}</CardTitle>
-                    <CardDescription className="flex justify-between w-full">
-                      <div>Score: {quiz.score.toFixed(1)}%</div>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-2xl">{quiz.name}</CardTitle>
+                      {quiz.status === "generating" && (
+                        <span className="bg-yellow-500/20 text-yellow-500 text-xs px-2 py-1 rounded-full">
+                          Generating...
+                        </span>
+                      )}
+                      {quiz.status === "error" && (
+                        <span className="bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded-full">
+                          Error
+                        </span>
+                      )}
+                    </div>
+                    <CardDescription className="flex justify-between w-full mt-2">
+                      <div>
+                        {quiz.status === "generating"
+                          ? "Processing..."
+                          : `Score: ${quiz.score.toFixed(1)}%`}
+                      </div>
 
                       <div>
                         {format(
                           new Date(quiz.created_at),
-                          "MMMM dd, yyyy HH:mm"
+                          "MMMM dd, yyyy HH:mm",
                         )}
                       </div>
                     </CardDescription>
