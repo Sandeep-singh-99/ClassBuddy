@@ -1,7 +1,7 @@
 import inngest
 from app.core import inngest as core_inngest
 from app.config import db
-from app.models.InterviewPreparation import InterviewPrep
+from app.models.InterviewPreparation import InterviewPrep, Status
 from app.ai.interview_graph import graph
 from langchain_core.messages import HumanMessage
 import json
@@ -36,7 +36,7 @@ async def generate_interview_questions(ctx: inngest.Context):
             )
             if interview_prep:
                 interview_prep.questions = quiz_json["questions"]
-                interview_prep.status = "completed"
+                interview_prep.status = Status.COMPLETED
                 interview_prep.updated_at = datetime.utcnow()
                 session.commit()
                 return True
@@ -54,7 +54,7 @@ async def generate_interview_questions(ctx: inngest.Context):
                     .first()
                 )
                 if interview_prep:
-                    interview_prep.status = "error"
+                    interview_prep.status = Status.ERROR
                     session.commit()
 
         await ctx.step.run("db-update-error", update_error)

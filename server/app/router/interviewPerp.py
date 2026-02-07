@@ -15,7 +15,7 @@ from app.models.auth import User, userRole
 from dotenv import load_dotenv
 from app.core.inngest import inngest_client
 import inngest
-from app.models.InterviewPreparation import InterviewPrep
+from app.models.InterviewPreparation import InterviewPrep, Status
 import uuid
 from datetime import datetime
 import json
@@ -48,7 +48,7 @@ async def create_interview_prep(
         description=interview_prep.description,
         user_id=current_user.id,
         questions=[],
-        status="generating",
+        status=Status.GENERATING,
     )
     db.add(new_entry)
     db.commit()
