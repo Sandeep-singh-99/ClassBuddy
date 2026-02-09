@@ -29,7 +29,10 @@ class InterviewPrep(Base):
     description = Column(String, nullable=True)
     questions = Column(JSON, nullable=True)
     score = Column(Integer, nullable=False, default=0)
-    status = Column(Enum(Status, name="interviewprepstatus"), default=Status.GENERATING, nullable=False)
+    status = Column(Enum(Status, name="interviewprepstatus", values_callable=lambda obj: [e.value for e in obj]),
+    default=Status.GENERATING,
+    nullable=False,
+    )
     user_answers = Column(JSON, nullable=False, default=dict)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
