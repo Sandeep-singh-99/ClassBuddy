@@ -30,11 +30,40 @@ export default function Mock() {
     }
   }, [dispatch, id]);
 
-  if (!data || !data.questions) {
-    return <div>No quiz data available</div>;
+  const questions = data?.questions;
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (data?.status === "generating") {
+      intervalId = setInterval(() => {
+        if (id) {
+          dispatch(GetInterviewQuestion(id));
+        }
+      }, 5000); 
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [data?.status, id, dispatch]);
+
+  if (!data || data.status === "generating") {
+    return (
+      <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+        <p className="text-lg font-medium text-gray-300">
+          Generating your interview questions...
+        </p>
+        <p className="text-sm text-gray-500">This may take a few moments.</p>
+      </div>
+    );
   }
 
-  const questions = data.questions;
+  if (!questions || questions.length === 0) {
+    return <div>No questions available.</div>;
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
 
   // Selecting an option

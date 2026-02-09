@@ -107,6 +107,7 @@ async def get_interview_question(
         "name": query.name,
         "description": query.description,
         "questions": query.questions,
+        "status": query.status,
     }
 
 
