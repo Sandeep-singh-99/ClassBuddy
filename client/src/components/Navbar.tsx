@@ -49,12 +49,22 @@ export default function Navbar() {
             <div className="flex items-center gap-4 text-foreground">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <img
-                    src={user.image_url}
-                    alt={user.full_name}
-                    className="w-8 h-8 rounded-full object-cover cursor-pointer"
-                    loading="lazy"
-                  />
+                  {
+                    user.image_url ? (
+                      <img
+                        src={user.image_url}
+                        alt={user.full_name}
+                        className="w-8 h-8 rounded-full object-cover cursor-pointer"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center cursor-pointer">
+                        <span className="text-primary-foreground font-bold">
+                          {user.full_name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )
+                  }
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="" align="end" sideOffset={5}>
                   {user.role === "teacher" ? (
