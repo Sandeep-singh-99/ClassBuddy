@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { generateNotes, saveNotes } from "@/redux/slice/tSlice";
+import { generateNotes, saveNotes, getNoteById, updateNotes } from "@/redux/slice/tSlice";
 import React, { useState, useEffect } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,20 @@ export default function TNotes() {
 
   const dispatch = useAppDispatch();
 
-  const { generatedNotes, loading } = useAppSelector((state) => state.teachers);
+  const { generatedNotes, loading, currentNoteId } = useAppSelector((state) => state.teachers);
+
+  // Status check effect for polling
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (generatedNotes === "Generating notes... Please wait." && currentNoteId) {
+      interval = setInterval(() => {
+        dispatch(getNoteById(currentNoteId));
+      }, 3000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [generatedNotes, currentNoteId, dispatch]);
 
   useEffect(() => {
     if (!loading && generatedNotes) {
@@ -37,21 +50,31 @@ export default function TNotes() {
     }
   };
 
-  const handleSaveNotes = (e: React.FormEvent) => {
+  const handleSaveNotes = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", generatedNotes ?? "");
-
-    try {
-      dispatch(saveNotes(formData));
-      setTitle("");
-      setVisible(false);
-      toast.success("Notes saved successfully!");
-    } catch (error) {
-      // console.log("Error saving notes:", error);
-      toast.error("Failed to save notes. Please try again.");
+    if (currentNoteId) {
+      try {
+        await dispatch(updateNotes({ noteId: currentNoteId, title, content: generatedNotes ?? "" })).unwrap();
+        setTitle("");
+        setVisible(false);
+        toast.success("Notes saved successfully!");
+      } catch (error) {
+        toast.error("Failed to save notes. Please try again.");
+      }
+    } else {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", generatedNotes ?? "");
+  
+      try {
+        await dispatch(saveNotes(formData)).unwrap();
+        setTitle("");
+        setVisible(false);
+        toast.success("Notes saved successfully!");
+      } catch (error) {
+        toast.error("Failed to save notes. Please try again.");
+      }
     }
   };
 
