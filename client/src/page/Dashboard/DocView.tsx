@@ -1,10 +1,10 @@
+import DocCardSkeleton from "@/components/skeletons/DocCardSkeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { DocsStudentFetch } from "@/redux/slice/docsSlice";
 import { AlertCircle, File, FileIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BarLoader } from "react-spinners";
 
 export default function DocView() {
   const dispatch = useAppDispatch();
@@ -23,7 +23,14 @@ export default function DocView() {
         <FileIcon className="w-7 h-7 text-blue-600" /> Documents
       </h1>
 
-      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
+      {/* {loading && <BarLoader width={"100%"} color="gray" className="my-4" />} */}
+      {loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <DocCardSkeleton key={index} />
+          ))}
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
