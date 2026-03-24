@@ -6,7 +6,7 @@ import { DocsFetch } from "@/redux/slice/docsSlice";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import DocsDeleteBtn from "./components/DocsDeleteBtn";
-import { BarLoader } from "react-spinners";
+import DocCardSkeleton from "@/components/skeletons/DocCardSkeleton";
 
 export default function Docs() {
   const dispatch = useAppDispatch();
@@ -26,7 +26,14 @@ export default function Docs() {
       <div className="flex justify-end">
         <DocsForm />
       </div>
-      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
+      {loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <DocCardSkeleton key={index} />
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {docs.map((doc) => (
           <Card

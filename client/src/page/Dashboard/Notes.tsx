@@ -5,7 +5,7 @@ import { AlertCircle, FileText, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { studentJoinGroupNote } from "@/redux/slice/noteSlice";
-import { BarLoader } from "react-spinners";
+import NoteCardSkeleton from "@/components/skeletons/NoteCardSkeleton";
 
 export default function Notes() {
   const { notes, loading, error } = useAppSelector((state) => state.notes);
@@ -24,7 +24,14 @@ export default function Notes() {
       </h1>
 
       {/* Loading */}
-      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
+      {/* {loading && <BarLoader width={"100%"} color="gray" className="my-4" />} */}
+      {loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <NoteCardSkeleton key={index} />
+          ))}
+        </div>
+      )}
 
       {/* Error */}
 
