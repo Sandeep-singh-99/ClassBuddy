@@ -71,6 +71,17 @@ async def generate_question(
         )
 
     try:
+        # Prevent starting again if already generating
+        if assignment.is_generating:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Questions are already being generated for this assignment.",
+            )
+
+        assignment.is_generating = True
+        db.commit()
+        db.refresh(assignment)
+
         # Trigger Inngest Event
         await inngest_client.send(
             inngest.Event(
