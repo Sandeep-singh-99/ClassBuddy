@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
+import UserProfileImage from "./skeletons/userProfileImage";
 
 export default function Navbar() {
   const dispatch = useAppDispatch();
@@ -58,11 +59,7 @@ export default function Navbar() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center cursor-pointer">
-                        <span className="text-primary-foreground font-bold">
-                          {user.full_name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                      <UserProfileImage />
                     )
                   }
                 </DropdownMenuTrigger>
