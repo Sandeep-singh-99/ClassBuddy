@@ -23,7 +23,21 @@ export default function TAssignmentViewById() {
     }
   }, [dispatch, assignmentId]);
 
-  if (loading) {
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (currentAssignment?.is_generating) {
+      interval = setInterval(() => {
+        if (assignmentId) {
+          dispatch(fetchAssignmentById(assignmentId));
+        }
+      }, 3000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [currentAssignment?.is_generating, dispatch, assignmentId]);
+
+  if (loading && (!currentAssignment || currentAssignment.id !== assignmentId)) {
     return (
       <div className="max-w-5xl mx-auto mt-8 px-4">
         <BarLoader width={"100%"} color="gray" className="my-4" />
@@ -55,7 +69,7 @@ export default function TAssignmentViewById() {
 
   return (
     <div className="max-w-5xl mx-auto mt-8 px-4 space-y-6">
-      {questions.length === 0 && (
+      {questions.length === 0 && !currentAssignment.is_generating && (
        <div>
         <div className="py-10 flex justify-end">
           <GenerateAssignment id={assignmentId!} />
@@ -66,7 +80,28 @@ export default function TAssignmentViewById() {
         </div>
        </div>
       )}
-      {questions.length > 0 && (
+
+      {currentAssignment?.is_generating && (
+        <div className="flex flex-col gap-4 mt-8">
+          <div className="flex items-center justify-center gap-2 p-4 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg animate-pulse">
+            <BarLoader color="#2563eb" className="my-2 mr-4" width={100} />
+            <span className="text-sm font-medium">Generating assignment questions using AI... This may take a moment.</span>
+          </div>
+          <Card className="border border-zinc-700 bg-zinc-900/60 text-zinc-100 shadow-lg backdrop-blur-md">
+            <CardHeader className="space-y-4">
+              <div className="h-8 bg-zinc-800/50 rounded-lg w-1/3 animate-pulse"></div>
+              <div className="h-4 bg-zinc-800/50 rounded-lg w-1/2 animate-pulse"></div>
+            </CardHeader>
+            <div className="p-6 pt-0 space-y-4">
+              <div className="h-24 bg-zinc-800/50 rounded-lg animate-pulse w-full"></div>
+              <div className="h-24 bg-zinc-800/50 rounded-lg animate-pulse w-full"></div>
+              <div className="h-24 bg-zinc-800/50 rounded-lg animate-pulse w-full"></div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {questions.length > 0 && !currentAssignment.is_generating && (
         <>
         <div className="flex flex-col gap-4">
           <AssignmentStats id={assignmentId!} />

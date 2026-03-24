@@ -33,28 +33,44 @@ async def generate_assignment_questions(ctx: inngest.Context):
     # DB Update Step
     def update_db():
         with SessionLocal() as session:
-            # Check if an AssignmentQuestion already exists to prevent duplicates
-            existing = (
-                session.query(AssignmentQuestion)
-                .filter(AssignmentQuestion.assignment_id == assignment_id)
-                .first()
-            )
-            if existing:
-                return False
-
-            question = AssignmentQuestion(
-                assignment_id=assignment_id,
-                question_text=json.dumps(quiz_json, indent=2),
-            )
-            session.add(question)
-            session.commit()
-            return True
+            try:
+                # Check if an AssignmentQuestion already exists to prevent duplicates
+                existing = (
+                    session.query(AssignmentQuestion)
+                    .filter(AssignmentQuestion.assignment_id == assignment_id)
+                    .first()
+                )
+                if not existing:
+                    question = AssignmentQuestion(
+                        assignment_id=assignment_id,
+                        question_text=json.dumps(quiz_json, indent=2),
+                    )
+                    session.add(question)
+                
+                # Update assignment status
+                from app.models.assignment import Assignment
+                assignment = session.query(Assignment).filter(Assignment.id == assignment_id).first()
+                if assignment:
+                    assignment.is_generating = False
+                    
+                session.commit()
+                return True
+            except Exception as e:
+                session.rollback()
+                raise e
 
     try:
         success = await ctx.step.run("db-update-assignment-questions", update_db)
     except Exception as e:
-        # We don't have a status on Assignment Question so just raise 
-        # (could add logging here if needed)
+        # Fallback to reset generating state on ultimate failure
+        def reset_generating_state():
+            with SessionLocal() as session:
+                from app.models.assignment import Assignment
+                assignment = session.query(Assignment).filter(Assignment.id == assignment_id).first()
+                if assignment:
+                    assignment.is_generating = False
+                    session.commit()
+        await ctx.step.run("reset-generating-state-on-error", reset_generating_state)
         raise e
 
     return {

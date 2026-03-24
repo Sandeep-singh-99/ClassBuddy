@@ -14,6 +14,7 @@ class Assignment(Base):
     description = Column(String, nullable=False)
     due_date = Column(DateTime, nullable=False)
     owner_id = Column(String, ForeignKey("users.id"), nullable=False)
+    is_generating = Column(Boolean, default=False)
 
     owner = relationship("User", back_populates="assignments")
     questions = relationship("AssignmentQuestion", back_populates="assignment", cascade="all, delete-orphan")

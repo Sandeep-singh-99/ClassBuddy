@@ -33,6 +33,7 @@ class AssignmentBase(BaseModel):
     title: str = Field(..., example="Python Basics")
     description: str = Field(..., example="Complete the exercises on loops and functions.")
     due_date: datetime = Field(..., example="2025-10-20T18:30:00Z")
+    is_generating: bool = Field(False, example=False)
 
 
 class AssignmentCreate(AssignmentBase):

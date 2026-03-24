@@ -24,4 +24,5 @@ export interface IAssignment {
   created_at: string;
   updated_at: string;
   questions: IQuestion[];
+  is_generating?: boolean;
 }
