@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { loadRazorpay } from "@/helper/loadRazorPay";
 import { Button } from "./ui/button";
 import { toast } from "react-toastify";
@@ -12,6 +13,10 @@ type Props = {
 
 export default function BuyPlanButton({ plan_id, planName }: Props) {
   const { user } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    loadRazorpay();
+  }, []);
 
   const handlePayment = async (e: React.MouseEvent) => {
     e.preventDefault();
