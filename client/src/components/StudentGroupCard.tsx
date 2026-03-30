@@ -26,8 +26,8 @@ export function StudentGroupCard({ data }: StudentGroupCardProps) {
     return diffDays > 0 ? diffDays : 0;
   };
 
-  const isSubscribed = subscription && subscription.is_active;
-  const daysLeft = isSubscribed ? getDaysLeft() : 0;
+  const daysLeft = getDaysLeft();
+  const isSubscribed = subscription && subscription.is_active && daysLeft > 0;
 
   const activePlanName = isSubscribed
     ? plans.find((p) => p.id === subscription?.plan_id)?.plan_name ||
