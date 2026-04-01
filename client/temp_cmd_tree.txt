@@ -1,0 +1,188 @@
+Folder PATH listing for volume Acer
+Volume serial number is C2E9-7023
+C:\USERS\SANDEEP SINGH\DOCUMENTS\CODING\WEB DEV\MAJOR_PROJECTS\CLASSBUDDY\CLIENT\SRC
+|   App.tsx
+|   index.css
+|   main.tsx
+|   vite-env.d.ts
+|   
++---assets
+|       img.png
+|       react.svg
+|       
++---components
+|   |   AppHeader.tsx
+|   |   AppSidebar.tsx
+|   |   AssignmentLists.tsx
+|   |   AssignmentPerformanceStats.tsx
+|   |   AssignmentStats.tsx
+|   |   AssignmentStatsChart.tsx
+|   |   AssignmentViewCard.tsx
+|   |   AuthComponent.tsx
+|   |   BuyPlanButton.tsx
+|   |   FAQSection.tsx
+|   |   FeaturesComponents.tsx
+|   |   Footer.tsx
+|   |   GenerateDashboardBtn.tsx
+|   |   HeroComponent.tsx
+|   |   mode-toggle.tsx
+|   |   Navbar.tsx
+|   |   PerformanceChart.tsx
+|   |   ProfileCard.tsx
+|   |   QuizFormComponents.tsx
+|   |   QuizList.tsx
+|   |   QuizResult.tsx
+|   |   RateLimitBanner.tsx
+|   |   StudentGroupCard.tsx
+|   |   SubscriptionPlansDialog.tsx
+|   |   Testimonials.tsx
+|   |   theme-provider.tsx
+|   |   
+|   +---ProtectedRoute
+|   |       RoleProtectedRoute.tsx
+|   |       
+|   +---skeletons
+|   |       AssignmentCardSkeleton.tsx
+|   |       AssignmentChartSkeleton.tsx
+|   |       AssignmentListSkeleton.tsx
+|   |       DashboardSkeleton.tsx
+|   |       DocCardSkeleton.tsx
+|   |       FAQSkeleton.tsx
+|   |       FeatureSkeleton.tsx
+|   |       NoteCardSkeleton.tsx
+|   |       PerformanceStatsSkeleton.tsx
+|   |       TestimonialSkeleton.tsx
+|   |       userProfileImage.tsx
+|   |       
+|   \---ui
+|           accordion.tsx
+|           alert-dialog.tsx
+|           alert.tsx
+|           avatar.tsx
+|           badge.tsx
+|           button.tsx
+|           calendar.tsx
+|           card.tsx
+|           chart.tsx
+|           dialog.tsx
+|           dropdown-menu.tsx
+|           input.tsx
+|           label.tsx
+|           popover.tsx
+|           progress.tsx
+|           radio-group.tsx
+|           scroll-area.tsx
+|           select.tsx
+|           separator.tsx
+|           sheet.tsx
+|           sidebar.tsx
+|           skeleton.tsx
+|           table.tsx
+|           tabs.tsx
+|           textarea.tsx
+|           tooltip.tsx
+|           
++---helper
+|       axiosClient.ts
+|       loadRazorPay.ts
+|       useJoinToGroup.tsx
+|       
++---hooks
+|       hooks.ts
+|       use-mobile.ts
+|       
++---lib
+|       utils.ts
+|       
++---page
+|   |   Home.tsx
+|   |   NotFound.tsx
+|   |   
+|   +---ChatDashboard
+|   |   |   Chat.tsx
+|   |   |   ChatPanel.tsx
+|   |   |   mockData.ts
+|   |   |   
+|   |   \---components
+|   |           ChatSidebar.tsx
+|   |           MessageBubble.tsx
+|   |           
+|   +---Dashboard
+|   |       Assignment.tsx
+|   |       AssignmentDetails.tsx
+|   |       AssignmentViewById.tsx
+|   |       CareerDashboard.tsx
+|   |       DashboardHome.tsx
+|   |       DashboardPanel.tsx
+|   |       DocView.tsx
+|   |       InterviewPerPage.tsx
+|   |       Mock.tsx
+|   |       Notes.tsx
+|   |       Payment.tsx
+|   |       ViewAllTeacher.tsx
+|   |       
+|   \---Teacher
+|       |   Docs.tsx
+|       |   DocsById.tsx
+|       |   PaymentPage.tsx
+|       |   TAssignment.tsx
+|       |   TAssignmentViewById.tsx
+|       |   TDashboard.tsx
+|       |   THome.tsx
+|       |   TNotes.tsx
+|       |   UpdatedNote.tsx
+|       |   ViewNoteById.tsx
+|       |   ViewNotes.tsx
+|       |   
+|       +---components
+|       |       AQuestions.tsx
+|       |       AssignmentCard.tsx
+|       |       AssignmentDelete.tsx
+|       |       AssignmentForm.tsx
+|       |       AssignmentMarksCard.tsx
+|       |       CreateSubscriptionDialog.tsx
+|       |       DeleteBtn.tsx
+|       |       DocsDeleteBtn.tsx
+|       |       DocsForm.tsx
+|       |       GenerateAssignment.tsx
+|       |       NotesList.tsx
+|       |       PaymentStats.tsx
+|       |       StudentsList.tsx
+|       |       SubscriptionAnalytics.tsx
+|       |       SubscriptionCard.tsx
+|       |       TSidebar.tsx
+|       |       
+|       \---Insight
+|               InsightHome.tsx
+|               TInsight.tsx
+|               
++---redux
+|   |   store.ts
+|   |   
+|   \---slice
+|           assignmentSlice.ts
+|           authSlice.ts
+|           chatSlice.ts
+|           dashboardSlice.ts
+|           docsSlice.ts
+|           interviewSlice.ts
+|           noteSlice.ts
+|           submissionSlice.ts
+|           subscriptionSlice.ts
+|           tSlice.ts
+|           
++---routes
+|       index.tsx
+|       
++---services
+|       payment.ts
+|       
+\---types
+        assignment.ts
+        dashboard.ts
+        doc.ts
+        note.ts
+        subscription.ts
+        teacher.ts
+        user.ts
+        
