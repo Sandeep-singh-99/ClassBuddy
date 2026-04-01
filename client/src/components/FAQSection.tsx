@@ -42,45 +42,54 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="py-20 bg-muted/30 text-foreground">
-      <div className="max-w-3xl mx-auto px-6">
-        {/* Section Heading */}
-        <h2 className="text-4xl font-bold text-center mb-4">
-          Frequently Asked Questions
-        </h2>
-        <p className="text-muted-foreground text-center mb-12">
-          Here are some common questions about how ClassBuddy works for teachers
-          and students.
-        </p>
+    <section id="faq" className="w-full py-24 relative bg-white dark:bg-[#08101F] border-t border-border/40 overflow-hidden">
+      {/* Background divider line at top */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="max-w-3xl mx-auto mt-2 mb-12">
+          {/* Section Heading */}
+          <h2 className="text-4xl md:text-5xl tracking-tight font-extrabold text-center mb-6 text-foreground">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-muted-foreground text-lg font-medium text-center">
+            Here are some common questions about how ClassBuddy works for teachers
+            and students.
+          </p>
+        </div>
 
         {/* FAQ Items */}
-        <div className="space-y-4">
+        <div className="space-y-4 max-w-3xl mx-auto">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-border bg-card rounded-xl overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
+              className={`border bg-card/40 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 ${
+                openIndex === index ? "border-primary/30 shadow-sm" : "border-border/50 hover:border-border"
+              }`}
             >
               {/* Question Row */}
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full flex justify-between items-center px-4 py-4 text-left focus:outline-none"
+                className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none transition-colors hover:bg-muted/10"
               >
-                <span className="text-lg font-medium text-foreground">
+                <span className={`text-lg font-semibold transition-colors ${openIndex === index ? 'text-primary' : 'text-foreground'}`}>
                   {faq.question}
                 </span>
-                {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-gray-500" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-500" />
-                )}
+                <div className={`p-1 rounded-full transition-colors ${openIndex === index ? 'bg-primary/10 text-primary' : 'bg-muted/50 text-muted-foreground'}`}>
+                  {openIndex === index ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </div>
               </button>
 
               {/* Answer Section */}
               <div
-                className={`px-4 pb-4 text-muted-foreground transition-all duration-300 ease-in-out ${
+                className={`px-6 text-muted-foreground text-[15px] leading-relaxed transition-all duration-300 ease-in-out ${
                   openIndex === index
-                    ? "max-h-40 opacity-100"
-                    : "max-h-0 opacity-0 overflow-hidden"
+                    ? "max-h-40 pb-6 opacity-100"
+                    : "max-h-0 pb-0 opacity-0 overflow-hidden"
                 }`}
               >
                 {faq.answer}

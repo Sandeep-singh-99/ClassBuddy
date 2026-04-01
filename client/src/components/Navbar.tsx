@@ -33,13 +33,13 @@ export default function Navbar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed top-0 left-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border"
+      className="fixed top-0 left-0 w-full z-50 bg-slate-50/80 dark:bg-[#0c1729]/80 backdrop-blur-xl border-b border-border/50 shadow-sm"
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link
           to={"/"}
-          className="text-2xl font-bold text-yellow-500 tracking-tight"
+          className="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-violet-500 hover:opacity-80 transition-opacity"
         >
           ClassBuddy
         </Link>
