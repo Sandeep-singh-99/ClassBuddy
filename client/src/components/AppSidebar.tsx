@@ -1,6 +1,6 @@
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar'
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar, SidebarFooter } from './ui/sidebar'
 import { Link } from 'react-router-dom'
-
+import { SidebarThemeToggle } from "@/components/SidebarThemeToggle";
 import {
   LayoutDashboard,
   Users,
@@ -12,7 +12,6 @@ import {
   Sparkles,
   DollarSignIcon,
 } from "lucide-react";
-
 
 const MenuOptions = [
   {
@@ -57,7 +56,6 @@ const MenuOptions = [
   }
 ];
 
-
 export default function AppSidebar() {
   const { open } = useSidebar();
   return (
@@ -87,6 +85,13 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarThemeToggle />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

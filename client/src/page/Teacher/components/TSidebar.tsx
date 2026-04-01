@@ -9,7 +9,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   useSidebar,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
+import { SidebarThemeToggle } from "@/components/SidebarThemeToggle";
 import {
   Home,
   FilePlus,
@@ -83,6 +85,13 @@ export default function TSideBar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarThemeToggle />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }
