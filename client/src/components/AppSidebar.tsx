@@ -1,5 +1,17 @@
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar, SidebarFooter } from './ui/sidebar'
-import { Link } from 'react-router-dom'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+  SidebarFooter,
+} from "./ui/sidebar";
+import { Link } from "react-router-dom";
 import { SidebarThemeToggle } from "@/components/SidebarThemeToggle";
 import {
   LayoutDashboard,
@@ -53,17 +65,17 @@ const MenuOptions = [
     title: "Payments",
     url: "/dashboard-panel/payments",
     icon: <DollarSignIcon />,
-  }
+  },
 ];
 
 export default function AppSidebar() {
   const { open } = useSidebar();
   return (
-    <Sidebar collapsible='icon'>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link to={"/"} className='flex items-center gap-2 text-yellow-400'>
+        <Link to={"/"} className="flex items-center gap-2 text-yellow-400">
           <Sparkles />
-          { open && <span className="text-3xl font-bold">Class Buddy</span> }
+          {open && <span className="text-3xl font-bold">Class Buddy</span>}
         </Link>
       </SidebarHeader>
       <SidebarContent>
@@ -75,7 +87,7 @@ export default function AppSidebar() {
                 <SidebarMenuItem key={index}>
                   <SidebarMenuButton asChild size={open ? "lg" : "default"}>
                     <Link to={option.url}>
-                     {option.icon}
+                      {option.icon}
                       <span>{option.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -93,5 +105,5 @@ export default function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
