@@ -52,8 +52,17 @@ async def register(
         image_url_id=image_url_id
     )
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+
+    try:
+        db.commit()
+        db.refresh(db_user)
+    except Exception as e:
+        db.rollback()
+
+        if image_url_id:
+            delete_image(image_url_id)
+
+        raise HTTPException(status_code=500, detail="Registration failed due to a server error. Please try again.")
 
     # create JWT
     access_token = create_access_token({"sub": db_user.email})
