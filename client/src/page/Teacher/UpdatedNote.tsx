@@ -14,7 +14,7 @@ import { updateNotes } from "@/redux/slice/tSlice";
 import MDEditor from "@uiw/react-md-editor";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function UpdatedNote() {
   const { noteId } = useParams<{ noteId: string }>();

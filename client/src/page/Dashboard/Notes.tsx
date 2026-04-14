@@ -24,7 +24,6 @@ export default function Notes() {
       </h1>
 
       {/* Loading */}
-      {/* {loading && <BarLoader width={"100%"} color="gray" className="my-4" />} */}
       {loading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, index) => (

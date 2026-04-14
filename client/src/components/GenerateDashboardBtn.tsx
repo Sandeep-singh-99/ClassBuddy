@@ -10,11 +10,11 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { useAppDispatch } from "@/hooks/hooks";
-import { toast } from "react-toastify";
 import { GenerateDashboardData } from "@/redux/slice/dashboardSlice";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function GenerateDashboardBtn() {
   const [industry, setIndustry] = useState<string>("");

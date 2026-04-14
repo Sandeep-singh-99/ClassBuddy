@@ -4,7 +4,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { DocsDelete } from "@/redux/slice/docsSlice";
 import { Loader2Icon, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function DocsDeleteBtn({ docId }: { docId: string }) {
     const dispatch = useAppDispatch();

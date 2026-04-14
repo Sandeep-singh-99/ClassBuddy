@@ -2,7 +2,6 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { fetchAssignmentById } from "@/redux/slice/assignmentSlice";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { BarLoader } from "react-spinners";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import AQuestions from "./components/AQuestions";

@@ -6,7 +6,6 @@ import {
 } from "@/redux/slice/submissionSlice";
 import { useEffect, Suspense, lazy } from "react";
 import ProfileCard from "@/components/ProfileCard";
-import { toast } from "react-toastify";
 
 // Lazy load heavy components
 const AssignmentStatsChart = lazy(
@@ -20,6 +19,7 @@ const AssignmentLists = lazy(() => import("@/components/AssignmentLists"));
 import AssignmentListSkeleton from "@/components/skeletons/AssignmentListSkeleton";
 import PerformanceStatsSkeleton from "@/components/skeletons/PerformanceStatsSkeleton";
 import AssignmentChartSkeleton from "@/components/skeletons/AssignmentChartSkeleton";
+import { toast } from "sonner";
 
 export default function DashboardHome() {
   const dispatch = useAppDispatch();
@@ -52,16 +52,6 @@ export default function DashboardHome() {
       </div>
     );
   }
-
-  // if (!studentAssignmentStats) {
-  //   return (
-  //     <div className="flex items-center justify-center h-[400px] text-gray-500">
-  //       No stats available yet 📉
-  //     </div>
-  //   );
-  // }
-
-  // const { total_submissions, completion_over_time } = studentAssignmentStats;
 
   return (
     <div className="relative min-h-screen text-foreground p-6 md:p-8 space-y-8">

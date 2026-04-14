@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useAppDispatch } from "@/hooks/hooks";
 import { deleteNoteById, teacherNotes } from "@/redux/slice/noteSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function DeleteBtn({ noteId }: { noteId: string }) {
   const dispatch = useAppDispatch();

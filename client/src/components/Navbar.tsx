@@ -5,7 +5,6 @@ import { useAppSelector } from "@/hooks/hooks";
 import { useAppDispatch } from "@/hooks/hooks";
 import { logout } from "@/redux/slice/authSlice";
 import { useNavigate } from "react-router-dom";
-// import { toast } from "react-toastify";
 
 import {
   DropdownMenu,

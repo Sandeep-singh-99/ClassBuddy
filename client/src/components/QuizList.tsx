@@ -11,7 +11,6 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { Dialog, DialogContent } from "./ui/dialog";
 import QuizResult from "./QuizResult";
-import { BarLoader } from "react-spinners";
 
 export default function QuizList() {
   const [selectedQuiz, setSelectedQuiz] = useState<any>(null);

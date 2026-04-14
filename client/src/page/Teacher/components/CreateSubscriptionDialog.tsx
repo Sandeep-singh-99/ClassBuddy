@@ -16,7 +16,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { createSubscriptionPlan } from "@/redux/slice/subscriptionSlice";
 import type { ICreatePlan } from "@/types/subscription";
 import { Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export function CreateSubscriptionDialog() {
   const [open, setOpen] = useState(false);
