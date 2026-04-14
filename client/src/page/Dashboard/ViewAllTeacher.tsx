@@ -4,6 +4,7 @@ import { JoinedCheckStatus, viewAllTeacher } from "@/redux/slice/tSlice";
 import { useEffect } from "react";
 import { User, JoystickIcon, AlertCircle } from "lucide-react";
 import { useJoinToGroup } from "@/helper/useJoinToGroup";
+import TeacherCardSkeleton from "@/components/skeletons/TeacherCardSkeleton";
 
 export default function ViewAllTeacher() {
   const dispatch = useAppDispatch();
@@ -27,10 +28,6 @@ export default function ViewAllTeacher() {
     }
   }, [dispatch, teachers]);
 
-  if (loading) {
-    // return <BarLoader width={"100%"} color="gray" className="my-4" />;
-  }
-
   return (
     <div className="p-10">
       <h1 className="text-3xl font-bold mb-8 text-foreground tracking-tight">
@@ -45,7 +42,11 @@ export default function ViewAllTeacher() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {teachers.map((teacher) => (
+        {loading
+          ? Array.from({ length: 6 }).map((_, idx) => (
+              <TeacherCardSkeleton key={idx} />
+            ))
+          : teachers.map((teacher) => (
           <Card
             key={teacher.id}
             className="border border-border shadow-md hover:shadow-xl
@@ -122,7 +123,7 @@ export default function ViewAllTeacher() {
               </div>
             </CardContent>
           </Card>
-        ))}
+            ))}
       </div>
     </div>
   );
