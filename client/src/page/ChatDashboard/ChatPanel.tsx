@@ -4,10 +4,6 @@ import { ChatSidebar } from "./components/ChatSidebar";
 export default function ChatPanel() {
   const location = useLocation();
 
-  /* 
-    The path "/chat-panel" contains "/chat", so we need to be specific 
-    to avoid hiding the sidebar on the main list view.
-  */
   const isChatOpen = location.pathname.includes("/chat-panel/chat");
 
   return (

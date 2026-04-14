@@ -35,7 +35,7 @@ export default function QuizList() {
         </CardHeader>
         <CardContent>
           {loading && (
-            <BarLoader width={"100%"} color="gray" className="my-4" />
+            // <BarLoader width={"100%"} color="gray" className="my-4" />
           )}
           <div className="space-y-4">
             {data && data.length > 0 ? (

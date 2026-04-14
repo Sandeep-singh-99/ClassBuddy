@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/hooks/hooks";
 import { joinTeacherGroup } from "@/redux/slice/tSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export const useJoinToGroup = () => {
   const dispatch = useAppDispatch();

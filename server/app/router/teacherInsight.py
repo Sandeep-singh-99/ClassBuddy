@@ -14,6 +14,11 @@ def create_teacher_insight(db: Session = Depends(get_db), current_user: User = D
     if not current_user or current_user.role != "teacher":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can create insights.")
     
+    # Check if teacher has already created a group
+    existing_group = db.query(TeacherInsight).filter(TeacherInsight.user_id == current_user.id).first()
+    if existing_group:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You have already created a group. Only one group per teacher is allowed.")
+    
     image_url, image_url_id = None, None
     if image:
         result = upload_image(image.file, folder="ClassBuddy")
