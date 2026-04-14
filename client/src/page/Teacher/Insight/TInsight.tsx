@@ -24,6 +24,7 @@ export default function TInsight() {
     groupDescription: "",
     imageUrl: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
@@ -61,6 +62,7 @@ export default function TInsight() {
   // 🔹 Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     // Validation
     if (!formData.groupName.trim() || !formData.groupDescription.trim()) {
@@ -91,6 +93,7 @@ export default function TInsight() {
       toast.success(response.data.message || "Group created successfully!");
 
       if (response.status === 200) {
+        setLoading(false);
         // Reset form after success
         setFormData({
           groupName: "",
@@ -106,6 +109,8 @@ export default function TInsight() {
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -182,7 +187,7 @@ export default function TInsight() {
 
             <CardFooter className="flex-col gap-2">
               <Button type="submit" className="w-full">
-                Create Group
+                {loading ? "Creating..." : "Create Group"}
               </Button>
             </CardFooter>
           </form>

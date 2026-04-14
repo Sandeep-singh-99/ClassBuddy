@@ -28,7 +28,6 @@ import {
   deleteSubscriptionPlan,
   fetchSubscription,
 } from "@/redux/slice/subscriptionSlice";
-import { toast } from "react-toastify";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +39,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 interface SubscriptionCardProps {
   plan: IPlan;
