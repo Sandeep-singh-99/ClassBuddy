@@ -28,7 +28,6 @@ import { Mail, Lock, User, UserCog, Loader } from "lucide-react";
 import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
 import { checkAuth, login, register } from "@/redux/slice/authSlice";
-// import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner"
 
@@ -171,15 +170,11 @@ export default function AuthComponent() {
         <Tabs defaultValue="login" className="w-full mt-4">
           <TabsList className="grid w-full grid-cols-2 bg-muted rounded-lg p-1">
             <TabsTrigger
-              value="login"
-              className="rounded-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground hover:data-[state=inactive]:text-foreground transition-all"
-            >
+              value="login">
               Log In
             </TabsTrigger>
             <TabsTrigger
-              value="signup"
-              className="rounded-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground hover:data-[state=inactive]:text-foreground transition-all"
-            >
+              value="signup">
               Sign Up
             </TabsTrigger>
           </TabsList>
@@ -232,9 +227,7 @@ export default function AuthComponent() {
                 </DialogClose>
                 <Button
                   type="submit"
-                  disabled={loading}
-                  className="bg-gradient-to-r from-primary to-violet-600 cursor-pointer text-white hover:from-primary/90 hover:to-violet-600/90 rounded-lg px-6 shadow-md shadow-violet-500/20 transition-all"
-                >
+                  disabled={loading}>
                   {loading && <Loader className="animate-spin text-blue-900" />}
                   Log In
                 </Button>
@@ -379,9 +372,7 @@ export default function AuthComponent() {
                 </DialogClose>
                 <Button
                   type="submit"
-                  disabled={loading}
-                  className="bg-gradient-to-r from-primary to-violet-600 cursor-pointer text-white hover:from-primary/90 hover:to-violet-600/90 rounded-lg px-6 shadow-md shadow-violet-500/20 transition-all"
-                >
+                  disabled={loading}>
                   {loading && <Loader className="animate-spin text-blue-900" />}
                   Sign Up
                 </Button>

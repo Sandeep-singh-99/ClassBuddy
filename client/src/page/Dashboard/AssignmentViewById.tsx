@@ -3,7 +3,6 @@ import { fetchAssignmentById } from "@/redux/slice/assignmentSlice";
 import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { BarLoader } from "react-spinners";
 import { Button } from "@/components/ui/button";
 import MDEditor from "@uiw/react-md-editor";
 import { Card, CardContent } from "@/components/ui/card";

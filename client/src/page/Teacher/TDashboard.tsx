@@ -9,18 +9,6 @@ export default function TDashboard() {
     <SidebarProvider>
       <TSideBar />
       <div className="w-full p-5 bg-background text-foreground">
-        {/* <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        /> */}
          <Toaster />
         <AppHeader />
         <Outlet />

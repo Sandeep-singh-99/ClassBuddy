@@ -7,8 +7,8 @@ import React, { useState, useEffect } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { toast } from "react-toastify";
 import { Loader } from "lucide-react";
+import { toast } from "sonner";
 
 export default function TNotes() {
   const [visible, setVisible] = useState(false);

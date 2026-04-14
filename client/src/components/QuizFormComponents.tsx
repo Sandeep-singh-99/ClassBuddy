@@ -15,7 +15,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { InterviewPrepCreate } from "@/redux/slice/interviewSlice";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function QuizFormComponents() {
   const navigate = useNavigate();

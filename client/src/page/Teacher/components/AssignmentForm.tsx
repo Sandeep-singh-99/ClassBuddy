@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAppDispatch } from "@/hooks/hooks";
 import { CreateAssignment } from "@/redux/slice/assignmentSlice";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function AssignmentForm() {
   const dispatch = useAppDispatch();

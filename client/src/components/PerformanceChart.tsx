@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { format } from "date-fns";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { BarLoader } from "react-spinners";
 import { TrendingUp } from "lucide-react";
 
 import {

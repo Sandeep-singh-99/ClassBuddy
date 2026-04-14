@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { loadRazorpay } from "@/helper/loadRazorPay";
 import { Button } from "./ui/button";
-import { toast } from "react-toastify";
 import { createOrder } from "@/services/payment";
 import { axiosClient } from "@/helper/axiosClient";
 import { useAppSelector } from "@/hooks/hooks";
+import { toast } from "sonner";
 
 type Props = {
   plan_id: string;

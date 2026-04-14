@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/accordion";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { axiosClient } from "@/helper/axiosClient";
-import { toast } from "react-toastify";
 import { Link, useParams } from "react-router-dom";
 import { GetInterviewQuestion } from "@/redux/slice/interviewSlice";
+import { toast } from "sonner";
 
 export default function Mock() {
   const { data } = useAppSelector((state) => state.interview);

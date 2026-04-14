@@ -9,7 +9,7 @@ import {
 import { SubscriptionCard } from "./components/SubscriptionCard";
 
 import { PaymentStats } from "./components/PaymentStats";
-import { SubscriptionAnalytics } from "./components/SubscriptionAnalytics"; // Import Analytics
+import { SubscriptionAnalytics } from "./components/SubscriptionAnalytics"; 
 
 export default function PaymentPage() {
   const dispatch = useAppDispatch();
@@ -23,7 +23,7 @@ export default function PaymentPage() {
   useEffect(() => {
     dispatch(fetchSubscription());
     dispatch(teacherSubscriptionStats());
-    dispatch(fetchSubscriptionAnalytics()); // Dispatch Thunk
+    dispatch(fetchSubscriptionAnalytics()); 
   }, []);
 
   return (

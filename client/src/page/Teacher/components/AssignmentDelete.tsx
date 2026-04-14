@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { DeleteAssignment } from "@/redux/slice/assignmentSlice";
 import { Loader2Icon, Trash2 } from "lucide-react";
 import type React from "react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function AssignmentDelete({ id }: { id: string }) {
   const dispatch = useAppDispatch();

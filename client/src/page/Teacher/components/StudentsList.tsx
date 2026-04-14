@@ -11,13 +11,6 @@ export default function StudentsList() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Students</CardTitle>
-          {/* <Button
-            className="text-muted-foreground "
-            size={"sm"}
-            variant={"ghost"}
-          >
-            View All
-          </Button> */}
         </div>
       </CardHeader>
 

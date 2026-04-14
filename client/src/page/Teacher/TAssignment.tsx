@@ -3,7 +3,6 @@ import AssignmentForm from "./components/AssignmentForm";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { useEffect } from "react";
 import { fetchTeacherAssignments } from "@/redux/slice/assignmentSlice";
-import { BarLoader } from "react-spinners";
 import AssignmentCard from "./components/AssignmentCard";
 
 export default function TAssignment() {
@@ -27,7 +26,7 @@ export default function TAssignment() {
         <AssignmentForm />
       </div>
 
-      {loading && <BarLoader width={"100%"} color="gray" className="my-4" />}
+      {/* {loading && <BarLoader width={"100%"} color="gray" className="my-4" />} */}
 
       {error && (
         <div className="flex items-center justify-center gap-2 p-4 mb-6 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">

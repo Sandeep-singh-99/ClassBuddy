@@ -4,7 +4,6 @@ import { fetchSubmissionResult } from "@/redux/slice/submissionSlice";
 import { AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { BarLoader } from "react-spinners";
 
 export default function AssignmentDetails() {
   const dispatch = useAppDispatch();

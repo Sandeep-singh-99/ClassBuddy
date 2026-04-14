@@ -4,7 +4,6 @@ import { JoinedCheckStatus, viewAllTeacher } from "@/redux/slice/tSlice";
 import { useEffect } from "react";
 import { User, JoystickIcon, AlertCircle } from "lucide-react";
 import { useJoinToGroup } from "@/helper/useJoinToGroup";
-import { BarLoader } from "react-spinners";
 
 export default function ViewAllTeacher() {
   const dispatch = useAppDispatch();
@@ -29,7 +28,7 @@ export default function ViewAllTeacher() {
   }, [dispatch, teachers]);
 
   if (loading) {
-    return <BarLoader width={"100%"} color="gray" className="my-4" />;
+    // return <BarLoader width={"100%"} color="gray" className="my-4" />;
   }
 
   return (

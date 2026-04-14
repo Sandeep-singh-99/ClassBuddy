@@ -9,7 +9,7 @@ import {
 import { useAppDispatch } from "@/hooks/hooks";
 import { fetchAssignmentById, GenerateAssignmentById } from "@/redux/slice/assignmentSlice";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function GenerateAssignment({ id }: { id: string }) {
   const dispatch = useAppDispatch();

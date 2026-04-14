@@ -8,8 +8,6 @@ const FeaturesComponents = lazy(
 const Testimonials = lazy(() => import("@/components/Testimonials"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
 
-// bg-[#0c1729] text-white
-
 import FeatureSkeleton from "@/components/skeletons/FeatureSkeleton";
 import TestimonialSkeleton from "@/components/skeletons/TestimonialSkeleton";
 import FAQSkeleton from "@/components/skeletons/FAQSkeleton";

@@ -15,7 +15,7 @@ import { useAppSelector } from "@/hooks/hooks";
 import { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function TInsight() {
   const [uploadImage, setUploadImage] = useState<File | null>(null);

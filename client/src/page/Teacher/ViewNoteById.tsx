@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { CircleAlert } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
-import { BarLoader } from "react-spinners";
 import { useTheme } from "@/components/theme-provider";
 
 export default function ViewNoteById() {
