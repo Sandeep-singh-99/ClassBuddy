@@ -4,7 +4,8 @@ import Navbar from "./components/Navbar";
 import { useEffect } from "react";
 import { useAppDispatch } from "./hooks/hooks";
 import { checkAuth } from "./redux/slice/authSlice";
-import { ToastContainer } from "react-toastify";
+// import { ToastContainer } from "react-toastify";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -15,7 +16,7 @@ export default function App() {
 
   return (
     <>
-      <ToastContainer
+      {/* <ToastContainer
         position="bottom-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -26,7 +27,8 @@ export default function App() {
         draggable
         pauseOnHover
         theme="dark"
-      />
+      /> */}
+      <Toaster />
       <Navbar />
       <Outlet />
       <Footer />

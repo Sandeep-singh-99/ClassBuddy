@@ -28,8 +28,9 @@ import { Mail, Lock, User, UserCog, Loader } from "lucide-react";
 import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
 import { checkAuth, login, register } from "@/redux/slice/authSlice";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner"
 
 interface IFormData {
   fullName: string;

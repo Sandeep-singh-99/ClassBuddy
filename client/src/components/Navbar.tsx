@@ -5,7 +5,7 @@ import { useAppSelector } from "@/hooks/hooks";
 import { useAppDispatch } from "@/hooks/hooks";
 import { logout } from "@/redux/slice/authSlice";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
 import UserProfileImage from "./skeletons/userProfileImage";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const dispatch = useAppDispatch();
