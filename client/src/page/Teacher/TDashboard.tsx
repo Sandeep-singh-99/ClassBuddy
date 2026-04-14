@@ -2,14 +2,14 @@ import AppHeader from "@/components/AppHeader";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
 import TSideBar from "./components/TSidebar";
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function TDashboard() {
   return (
     <SidebarProvider>
       <TSideBar />
       <div className="w-full p-5 bg-background text-foreground">
-        <ToastContainer
+        {/* <ToastContainer
           position="bottom-right"
           autoClose={5000}
           hideProgressBar={false}
@@ -20,7 +20,8 @@ export default function TDashboard() {
           draggable
           pauseOnHover
           theme="dark"
-        />
+        /> */}
+         <Toaster />
         <AppHeader />
         <Outlet />
       </div>
