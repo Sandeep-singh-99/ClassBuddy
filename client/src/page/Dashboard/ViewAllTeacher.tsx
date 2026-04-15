@@ -109,7 +109,7 @@ export default function ViewAllTeacher() {
                   className={`w-full flex items-center justify-center gap-2 text-sm py-2 px-4 rounded-xl transition-colors duration-300 ${
                     joinedStatus[teacher.id]
                       ? "bg-green-600 text-white cursor-not-allowed"
-                      : "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
                   }`}
                   disabled={joinedStatus[teacher.id]}
                   onClick={(e) => {

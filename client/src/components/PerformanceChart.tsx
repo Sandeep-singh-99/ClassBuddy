@@ -19,6 +19,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useAppSelector } from "@/hooks/hooks";
+import PerformanceChartSkeleton from "./skeletons/PerformanceChartSkeleton";
 
 // Fallback colors if CSS variables aren't set
 // Blue shades palette
@@ -69,11 +70,7 @@ export default function PerformanceChart() {
   }, [quizNames]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-[400px] w-full bg-muted/10 rounded-xl">
-        <BarLoader color="#3b82f6" />
-      </div>
-    );
+    return <PerformanceChartSkeleton />;
   }
 
   if (error) {
