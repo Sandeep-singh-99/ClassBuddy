@@ -57,7 +57,7 @@ export const router = createBrowserRouter([
     element: (
       <Suspense
         fallback={
-          <div className="text-center py-20 text-gray-400">Loading...</div>
+          <div className="text-center py-20 text-gray-400"></div>
         }
       >
         <App />
