@@ -5,12 +5,17 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import QuizFormComponents from "./QuizFormComponents";
+import { Suspense, lazy } from "react";
+
+const QuizFormComponents = lazy(() => import("./QuizFormComponents"));
+
 import { useAppSelector } from "@/hooks/hooks";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Dialog, DialogContent } from "./ui/dialog";
 import QuizResult from "./QuizResult";
+import QuizCardSkeleton from "./skeletons/QuizCardSkeleton";
+import ButtonSkeleton from "./skeletons/ButtonSkeleton";
 
 export default function QuizList() {
   const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
@@ -30,64 +35,67 @@ export default function QuizList() {
                 Review your past quiz performance
               </CardDescription>
             </div>
-            <QuizFormComponents />
+            <Suspense fallback={<ButtonSkeleton />}>
+              <QuizFormComponents />
+            </Suspense>
           </div>
         </CardHeader>
         <CardContent>
-          {loading && (
-            // <BarLoader width={"100%"} color="gray" className="my-4" />
-          )}
-          <div className="space-y-4">
-            {data && data.length > 0 ? (
-              data.map((quiz: any) => (
-                <Card
-                  key={quiz.id}
-                  className={`cursor-pointer transition-colors ${
-                    quiz.status === "generating"
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-muted/50"
-                  }`}
-                  onClick={() => {
-                    if (quiz.status === "completed" || !quiz.status) {
-                      setSelectedQuiz(quiz);
-                    }
-                  }}
-                >
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-2xl">{quiz.name}</CardTitle>
-                      {quiz.status === "generating" && (
-                        <span className="bg-yellow-500/20 text-yellow-500 text-xs px-2 py-1 rounded-full">
-                          Generating...
-                        </span>
-                      )}
-                      {quiz.status === "error" && (
-                        <span className="bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded-full">
-                          Error
-                        </span>
-                      )}
-                    </div>
-                    <CardDescription className="flex justify-between w-full mt-2">
-                      <div>
-                        {quiz.status === "generating"
-                          ? "Processing..."
-                          : `Score: ${quiz.score.toFixed(1)}%`}
-                      </div>
-
-                      <div>
-                        {format(
-                          new Date(quiz.created_at),
-                          "MMMM dd, yyyy HH:mm",
+          {loading ? (
+            <QuizCardSkeleton />
+          ) : (
+            <div className="space-y-4">
+              {data && data.length > 0 ? (
+                data.map((quiz: any) => (
+                  <Card
+                    key={quiz.id}
+                    className={`cursor-pointer transition-colors ${
+                      quiz.status === "generating"
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-muted/50"
+                    }`}
+                    onClick={() => {
+                      if (quiz.status === "completed" || !quiz.status) {
+                        setSelectedQuiz(quiz);
+                      }
+                    }}
+                  >
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-2xl">{quiz.name}</CardTitle>
+                        {quiz.status === "generating" && (
+                          <span className="bg-yellow-500/20 text-yellow-500 text-xs px-2 py-1 rounded-full">
+                            Generating...
+                          </span>
+                        )}
+                        {quiz.status === "error" && (
+                          <span className="bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded-full">
+                            Error
+                          </span>
                         )}
                       </div>
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              ))
-            ) : (
-              <p>No quizzes available.</p>
-            )}
-          </div>
+                      <CardDescription className="flex justify-between w-full mt-2">
+                        <div>
+                          {quiz.status === "generating"
+                            ? "Processing..."
+                            : `Score: ${quiz.score.toFixed(1)}%`}
+                        </div>
+
+                        <div>
+                          {format(
+                            new Date(quiz.created_at),
+                            "MMMM dd, yyyy HH:mm",
+                          )}
+                        </div>
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                ))
+              ) : (
+                <p>No quizzes available.</p>
+              )}
+            </div>
+          )}
           <Dialog
             open={!!selectedQuiz}
             onOpenChange={() => setSelectedQuiz(null)}

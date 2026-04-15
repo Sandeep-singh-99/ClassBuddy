@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/hooks/hooks";
-import { joinTeacherGroup } from "@/redux/slice/tSlice";
+import { joinTeacherGroup, JoinedCheckStatus } from "@/redux/slice/tSlice";
 import { toast } from "sonner";
 
 export const useJoinToGroup = () => {
@@ -8,7 +8,9 @@ export const useJoinToGroup = () => {
   const joinGroup = async (groupId: string) => {
     try {
       const response = await dispatch(joinTeacherGroup(groupId)).unwrap();
-      toast.success(response.message || "Successfully joined the group!");
+      // Update joined status in redux
+      await dispatch(JoinedCheckStatus(groupId));
+      toast.success("Successfully joined the group!");
       return response;
     } catch (error: any) {
       if (error?.detail) {
