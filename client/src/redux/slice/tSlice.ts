@@ -76,22 +76,7 @@ export const GroupJoinStudents = createAsyncThunk("teacher/group-join-students",
   }
 });
 
-export const generateNotes = createAsyncThunk("teacher/generate-notes", async (title: string, thunkApi) => {
-  try {
-    const response = await axiosClient.post("/notes/notes-generates", { title: title }, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      }
-    });
-    return response.data;
-  } catch (error: unknown) {
-    if (error instanceof AxiosError) {
-      return thunkApi.rejectWithValue(
-        error.response?.data?.detail ?? error.message ?? "Generating notes failed"
-      );
-    }
-  }
-})
+
 
 export const getNoteById = createAsyncThunk("teacher/get-note-by-id", async (noteId: string, thunkApi) => {
   try {
@@ -167,7 +152,20 @@ const initialState: TState = {
 const tSlice = createSlice({
   name: "teacher",
   initialState,
-  reducers: {},
+  reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setGeneratedNotes: (state, action: PayloadAction<string | null>) => {
+      state.generatedNotes = action.payload;
+    },
+    setCurrentNoteId: (state, action: PayloadAction<string | null>) => {
+      state.currentNoteId = action.payload;
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(viewAllTeacher.pending, (state) => {
       state.loading = true;
@@ -219,25 +217,7 @@ const tSlice = createSlice({
       state.error = action.payload as string;
     });
 
-    builder.addCase(generateNotes.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-      state.generatedNotes = null;
-      state.currentNoteId = null;
-    });
 
-    builder.addCase(generateNotes.fulfilled, (state, action) => {
-      state.loading = false;
-      state.error = null;
-      state.generatedNotes = action.payload.generated_notes; 
-      state.currentNoteId = action.payload.note_id;
-    });
-
-    builder.addCase(generateNotes.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-      state.generatedNotes = null;
-    });
 
     builder.addCase(getNoteById.fulfilled, (state, action) => {
       if (action.payload && action.payload.content) {
@@ -246,5 +226,7 @@ const tSlice = createSlice({
     });
   },
 });
+
+export const { setLoading, setGeneratedNotes, setCurrentNoteId, setError } = tSlice.actions;
 
 export default tSlice.reducer;

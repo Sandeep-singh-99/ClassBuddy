@@ -25,12 +25,12 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 # -------------------------------
 # 3. Tavily Search Node
 # -------------------------------
-def tavily_search_node(state: State):
+async def tavily_search_node(state: State):
     """
     Fetch research data from Tavily based on the provided title.
     """
     topic = state["title"][-1].content
-    search_results = search_tool.invoke({"query": topic})
+    search_results = await search_tool.ainvoke({"query": topic})
 
     if not search_results or "results" not in search_results:
         combined_results = "No search results found."
@@ -48,7 +48,7 @@ def tavily_search_node(state: State):
 # -------------------------------
 # 4. Notes Generation Node
 # -------------------------------
-def generate_notes_node(state: State):
+async def generate_notes_node(state: State):
     """
     Generate structured Markdown notes using gemini and research data.
     """
@@ -114,7 +114,7 @@ Short recap of the topic.
 Return **ONLY Markdown formatted notes**.
    """
 
-    response = llm.invoke([
+    response = await llm.ainvoke([
         HumanMessage(content=prompt)
     ])
 
