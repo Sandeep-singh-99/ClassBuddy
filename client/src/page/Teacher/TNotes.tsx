@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { generateNotes, saveNotes, getNoteById, updateNotes } from "@/redux/slice/tSlice";
+import { saveNotes, getNoteById, updateNotes } from "@/redux/slice/tSlice";
+import { setLoading, setGeneratedNotes, setCurrentNoteId, setError } from "@/redux/slice/tSlice";
 import React, { useState, useEffect } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import { Label } from "@/components/ui/label";
@@ -18,19 +19,7 @@ export default function TNotes() {
 
   const { generatedNotes, loading, currentNoteId } = useAppSelector((state) => state.teachers);
 
-  // Status check effect for polling
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (generatedNotes === "Generating notes... Please wait." && currentNoteId) {
-      interval = setInterval(() => {
-        dispatch(getNoteById(currentNoteId));
-      }, 3000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [generatedNotes, currentNoteId, dispatch]);
-
+  // Status check effect for polling - REMOVED since we use SSE now
   useEffect(() => {
     if (!loading && generatedNotes) {
       setVisible(true);
@@ -41,12 +30,83 @@ export default function TNotes() {
     e.preventDefault();
     try {
       toast.info("Generating notes, please wait...");
-      await dispatch(generateNotes(title)).unwrap();
-      toast.success("Notes generated successfully!");
-    } catch (error) {
-      toast.error(
-        (error as string) || "Failed to generate notes. Please try again."
+      dispatch(setLoading(true));
+      dispatch(setGeneratedNotes(""));
+      dispatch(setCurrentNoteId(null));
+      dispatch(setError(null));
+      setVisible(true); // make editor visible so user can see streaming
+
+      const formData = new URLSearchParams();
+      formData.append("title", title);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1"}/notes/notes-generates`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`, // assuming token is in localStorage, or handle via your auth setup
+          },
+          body: formData.toString(),
+        }
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (!response.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let done = false;
+      let currentText = "";
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+
+        if (value) {
+          const chunkString = decoder.decode(value, { stream: true });
+          const lines = chunkString.split('\n');
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const dataStr = line.slice(6);
+              if (dataStr.trim() === "") continue;
+              try {
+                const data = JSON.parse(dataStr);
+                if (data.error) {
+                   throw new Error(data.error);
+                }
+                if (data.chunk) {
+                   currentText += data.chunk;
+                   dispatch(setGeneratedNotes(currentText));
+                }
+                if (data.note_id && !currentNoteId) {
+                   dispatch(setCurrentNoteId(data.note_id));
+                }
+                if (data.done) {
+                   toast.success("Notes generated successfully!");
+                   dispatch(setLoading(false));
+                }
+              } catch (e) {
+                console.error("Error parsing SSE data", e, dataStr);
+              }
+            }
+          }
+        }
+      }
+      
+      dispatch(setLoading(false));
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        (error instanceof Error ? error.message : "Failed to generate notes. Please try again.")
+      );
+      dispatch(setLoading(false));
+      dispatch(setError(error instanceof Error ? error.message : "Error"));
     }
   };
 

@@ -5,9 +5,10 @@ from app.config.db import get_db
 from sqlalchemy.orm import Session
 from app.models.notes import Note
 from app.models.teacherInsight import TeacherInsight
-from app.core.inngest import inngest_client
-import inngest
-import asyncio
+from fastapi.responses import StreamingResponse
+import json
+from app.ai.notes_graph import graph
+from langchain_core.messages import HumanMessage
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -67,30 +68,33 @@ async def generate_notes(
         db.commit()
         db.refresh(new_note)
 
-        # Trigger Inngest Event
-        await inngest_client.send(
-            inngest.Event(
-                name="note/generate",
-                data={
-                    "note_id": new_note.id,
-                    "title": title,
-                },
-            )
-        )
+        async def event_generator():
+            generated_content = ""
+            inputs = {
+                "title": [HumanMessage(content=title)],
+                "research": [],
+                "notes": [],
+            }
+            try:
+                async for event in graph.astream_events(inputs, version="v2"):
+                    kind = event["event"]
+                    if kind == "on_chat_model_stream":
+                        chunk = event["data"]["chunk"].content
+                        if chunk:
+                            generated_content += chunk
+                            yield f"data: {json.dumps({'chunk': chunk, 'note_id': new_note.id})}\n\n"
+                
+                # Update DB with final content
+                new_note.content = generated_content
+                db.commit()
+                yield f"data: {json.dumps({'chunk': '', 'note_id': new_note.id, 'done': True})}\n\n"
+            except Exception as e:
+                # Update DB with error message
+                new_note.content = f"Error generating notes: {str(e)}"
+                db.commit()
+                yield f"data: {json.dumps({'error': str(e), 'note_id': new_note.id, 'done': True})}\n\n"
 
-        # Poll the database until Inngest completes the generation
-        for _ in range(30):  # Wait up to 60 seconds (30 * 2s)
-            await asyncio.sleep(2)
-            db.refresh(new_note)
-            if new_note.content != "Generating notes... Please wait.":
-                break
-
-        return {
-            "title": title,
-            "generated_notes": new_note.content,
-            "note_id": new_note.id,
-            "format": "markdown",
-        }
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
