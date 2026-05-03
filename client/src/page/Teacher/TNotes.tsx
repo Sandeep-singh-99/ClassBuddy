@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { saveNotes, getNoteById, updateNotes } from "@/redux/slice/tSlice";
+import { saveNotes, updateNotes } from "@/redux/slice/tSlice";
 import { setLoading, setGeneratedNotes, setCurrentNoteId, setError } from "@/redux/slice/tSlice";
 import React, { useState, useEffect } from "react";
 import MDEditor from "@uiw/react-md-editor";
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
+import axios from "axios";
 
 export default function TNotes() {
   const [visible, setVisible] = useState(false);
@@ -39,27 +40,24 @@ export default function TNotes() {
       const formData = new URLSearchParams();
       formData.append("title", title);
 
-      const response = await fetch(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1"}/notes/notes-generates`,
+        formData.toString(),
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": `Bearer ${localStorage.getItem("token")}`, // assuming token is in localStorage, or handle via your auth setup
           },
-          body: formData.toString(),
+          withCredentials: true,
+          responseType: "stream",
+          adapter: "fetch",
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.data) {
+        throw new Error("No response data");
       }
 
-      if (!response.body) {
-        throw new Error("No response body");
-      }
-
-      const reader = response.body.getReader();
+      const reader = (response.data as any).getReader();
       const decoder = new TextDecoder("utf-8");
       let done = false;
       let currentText = "";
