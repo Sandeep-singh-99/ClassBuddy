@@ -7,6 +7,7 @@ from langchain_tavily import TavilySearch
 
 load_dotenv()
 
+
 # -------------------------------
 # 1. Define Graph State
 # -------------------------------
@@ -15,12 +16,14 @@ class State(TypedDict):
     research: Annotated[list, add_messages]
     notes: Annotated[list, add_messages]
 
+
 search_tool = TavilySearch(max_results=3)
 
 # -------------------------------
 # 2. Initialize LLM
 # -------------------------------
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+
 
 # -------------------------------
 # 3. Tavily Search Node
@@ -36,14 +39,18 @@ async def tavily_search_node(state: State):
         combined_results = "No search results found."
     else:
         combined_results = "\n".join(
-            [f"- {item['title']}: {item['content']}" for item in search_results["results"]]
+            [
+                f"- {item['title']}: {item['content']}"
+                for item in search_results["results"]
+            ]
         )
 
     return {
         "title": state["title"],
         "research": [HumanMessage(content=combined_results)],
-        "notes": state["notes"]
+        "notes": state["notes"],
     }
+
 
 # -------------------------------
 # 4. Notes Generation Node
@@ -114,15 +121,14 @@ Short recap of the topic.
 Return **ONLY Markdown formatted notes**.
    """
 
-    response = await llm.ainvoke([
-        HumanMessage(content=prompt)
-    ])
+    response = await llm.ainvoke([HumanMessage(content=prompt)])
 
     return {
         "title": state["title"],
         "research": state["research"],
         "notes": [HumanMessage(content=response.content)],
     }
+
 
 # -------------------------------
 # 5. Build LangGraph Workflow
