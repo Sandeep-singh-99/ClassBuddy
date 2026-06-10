@@ -6,7 +6,7 @@ import tempfile
 from dotenv import load_dotenv
 from app.models.auth import User
 from app.dependencies.dependencies import get_current_user
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
