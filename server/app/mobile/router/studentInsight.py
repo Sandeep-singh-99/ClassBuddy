@@ -27,7 +27,7 @@ class State(TypedDict):
 search_tool = TavilySearch(max_results=2)
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash", temperature=0, response_format="json"
+    model="gemini-2.5-flash", temperature=0
 )
 
 
