@@ -1,23 +1,14 @@
-# Stage 1: builder
-FROM python:3.13-slim AS builder
+FROM python:3.13-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+ENV UV_SYSTEM_PYTHON=1
+ENV UV_COMPILE_BYTECODE=1
 
 WORKDIR /app
 
 COPY requirements.txt .
-# RUN pip install -r requirements.txt
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
-
-# Remove cache
-RUN find /usr/local -type d -name "__pycache__" -exec rm -r {} + \
- && find /usr/local -type f -name "*.pyc" -delete
-
-# Stage 2: final image
-
-FROM python:3.13-slim
-
-WORKDIR /app
-
-COPY --from=builder /install /usr/local
+RUN uv pip install --system --no-cache -r requirements.txt
 
 COPY . .
 
