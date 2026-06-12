@@ -8,7 +8,7 @@ export const viewAllTeacher = createAsyncThunk(
   "teacher/viewAll",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/insights/teacher-insights");
+      const response = await axiosClient.get("/insights/");
       return response.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

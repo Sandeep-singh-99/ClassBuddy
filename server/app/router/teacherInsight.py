@@ -9,7 +9,7 @@ from app.utils.cloudinary import upload_image, delete_image
 
 router = APIRouter()
 
-@router.post("/create-teacher-insights", response_model=TeacherInsightResponse)
+@router.post("/", response_model=TeacherInsightResponse)
 def create_teacher_insight(db: Session = Depends(get_db), current_user: User = Depends(get_current_user), group_name: str = Form(...), group_des: str = Form(...) , image: UploadFile = File(None)):
     if not current_user or current_user.role != "teacher":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can create insights.")
@@ -38,7 +38,7 @@ def create_teacher_insight(db: Session = Depends(get_db), current_user: User = D
     db.refresh(new_insight)
     return new_insight
 
-@router.get("/teacher-insights", response_model=list[TeacherInsightResponse])
+@router.get("/", response_model=list[TeacherInsightResponse])
 def get_teacher_insights(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Authentication required")
