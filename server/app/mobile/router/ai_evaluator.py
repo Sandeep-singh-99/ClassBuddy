@@ -8,15 +8,12 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 import json
-import logging
+from app.core.logger import logger
 import re
 from datetime import datetime
 
 load_dotenv()
 
-# ===== Logging =====
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # ===== LLM Setup =====
 llm = ChatGoogleGenerativeAI(
