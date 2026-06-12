@@ -81,7 +81,7 @@ export default function TInsight() {
 
     try {
       const response = await axiosClient.post(
-        "/insights/create-teacher-insights",
+        "/insights/",
         formDataToSend,
         {
           headers: {
