@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from app.router import (
     auth,
     chat_with_pdf,
@@ -37,21 +38,45 @@ from app.mobile.router import (
     subscription as mobile_subscription,
 )
 from app.utils import socket_manager
-from app.config import db
-from app.models import (
-    auth as auth_model,
-    notes as notes_model,
-    teacherInsight as teacher_insight_model,
-)
+
+from app.dependencies.request_logger import log_requests
+
 from dotenv import load_dotenv
 import os
 
 from slowapi.errors import RateLimitExceeded
 from app.core import rate_limiter
 
+from app.core.logger import logger
+
 load_dotenv()
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting ClassBuddy API")
+
+    try:
+        await socket_manager.manager.start_listener()
+        logger.info("Socket listener started")
+    except Exception:
+        logger.exception("Failed to start socket listener")
+        raise
+
+    yield
+
+    logger.info("Shutting down ClassBuddy API")
+
+    try:
+        await socket_manager.manager.stop_listener()
+        logger.info("Socket listener stopped")
+    except Exception:
+        logger.exception("Failed to stop socket listener")
+
+app = FastAPI(
+    title="ClassBuddy API",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 app.state.limiter = rate_limiter.limiter
 app.add_exception_handler(RateLimitExceeded, rate_limiter.rate_limit_exceeded_handler)
@@ -67,19 +92,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Base.metadata.create_all(bind=engine)
+app.middleware("http")(log_requests)
+
+# Health Check
+@app.get("/health", tags=["Health"])
+async def health_check():
+    return {
+        "status": "healthy",
+        "service": "classbuddy-api",
+    }
 
 
-@app.on_event("startup")
-async def on_startup():
-    print("Creating database tables (if not exist)...")
-    db.Base.metadata.create_all(bind=db.engine)
-    await socket_manager.manager.start_listener()
-
-
-@app.on_event("shutdown")
-async def on_shutdown():
-    await socket_manager.manager.stop_listener()
+@app.get("/", tags=["Root"])
+async def read_root():
+    return {
+        "message": "Welcome to the ClassBuddy API"
+    }
 
 
 app.include_router(inngest_route.router)
@@ -165,7 +193,3 @@ app.include_router(
     tags=["Mobile Subscription"],
 )
 
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the ClassBuddy API"}
