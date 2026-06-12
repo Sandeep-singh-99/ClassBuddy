@@ -1,5 +1,6 @@
 import redis.asyncio as redis
 from dotenv import load_dotenv
+from app.core.logger import logger
 import os
 
 load_dotenv()
@@ -19,7 +20,7 @@ async def check_redis_connection():
     """Confirms Redis connection is active."""
     try:
         await redis_async_client.ping()
-        print("✅ Redis async connection successful")
+        logger.info("✅ Redis async connection successful")
     except redis.exceptions.ConnectionError as e:
-        print(f"❌ Redis async connection failed: {e}")
+        logger.error(f"❌ Redis async connection failed: {e}")
         raise e
