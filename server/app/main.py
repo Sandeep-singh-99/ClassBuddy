@@ -37,6 +37,9 @@ from app.mobile.router import (
     groupMessage as mobile_group_message,
     subscription as mobile_subscription,
 )
+
+from app.router import health
+
 from app.utils import socket_manager
 
 from app.dependencies.request_logger import log_requests
@@ -94,14 +97,6 @@ app.add_middleware(
 
 app.middleware("http")(log_requests)
 
-# Health Check
-@app.get("/health", tags=["Health"])
-async def health_check():
-    return {
-        "status": "healthy",
-        "service": "classbuddy-api",
-    }
-
 
 @app.get("/", tags=["Root"])
 async def read_root():
@@ -112,6 +107,7 @@ async def read_root():
 
 app.include_router(inngest_route.router)
 
+app.include_router(health.router)
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(chat_with_pdf.router, prefix="/pdf", tags=["PDF Chat"])
