@@ -8,7 +8,7 @@ export const teacherNotes = createAsyncThunk(
   "notes/teacher-notes",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/notes/teacher-get-notes");
+      const response = await axiosClient.get("/notes/");
       return response.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -38,7 +38,7 @@ export const teachersGetNoteById = createAsyncThunk(
 
 export const deleteNoteById = createAsyncThunk("notes/delete-note-by-id", async (id: string, thunkApi) => {
   try {
-    const response = await axiosClient.delete(`/notes/delete-note/${id}`);
+    const response = await axiosClient.delete(`/notes/${id}`);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

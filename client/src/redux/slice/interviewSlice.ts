@@ -8,7 +8,7 @@ export const InterviewPrepCreate = createAsyncThunk(
   async (data: { name: string; description: string }, thunkApi) => {
     try {
       const response = await axiosClient.post(
-        "/interview-prep/create-interview-prep",
+        "/interview-prep/",
         data
       );
       return response.data;
@@ -27,7 +27,7 @@ export const GetAllInterviewPrep = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        "/interview-prep/get-interview-preps"
+        "/interview-prep/"
       );
       return response.data;
     } catch (error) {
@@ -42,7 +42,7 @@ export const GetAllInterviewPrep = createAsyncThunk(
 
 export const GetInterviewQuestion = createAsyncThunk("interview/getInterviewQuestion", async (id: string, thunkApi) => {
   try {
-    const response = await axiosClient.get(`/interview-prep/get-interview-question/${id}`);
+    const response = await axiosClient.get(`/interview-prep/${id}`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

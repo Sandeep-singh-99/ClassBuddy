@@ -17,7 +17,7 @@ from app.dependencies.require_active_subscription import check_active_subscripti
 
 router = APIRouter()
 
-@router.post("/upload-doc", response_model=DocsBase)
+@router.post("/", response_model=DocsBase)
 @limiter.limit("10/minute")
 def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != userRole.TEACHER:
@@ -53,7 +53,7 @@ def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = F
     return new_doc
 
 
-@router.get("/my-docs", response_model=List[DocsBase])
+@router.get("/", response_model=List[DocsBase])
 @limiter.limit("10/minute")
 def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
@@ -66,7 +66,7 @@ def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: U
     docs.sort(key=lambda x: x.updated_at, reverse=True)
     return docs
 
-@router.get("/my-docs/{doc_id}", response_model=DocsBase)
+@router.get("/{doc_id}", response_model=DocsBase)
 @limiter.limit("10/minute")
 def get_my_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
@@ -80,7 +80,7 @@ def get_my_doc(request: Request, doc_id: str, db: Session = Depends(get_db), cur
     return docs
 
 
-@router.get("/teacher-notes-with-docs", response_model=DocsUploadResponse, dependencies=[Depends(check_active_subscription)])
+@router.get("/", response_model=DocsUploadResponse, dependencies=[Depends(check_active_subscription)])
 @limiter.limit("10/minute")
 def get_teacher_notes_with_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
@@ -108,7 +108,7 @@ def get_teacher_notes_with_docs(request: Request, db: Session = Depends(get_db),
     }
 
 
-@router.delete("/delete-doc/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("10/minute")
 def delete_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:

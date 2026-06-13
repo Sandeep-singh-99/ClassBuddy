@@ -11,7 +11,7 @@ from sqlalchemy import extract, func
 
 router = APIRouter()
 
-@router.get("/student-view/{assignment_id}")
+@router.get("/{assignment_id}")
 async def get_submissions(assignment_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != userRole.STUDENT:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view submissions")
@@ -25,7 +25,7 @@ async def get_submissions(assignment_id: str, db: Session = Depends(get_db), cur
 
 
 
-@router.get("/assignment-stats/{assignment_id}")
+@router.get("/{assignment_id}")
 async def assignment_stats(
     assignment_id: str,
     db: Session = Depends(get_db),
@@ -59,7 +59,7 @@ async def assignment_stats(
     }
 
 
-@router.get("/assignment-marks/{assignment_id}")
+@router.get("/{assignment_id}")
 async def get_assignment_marks(
     assignment_id: str,
     db: Session = Depends(get_db),
@@ -113,7 +113,7 @@ async def get_assignment_marks(
     }
 
 
-@router.get("/total-submissions")
+@router.get("/")
 async def total_submissions(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -141,7 +141,7 @@ async def total_submissions(
     }
 
 
-@router.get("/student-submissions-stats")
+@router.get("/")
 async def student_submissions_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user or current_user.role != userRole.STUDENT:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
@@ -177,7 +177,7 @@ async def student_submissions_stats(db: Session = Depends(get_db), current_user:
 
 
 
-@router.get("/student/assignments")
+@router.get("/")
 def get_student_assignments(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -228,7 +228,7 @@ def get_student_assignments(
 
 
 
-@router.get("/student-performance-stats")
+@router.get("/")
 def get_student_performance_stats(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -279,5 +279,4 @@ def get_student_performance_stats(
         }
 
     except Exception as e:
-        print("❌ ERROR:", e)
         raise HTTPException(status_code=500, detail=str(e))

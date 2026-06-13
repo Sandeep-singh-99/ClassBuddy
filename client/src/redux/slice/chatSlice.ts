@@ -53,7 +53,7 @@ export const fetchGroups = createAsyncThunk(
   "chat/fetchGroups",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.get("/group-messages/get-group");
+      const { data } = await axiosClient.get("/group-messages/");
       return data.groups;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -72,7 +72,7 @@ export const fetchMessages = createAsyncThunk(
   async (groupId: string, { rejectWithValue }) => {
     try {
       const { data } = await axiosClient.get(
-        `/group-messages/get-messages/${groupId}`
+        `/group-messages/${groupId}`
       );
       return data.messages;
     } catch (error) {
@@ -94,7 +94,7 @@ export const sendMessage = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const { data } = await axiosClient.post("/group-messages/send-message", {
+      const { data } = await axiosClient.post("/group-messages/", {
         group_id: groupId,
         message,
       });

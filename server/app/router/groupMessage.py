@@ -69,7 +69,7 @@ async def get_current_user_ws(
 # --------------------------
 
 
-@router.get("/get-group", response_model=GroupListResponse)
+@router.get("/", response_model=GroupListResponse)
 def get_groups(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
@@ -102,7 +102,7 @@ def get_groups(
     return {"groups": groups}
 
 
-@router.get("/get-messages/{group_id}", response_model=GroupMessageListResponse)
+@router.get("/{group_id}", response_model=GroupMessageListResponse)
 def get_messages_by_group(
     group_id: str,
     db: Session = Depends(get_db),
@@ -146,7 +146,7 @@ def get_messages_by_group(
     return {"messages": messages}
 
 
-@router.post("/send-message", response_model=GroupMessageResponse)
+@router.post("/", response_model=GroupMessageResponse)
 async def send_message(
     request: SendMessageRequest,
     db: Session = Depends(get_db),

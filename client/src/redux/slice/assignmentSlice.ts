@@ -8,7 +8,7 @@ export const fetchAssignments = createAsyncThunk(
   "assignments/fetchAll",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/assignments/assignments");
+      const response = await axiosClient.get("/assignments/");
       return response.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -24,7 +24,7 @@ export const fetchTeacherAssignments = createAsyncThunk(
   "assignments/fetchTeacherAssignments",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/assignments/teacher-get-own-assignment");
+      const response = await axiosClient.get("/assignments/");
       return response.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -41,7 +41,7 @@ export const fetchAssignmentById = createAsyncThunk(
   async (id: string, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        `/assignments/get-assignment-viewById/${id}`
+        `/assignments/${id}`
       );
       return response.data;
     } catch (error: unknown) {
@@ -59,7 +59,7 @@ export const CreateAssignment = createAsyncThunk(
   async (data: FormData, thunkApi) => {
     try {
       const response = await axiosClient.post(
-        "/assignments/create-assignment",
+        "/assignments/",
         data,
         {
           headers: {
@@ -83,7 +83,7 @@ export const GenerateAssignmentById = createAsyncThunk(
   async (id: string, thunkApi) => {
     try {
       const response = await axiosClient.post(
-        `/assignments/generate-question/${id}`
+        `/assignments/${id}`
       );
       return response.data;
     } catch (error) {
@@ -101,7 +101,7 @@ export const DeleteAssignment = createAsyncThunk(
   async (id: string, thunkApi) => {
     try {
       const response = await axiosClient.delete(
-        `/assignments/delete-assignment/${id}`
+        `/assignments/${id}`
       );
       return response.data;
     } catch (error) {

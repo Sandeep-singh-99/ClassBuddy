@@ -148,7 +148,7 @@ def delete_subscription_plan(
     return {"message": "Plan deleted successfully"}
 
 
-@router.get("/student/plans")
+@router.get("/")
 def get_all_plans(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
@@ -271,7 +271,7 @@ def verify_payment(
     return {"message": "Subscription activated"}
 
 
-@router.get("/teacher/stats")
+@router.get("/")
 def get_teacher_subscription_stats(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
@@ -321,7 +321,7 @@ def get_teacher_subscription_stats(
     }
 
 
-@router.get("/teacher/analytics")
+@router.get("/")
 def get_teacher_subscription_analytics(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):

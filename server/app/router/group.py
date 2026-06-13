@@ -8,7 +8,7 @@ from app.schemas.teacherInsight import TeacherInsightCreate, TeacherInsightRespo
 from app.schemas.auth import UserResponse
 
 router = APIRouter()
-@router.post("/join", response_model=TeacherInsightResponse)
+@router.post("/", response_model=TeacherInsightResponse)
 def join_group(
     request: JoinGroupRequest,
     db: Session = Depends(get_db),
@@ -60,7 +60,7 @@ def join_group(
 
 
 
-@router.get("/joined-or-not/{group_id}")
+@router.get("/{group_id}")
 def check_if_user_joined_group(
     group_id: str,
     db: Session = Depends(get_db),
@@ -93,7 +93,7 @@ def check_if_user_joined_group(
     return {"group_id": group_id, "joined": is_member}
 
 
-@router.get("/view-students", response_model=list[TeacherInsightResponse])
+@router.get("/", response_model=list[TeacherInsightResponse])
 def view_students_in_teacher_groups(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)

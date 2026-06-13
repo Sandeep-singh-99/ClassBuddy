@@ -8,7 +8,7 @@ export const DocsUpload = createAsyncThunk(
   "docs/upload",
   async (data: { filename: string; file: File | null }, thunkApi) => {
     try {
-      const response = await axiosClient.post("/docs/upload-doc", data, {
+      const response = await axiosClient.post("/docs/", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -26,7 +26,7 @@ export const DocsUpload = createAsyncThunk(
 
 export const DocsFetch = createAsyncThunk("docs/fetch", async (_, thunkApi) => {
   try {
-    const response = await axiosClient.get("/docs/my-docs");
+    const response = await axiosClient.get("/docs/");
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -41,7 +41,7 @@ export const DocsFetchById = createAsyncThunk(
   "docs/fetchById",
   async (docId: string, thunkApi) => {
     try {
-      const response = await axiosClient.get(`/docs/my-docs/${docId}`);
+      const response = await axiosClient.get(`/docs/${docId}`);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -58,7 +58,7 @@ export const DocsStudentFetch = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        "/docs/teacher-notes-with-docs"
+        "/docs/"
       );
       return response.data;
     } catch (error) {
@@ -73,7 +73,7 @@ export const DocsStudentFetch = createAsyncThunk(
 
 export const DocsDelete = createAsyncThunk("docs/delete", async (docId: string, thunkApi) => {
   try {
-    const response = await axiosClient.delete(`/docs/delete-doc/${docId}`);
+    const response = await axiosClient.delete(`/docs/${docId}`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

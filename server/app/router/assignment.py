@@ -21,7 +21,7 @@ from app.dependencies.require_active_subscription import check_active_subscripti
 router = APIRouter()
 
 
-@router.post("/create-assignment", response_model=AssignmentBase)
+@router.post("/", response_model=AssignmentBase)
 @limiter.limit("10/minute")
 async def create_assignment(
     request: Request,
@@ -74,7 +74,7 @@ async def create_assignment(
     return new_assignment
 
 
-@router.get("/assignments", response_model=List[AssignmentBase], dependencies=[Depends(check_active_subscription)])
+@router.get("/", response_model=List[AssignmentBase], dependencies=[Depends(check_active_subscription)])
 @limiter.limit("10/minute")
 async def get_assignments(
     request: Request,
@@ -105,7 +105,7 @@ async def get_assignments(
 
     return assignments
 
-@router.get("/teacher-get-own-assignment", response_model=List[AssignmentBase])
+@router.get("/", response_model=List[AssignmentBase])
 @limiter.limit("10/minute")
 async def get_teacher_assignments(
     request: Request,
@@ -124,7 +124,7 @@ async def get_teacher_assignments(
 
 
 @router.get(
-    "/get-assignment-viewById/{assignment_id}", response_model=AssignmentResponse
+    "/{assignment_id}", response_model=AssignmentResponse
 )
 @limiter.limit("10/minute")
 async def get_assignment(
@@ -180,7 +180,7 @@ async def get_assignment(
     return assignment
 
 
-@router.delete("/delete-assignment/{assignment_id}", response_model=AssignmentResponse)
+@router.delete("/{assignment_id}", response_model=AssignmentResponse)
 @limiter.limit("10/minute")
 async def delete_assignment(
     request: Request,

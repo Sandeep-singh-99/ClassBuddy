@@ -90,7 +90,7 @@ export const fetchStudentSubscriptionPlans = createAsyncThunk(
   "subscription/studentPlans",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/subscription/student/plans");
+      const response = await axiosClient.get("/subscription/");
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -108,7 +108,7 @@ export const teacherSubscriptionStats = createAsyncThunk(
   "subscription/stats",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/subscription/teacher/stats");
+      const response = await axiosClient.get("/subscription/");
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -126,7 +126,7 @@ export const fetchSubscriptionAnalytics = createAsyncThunk(
   "subscription/analytics",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/subscription/teacher/analytics");
+      const response = await axiosClient.get("/subscription/");
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {

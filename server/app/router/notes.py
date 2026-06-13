@@ -16,7 +16,7 @@ from app.core.rate_limiter import limiter
 router = APIRouter()
 
 
-@router.post("/create-note", response_model=NotesResponse)
+@router.post("/", response_model=NotesResponse)
 @limiter.limit("10/minute")
 def create_note(
     request: Request,
@@ -56,7 +56,7 @@ def create_note(
 
     return new_note
 
-@router.get("/teacher-get-notes", response_model=TeacherNotesResponse)
+@router.get("/", response_model=TeacherNotesResponse)
 @limiter.limit("10/minute")
 def get_teacher_notes(
     request: Request,
@@ -94,7 +94,7 @@ def get_note_by_id(request: Request, note_id: str, db: Session = Depends(get_db)
     return note
 
 
-@router.delete("/delete-note/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("10/minute")
 def delete_note(request: Request, note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != userRole.TEACHER:
@@ -111,7 +111,7 @@ def delete_note(request: Request, note_id: str, db: Session = Depends(get_db), c
     return {"message": "Note deleted successfully"}
 
 
-@router.put("/edit-note/{note_id}", response_model=NotesResponse)
+@router.put("/{note_id}", response_model=NotesResponse)
 @limiter.limit("10/minute")
 def edit_note(
     request: Request,

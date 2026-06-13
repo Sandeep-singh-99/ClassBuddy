@@ -16,8 +16,6 @@ import inngest
 load_dotenv()
 
 
-
-
 # --------------------------
 # FastAPI Router
 # --------------------------
@@ -25,7 +23,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/generate-question/{assignment_id}"
+    "/{assignment_id}"
 )
 @limiter.limit("10/minute")
 async def generate_question(
