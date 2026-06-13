@@ -25,7 +25,7 @@ export const joinTeacherGroup = createAsyncThunk(
   async (groupId: string, thunkApi) => {
     try {
       const response = await axiosClient.post(
-        "/groups/join",
+        "/groups/",
         { group_id: groupId },
         {
           headers: {
@@ -49,7 +49,7 @@ export const JoinedCheckStatus = createAsyncThunk(
   async (groupId: string, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        `/groups/joined-or-not/${groupId}`
+        `/groups/${groupId}`
       );
       return response.data;
     } catch (error: unknown) {
@@ -65,7 +65,7 @@ export const JoinedCheckStatus = createAsyncThunk(
 
 export const GroupJoinStudents = createAsyncThunk("teacher/group-join-students", async (_ , thunkApi) => {
   try {
-    const response = await axiosClient.get("/groups/view-students");
+    const response = await axiosClient.get("/groups/");
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -93,7 +93,7 @@ export const getNoteById = createAsyncThunk("teacher/get-note-by-id", async (not
 
 export const saveNotes = createAsyncThunk("teacher/save-notes", async (formData: FormData, thunkApi) => {
   try {
-    const response = await axiosClient.post("/notes/create-note", formData, {
+    const response = await axiosClient.post("/notes/", formData, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       }
@@ -112,7 +112,7 @@ export const saveNotes = createAsyncThunk("teacher/save-notes", async (formData:
 
 export const updateNotes = createAsyncThunk("teacher/update-notes", async (data: { noteId: string; title?: string; content?: string }, thunkApi) => {
   try {
-    const response = await axiosClient.put(`/notes/edit-note/${data.noteId}`,{
+    const response = await axiosClient.put(`/notes/${data.noteId}`,{
       title: data.title,
       content: data.content
     }, {

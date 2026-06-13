@@ -12,7 +12,7 @@ export const GenerateDashboardData = createAsyncThunk(
   async ({ industry }: { industry: string }, thunkApi) => {
     try {
       const response = await axiosClient.post(
-        "/student-insight/generate-industry-insight",
+        "/student-insight/",
         { industry },
         {
           headers: {
@@ -35,7 +35,7 @@ export const FetchDashboardData = createAsyncThunk(
   "career/fetchDashboard",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/student-insight/my-insights");
+      const response = await axiosClient.get("/student-insight/");
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {

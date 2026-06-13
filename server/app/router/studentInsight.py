@@ -22,7 +22,7 @@ load_dotenv()
 router = APIRouter()
 
 
-@router.post("/generate-industry-insight")
+@router.post("/")
 async def generate_industry_insight(
     industry: str = Form(...),
     current_user=Depends(dependencies.get_current_user),
@@ -66,7 +66,7 @@ async def generate_industry_insight(
 
 
 @router.get(
-    "/my-insights", response_model=student_insight_schema.StudentInsightResponse
+    "/", response_model=student_insight_schema.StudentInsightResponse
 )
 def get_my_insights(
     current_user: User = Depends(dependencies.get_current_user),

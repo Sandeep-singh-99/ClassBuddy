@@ -26,7 +26,7 @@ export const fetchSubmissionResult = createAsyncThunk(
   "submission/fetchResult",
   async (id: string, thunkApi) => {
     try {
-      const response = await axiosClient.get(`/submissions/student-view/${id}`);
+      const response = await axiosClient.get(`/submissions/${id}`);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -43,7 +43,7 @@ export const fetchAssignmentStats = createAsyncThunk(
   async (id: string, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        `/submissions/assignment-stats/${id}`
+        `/submissions/${id}`
       );
       return response.data;
     } catch (error) {
@@ -61,7 +61,7 @@ export const fetchAllStudentSubmissions = createAsyncThunk(
   async (id: string, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        `/submissions/assignment-marks/${id}`
+        `/submissions/${id}`
       );
       return response.data;
     } catch (error) {
@@ -78,7 +78,7 @@ export const totalSubmission = createAsyncThunk(
   "submission/totalSubmission",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/submissions/total-submissions");
+      const response = await axiosClient.get("/submissions/");
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -95,7 +95,7 @@ export const studentSubmissionStats = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        "/submissions/student-submissions-stats"
+        "/submissions/"
       );
       return response.data;
     } catch (error: unknown) {
@@ -113,7 +113,7 @@ export const fetchStudentAssignmentStats = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        "/submissions/student/assignments"
+        "/submissions/"
       );
       return response.data;
     } catch (error) {
@@ -131,7 +131,7 @@ export const fetchStudentPerformanceStats = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        "/submissions/student-performance-stats"
+        "/submissions/"
       );
       return response.data;
     } catch (error) {

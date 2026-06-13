@@ -28,7 +28,7 @@ from app.core.rate_limiter import limiter
 router = APIRouter()
 
 
-@router.post("/create-interview-prep", response_model=InterviewPreparationAsyncResponse)
+@router.post("/", response_model=InterviewPreparationAsyncResponse)
 @limiter.limit("10/minute")
 async def create_interview_prep(
     request: Request,
@@ -75,7 +75,7 @@ async def create_interview_prep(
     }
 
 
-@router.get("/get-interview-question/{id}")
+@router.get("/{id}")
 @limiter.limit("10/minute")
 async def get_interview_question(
     id: str,
@@ -154,7 +154,7 @@ async def submit_quiz(
     }
 
 
-@router.get("/get-interview-preps", response_model=List[InterviewResponse])
+@router.get("/", response_model=List[InterviewResponse])
 @limiter.limit("10/minute")
 def get_interview_preps(
     request: Request,
