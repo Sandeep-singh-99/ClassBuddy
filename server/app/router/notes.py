@@ -11,50 +11,89 @@ from app.models.notes import Note
 from app.models.teacherInsight import TeacherInsight
 from datetime import datetime
 from app.core.rate_limiter import limiter
+from app.dependencies.require_active_subscription import check_active_subscription
+from app.services.notes_service import NotesService
 
 
 router = APIRouter()
+
+
+# @router.post("/", response_model=NotesResponse)
+# @limiter.limit("10/minute")
+# def create_note(
+#     request: Request,
+#     title: str = Form(...),
+#     content: str = Form(...),
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     # Ensure only TEACHERS can create notes
+#     if current_user.role != userRole.TEACHER:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Not authorized to create notes"
+#         )
+
+#     # Fetch the teacher's group automatically
+#     teacher_group = db.query(TeacherInsight).filter(
+#         TeacherInsight.user_id == current_user.id
+#     ).first()
+
+#     if not teacher_group:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="No group found for this teacher. Please create a group first."
+#         )
+
+#     # Create the note with the automatically fetched group_id
+#     new_note = Note(
+#         title=title,
+#         content=content,
+#         owner_id=current_user.id,
+#         group_id=teacher_group.id  
+#     )
+#     db.add(new_note)
+#     db.commit()
+#     db.refresh(new_note)
+
+#     return new_note
 
 
 @router.post("/", response_model=NotesResponse)
 @limiter.limit("10/minute")
 def create_note(
     request: Request,
-    title: str = Form(...),
-    content: str = Form(...),
+    note_data: NotesCreate, # Pydantic takes over parsing a pure JSON body
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Ensure only TEACHERS can create notes
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to create notes"
-        )
+    return NotesService.create_note(db, current_user, note_data)
 
-    # Fetch the teacher's group automatically
-    teacher_group = db.query(TeacherInsight).filter(
-        TeacherInsight.user_id == current_user.id
-    ).first()
 
-    if not teacher_group:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No group found for this teacher. Please create a group first."
-        )
 
-    # Create the note with the automatically fetched group_id
-    new_note = Note(
-        title=title,
-        content=content,
-        owner_id=current_user.id,
-        group_id=teacher_group.id  
-    )
-    db.add(new_note)
-    db.commit()
-    db.refresh(new_note)
+# @router.get("/", response_model=TeacherNotesResponse)
+# @limiter.limit("10/minute")
+# def get_teacher_notes(
+#     request: Request,
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     # Ensure only teachers can access
+#     if current_user.role != userRole.TEACHER:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Not authorized to view notes"
+#         )
+    
+#     # Fetch teacher's notes
+#     teacher_notes = db.query(Note).filter(Note.owner_id == current_user.id).all()
+#     teacher_notes.sort(key=lambda x: x.created_at, reverse=True)
 
-    return new_note
+#     return {
+#         "count": len(teacher_notes), 
+#         "notes": teacher_notes      
+#     }
+
 
 @router.get("/", response_model=TeacherNotesResponse)
 @limiter.limit("10/minute")
@@ -63,52 +102,92 @@ def get_teacher_notes(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Ensure only teachers can access
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to view notes"
-        )
-    
-    # Fetch teacher's notes
-    teacher_notes = db.query(Note).filter(Note.owner_id == current_user.id).all()
-    teacher_notes.sort(key=lambda x: x.created_at, reverse=True)
+    return NotesService.get_teacher_notes(db, current_user)
 
-    return {
-        "count": len(teacher_notes), 
-        "notes": teacher_notes      
-    }
+
+# @router.get("/{note_id}", response_model=NotesResponse)
+# @limiter.limit("10/minute")
+# def get_note_by_id(request: Request, note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+#     if not current_user:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    
+#     note = db.query(Note).filter(Note.id == note_id).first()
+
+#     if not note:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+    
+#     return note
 
 
 @router.get("/{note_id}", response_model=NotesResponse)
 @limiter.limit("10/minute")
-def get_note_by_id(request: Request, note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    
-    note = db.query(Note).filter(Note.id == note_id).first()
+def get_note_by_id(
+    request: Request, 
+    note_id: str, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    return NotesService.get_note_by_id(db, note_id)
 
-    if not note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+
+# @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
+# @limiter.limit("10/minute")
+# def delete_note(request: Request, note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+#     if current_user.role != userRole.TEACHER:
+#         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete notes")
     
-    return note
+#     note = db.query(Note).filter(Note.id == note_id, Note.owner_id == current_user.id).first()
+
+#     if not note:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found or not owned by user")
+    
+#     db.delete(note)
+#     db.commit()
+
+#     return {"message": "Note deleted successfully"}
 
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("10/minute")
-def delete_note(request: Request, note_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete notes")
-    
-    note = db.query(Note).filter(Note.id == note_id, Note.owner_id == current_user.id).first()
+def delete_note(
+    request: Request, 
+    note_id: str, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    NotesService.delete_note(db, current_user, note_id)
+    return  # 204 No Content shouldn't return a body
 
-    if not note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found or not owned by user")
-    
-    db.delete(note)
-    db.commit()
+# @router.put("/{note_id}", response_model=NotesResponse)
+# @limiter.limit("10/minute")
+# def edit_note(
+#     request: Request,
+#     note_id: str,
+#     note_data: EditNotes,
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     # Only TEACHER can edit notes
+#     if current_user.role != userRole.TEACHER:
+#         raise HTTPException(status_code=403, detail="Not authorized to edit notes")
 
-    return {"message": "Note deleted successfully"}
+#     # Find the note
+#     note = db.query(Note).filter(Note.id == note_id, Note.owner_id == current_user.id).first()
+#     if not note:
+#         raise HTTPException(status_code=404, detail="Note not found or not owned by user")
+
+#     update_data = note_data.dict(exclude_unset=True)  
+
+    
+#     for key, value in update_data.items():
+#         setattr(note, key, value)
+
+#     note.updated_at = datetime.utcnow()
+
+#     db.commit()
+#     db.refresh(note)
+
+#     return note
 
 
 @router.put("/{note_id}", response_model=NotesResponse)
@@ -120,24 +199,18 @@ def edit_note(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Only TEACHER can edit notes
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(status_code=403, detail="Not authorized to edit notes")
+    return NotesService.edit_note(db, current_user, note_id, note_data)
 
-    # Find the note
-    note = db.query(Note).filter(Note.id == note_id, Note.owner_id == current_user.id).first()
-    if not note:
-        raise HTTPException(status_code=404, detail="Note not found or not owned by user")
 
-    update_data = note_data.dict(exclude_unset=True)  
-
-    
-    for key, value in update_data.items():
-        setattr(note, key, value)
-
-    note.updated_at = datetime.utcnow()
-
-    db.commit()
-    db.refresh(note)
-
-    return note
+@router.get("/", response_model=TeacherNotesResponse, dependencies=[Depends(check_active_subscription)])
+@limiter.limit("10/minute")
+def get_group_notes_for_student(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+        
+    # Router does nothing but pass state to the service
+    return NotesService.get_student_notes(db, current_user)

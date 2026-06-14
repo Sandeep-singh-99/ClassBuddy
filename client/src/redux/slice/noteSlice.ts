@@ -51,7 +51,7 @@ export const deleteNoteById = createAsyncThunk("notes/delete-note-by-id", async 
 
 export const studentJoinGroupNote = createAsyncThunk("notes/student-join-group-note", async (_ , thunkApi) => {
   try {
-    const response = await axiosClient.get("/auth/student/notes")
+    const response = await axiosClient.get("/notes/")
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
