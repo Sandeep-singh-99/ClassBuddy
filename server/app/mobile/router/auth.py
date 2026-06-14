@@ -10,7 +10,7 @@ from fastapi import (
 )
 from sqlalchemy.orm import Session, joinedload
 from app.config.db import get_db
-from app.schemas.auth import UserResponse, UserOut
+from app.schemas.auth import UserResponse, MessageResponse
 from app.models.auth import User
 from app.schemas.notes import TeacherNotesResponse
 from app.models.notes import Note

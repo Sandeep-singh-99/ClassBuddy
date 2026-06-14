@@ -31,7 +31,7 @@ export const login = createAsyncThunk(
     try {
       const response = await axiosClient.post(`/auth/login`, formData, {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
         withCredentials: true,
       });
