@@ -5,7 +5,7 @@ import shutil
 import tempfile
 from dotenv import load_dotenv
 from app.models.auth import User
-from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints.auth import get_current_user_mobile as get_current_user
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyMuPDFLoader

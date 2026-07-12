@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.assignment import Assignment, Submission
 from app.models.auth import User, userRole
 from app.dependencies.dependencies import get_db
-from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints.auth import get_current_user_mobile as get_current_user
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage

@@ -18,7 +18,7 @@ from app.schemas.groupMessage import (
     SendMessageRequest,
     GroupMessageResponse,
 )
-from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints.auth import get_current_user_mobile as get_current_user
 from app.utils.utils import decode_access_token
 from typing import Optional, List
 import json
