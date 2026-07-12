@@ -20,23 +20,7 @@ from app.router import (
     inngest_route,
 )
 
-from app.mobile.router import (
-    auth as mobile_auth,
-    ai_evaluator as mobile_ai_evaluator,
-    assignment as mobile_assignment,
-    chat_with_pdf as mobile_chat_with_pdf,
-    docsupload as mobile_docsupload,
-    generate_assignment as mobile_generate_assignment,
-    generate_notes as mobile_generate_notes,
-    group as mobile_group,
-    interviewPerp as mobile_interview_prep,
-    notes as mobile_notes,
-    studentInsight as mobile_student_insight,
-    submission as mobile_submission,
-    teacherInsight as mobile_teacher_insight,
-    groupMessage as mobile_group_message,
-    subscription as mobile_subscription,
-)
+from app.mobile.api.v1.api import app_router
 
 from app.router import health
 
@@ -135,57 +119,5 @@ app.include_router(subscription.router, prefix="/api/v1/subscription", tags=["Su
 
 
 # Mobile APIs
-app.include_router(mobile_auth.router, prefix="/api/v1/mobile/auth", tags=["Mobile Auth"])
-app.include_router(
-    mobile_ai_evaluator.router,
-    prefix="/api/v1/mobile/ai-evaluator",
-    tags=["Mobile AI Evaluator"],
-)
-app.include_router(
-    mobile_assignment.router, prefix="/api/v1/mobile/assignments", tags=["Mobile Assignments"]
-)
-app.include_router(
-    mobile_chat_with_pdf.router, prefix="/api/v1/mobile/pdf", tags=["Mobile PDF Chat"]
-)
-app.include_router(
-    mobile_docsupload.router, prefix="/api/v1/mobile/docs", tags=["Mobile Document Upload"]
-)
-app.include_router(
-    mobile_generate_assignment.router,
-    prefix="/api/v1/mobile/assignments",
-    tags=["Mobile Generate Assignment"],
-)
-app.include_router(
-    mobile_generate_notes.router, prefix="/api/v1/mobile/notes", tags=["Mobile Generate Notes"]
-)
-app.include_router(mobile_group.router, prefix="/api/v1/mobile/groups", tags=["Mobile Groups"])
-app.include_router(
-    mobile_interview_prep.router,
-    prefix="/api/v1/mobile/interview-prep",
-    tags=["Mobile Interview Preparation"],
-)
-app.include_router(mobile_notes.router, prefix="/api/v1/mobile/notes", tags=["Mobile Notes"])
-app.include_router(
-    mobile_student_insight.router,
-    prefix="/api/v1/mobile/student-insight",
-    tags=["Mobile Student Insights"],
-)
-app.include_router(
-    mobile_submission.router, prefix="/api/v1/mobile/submissions", tags=["Mobile Submissions"]
-)
-app.include_router(
-    mobile_teacher_insight.router,
-    prefix="/api/v1/mobile/insights",
-    tags=["Mobile Teacher Insights"],
-)
-app.include_router(
-    mobile_group_message.router,
-    prefix="/api/v1/mobile/group-messages",
-    tags=["Mobile Group Messages"],
-)
-app.include_router(
-    mobile_subscription.router,
-    prefix="/api/v1/mobile/subscription",
-    tags=["Mobile Subscription"],
-)
+app.include_router(app_router, prefix="/api/v1/mobile", tags=['Mobile Route'])
 

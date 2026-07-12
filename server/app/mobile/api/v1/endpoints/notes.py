@@ -5,7 +5,7 @@ from app.models.auth import User, userRole
 from app.models.teacherInsight import TeacherInsight
 from app.schemas.auth import UserResponse
 from app.schemas.teacherInsight import TeacherInsightResponse
-from app.mobile.router.auth import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
 from app.schemas.notes import (
     NotesCreate,
     NotesResponse,

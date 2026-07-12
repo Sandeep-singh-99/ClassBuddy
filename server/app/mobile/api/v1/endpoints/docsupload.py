@@ -5,7 +5,7 @@ from app.schemas.docsupload import DocsUploadResponse, DocsBase
 from app.models.docsupload import DocsUpload
 from app.models.auth import User
 from app.config.db import get_db
-from app.mobile.router.auth import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
 from app.schemas.auth import userRole
 from app.utils.cloudinary import upload_image, delete_image
 from app.schemas.notes import TeacherNotesResponse

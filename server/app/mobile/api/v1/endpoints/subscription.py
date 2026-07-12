@@ -20,7 +20,7 @@ from app.schemas.auth import userRole
 from app.services.razorpay_services import client
 
 # Changed import for mobile auth
-from app.mobile.router.auth import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
 from app.models.auth import User
 from app.config.config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
 from app.services.plan import get_teacher_plans, get_plan_owned_by_teacher, delete_plan
