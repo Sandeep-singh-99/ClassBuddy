@@ -3,7 +3,7 @@ from typing import Annotated, Dict, List, TypedDict
 
 from app.config.db import get_db
 from app.dependencies.redis_client import get_redis_client
-from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints.auth import get_current_user_mobile as get_current_user
 from app.models.auth import User, userRole
 from app.models.InterviewPreparation import InterviewPrep
 from app.schemas.interviewpreparation import (

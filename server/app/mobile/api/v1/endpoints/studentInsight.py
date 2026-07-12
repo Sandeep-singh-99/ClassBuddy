@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, Form, File, HTTPException
 from sqlalchemy.orm import Session
 from typing import TypedDict, Annotated, Dict, List
 from app.schemas import studentInsight as student_insight_schema, auth as auth_schema
-from app.mobile.api.v1.endpoints import auth as mobile_auth
+from app.mobile.api.v1.endpoints.auth import auth as mobile_auth
 from app.config import db
 from app.models import auth, StudentInsight, User, userRole
 from dotenv import load_dotenv

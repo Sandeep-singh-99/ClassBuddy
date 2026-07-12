@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File,
 from sqlalchemy.orm import Session
 from app.config.db import get_db
 from app.models.auth import User
-from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints.auth import get_current_user_mobile as get_current_user
 from app.models.teacherInsight import TeacherInsight
 from app.schemas.teacherInsight import (
     TeacherInsightCreate,
