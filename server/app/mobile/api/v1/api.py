@@ -4,7 +4,7 @@ from app.mobile.api.v1.endpoints import auth, ai_evaluator, assignment, generate
 app_router = APIRouter()
 
 app_router.include_router(auth.router, prefix='/auth', tags=['Authentication'])
-app_router.include_router(ai_evaluator, prefix='/ai-evaluator', tags=['AI Evalutor'])
+app_router.include_router(ai_evaluator.router, prefix='/ai-evaluator', tags=['AI Evalutor'])
 app_router.include_router(assignment.router, prefix='/assignments', tags=['Assignments'])
 app_router.include_router(generate_assignment.router, prefix='/assignments', tags=['Generate Assignment'])
 app_router.include_router(generate_notes.router, prefix='/notes', tags=['Generate Notes'])

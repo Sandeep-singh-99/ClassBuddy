@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, Form, File, HTTPException
 from sqlalchemy.orm import Session
 from typing import TypedDict, Annotated, Dict, List
 from app.schemas import studentInsight as student_insight_schema, auth as auth_schema
-from app.mobile.api.v1.endpoints.auth import auth as mobile_auth
+from app.mobile.api.v1.endpoints.auth import get_current_user_mobile
 from app.config import db
 from app.models import auth, StudentInsight, User, userRole
 from dotenv import load_dotenv
@@ -109,7 +109,7 @@ router = APIRouter()
 )
 def generate_industry_insight(
     industry: str = Form(..., description="The industry to generate insights for."),
-    current_user: User = Depends(mobile_auth.get_current_user_mobile),
+    current_user: User = Depends(get_current_user_mobile),
     db_session: Session = Depends(db.get_db),
 ):
     if current_user.role != userRole.STUDENT:
@@ -168,7 +168,7 @@ def generate_industry_insight(
     "/my-insights", response_model=student_insight_schema.StudentInsightResponse
 )
 def get_my_insights(
-    current_user: User = Depends(mobile_auth.get_current_user_mobile),
+    current_user: User = Depends(get_current_user_mobile),
     db_session: Session = Depends(db.get_db),
     redis=Depends(redis_client.get_redis_client),
 ):
