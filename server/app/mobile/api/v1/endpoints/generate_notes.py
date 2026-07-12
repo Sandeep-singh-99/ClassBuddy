@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form
-from app.mobile.router.auth import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
 from app.models.auth import User, userRole
 from typing import TypedDict, Annotated
 from langgraph.graph import add_messages, StateGraph, END

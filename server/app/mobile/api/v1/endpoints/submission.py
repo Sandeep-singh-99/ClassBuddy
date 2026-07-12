@@ -7,7 +7,7 @@ from app.models.auth import User, group_members
 from app.schemas.auth import UserResponse
 from app.models.auth import userRole
 from app.dependencies.dependencies import get_db
-from app.mobile.router.auth import get_current_user_mobile as get_current_user
+from app.mobile.api.v1.endpoints import get_current_user_mobile as get_current_user
 from sqlalchemy import extract, func
 
 router = APIRouter()
