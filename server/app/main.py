@@ -1,28 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.router import (
-    auth,
-    chat_with_pdf,
-    teacherInsight,
-    group,
-    generate_notes,
-    notes,
-    interviewPerp,
-    docsupload,
-    studentInsight,
-    assignment,
-    generate_assignment,
-    ai_evaluator,
-    submission,
-    groupMessage,
-    subscription,
-    inngest_route,
-)
+
 
 from app.mobile.api.v1.api import app_router
-
-from app.router import health
+from app.api.v1.api import app_router
 
 from app.utils import socket_manager
 
@@ -89,34 +71,7 @@ async def read_root():
     }
 
 
-app.include_router(inngest_route.router)
-
-app.include_router(health.router)
-
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
-app.include_router(chat_with_pdf.router, prefix="/api/v1/pdf", tags=["PDF Chat"])
-app.include_router(teacherInsight.router, prefix="/api/v1/insights", tags=["Teacher Insights"])
-app.include_router(group.router, prefix="/api/v1/groups", tags=["Groups"])
-app.include_router(generate_notes.router, prefix="/api/v1/notes", tags=["Generate Notes"])
-app.include_router(notes.router, prefix="/api/v1/notes", tags=["Notes"])
-app.include_router(
-    studentInsight.router, prefix="/api/v1/student-insight", tags=["Student Insights"]
-)
-app.include_router(
-    interviewPerp.router, prefix="/api/v1/interview-prep", tags=["Interview Preparation"]
-)
-app.include_router(docsupload.router, prefix="/api/v1/docs", tags=["Document Upload"])
-app.include_router(assignment.router, prefix="/api/v1/assignments", tags=["Assignments"])
-app.include_router(
-    generate_assignment.router, prefix="/api/v1/assignments", tags=["Generate Assignment"]
-)
-app.include_router(ai_evaluator.router, prefix="/api/v1/ai-evaluator", tags=["AI Evaluator"])
-app.include_router(submission.router, prefix="/api/v1/submissions", tags=["Submissions"])
-app.include_router(
-    groupMessage.router, prefix="/api/v1/group-messages", tags=["Group Messages"]
-)
-app.include_router(subscription.router, prefix="/api/v1/subscription", tags=["Subscription"])
-
+app.include_router(app_router, prefix='/api/v1', tags=['Web Route'])
 
 # Mobile APIs
 app.include_router(app_router, prefix="/api/v1/mobile", tags=['Mobile Route'])
