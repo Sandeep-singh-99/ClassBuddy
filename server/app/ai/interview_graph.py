@@ -1,4 +1,4 @@
-from typing import TypedDict, Annotated, Dict, List
+from typing import TypedDict, Annotated
 from langgraph.graph import add_messages, StateGraph, END
 from langchain_tavily import TavilySearch
 from langchain_google_genai import ChatGoogleGenerativeAI
