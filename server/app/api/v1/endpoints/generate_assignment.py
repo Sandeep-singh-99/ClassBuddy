@@ -1,14 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from typing import List
-from typing import Dict, Any
-from datetime import datetime
-from app.schemas.assignment import AssignmentQuestionResponse
+
+
 from app.models.assignment import Assignment, AssignmentQuestion
 from app.models.auth import User, userRole
 from app.dependencies.dependencies import get_db, get_current_user
 from dotenv import load_dotenv
-import json
+
 from app.core.rate_limiter import limiter
 from app.core.inngest import inngest_client
 import inngest

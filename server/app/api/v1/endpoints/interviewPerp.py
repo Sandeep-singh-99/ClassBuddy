@@ -1,22 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from typing import TypedDict, Annotated, Dict, List
+from typing import List
 from app.schemas.interviewpreparation import (
     InterviewPreparationCreate,
-    InterviewPreparationResponse,
     InterviewPrepSubmit,
     InterviewResponse,
-    InterviewPreparationCreateResponse,
     InterviewPreparationAsyncResponse,
 )
 from app.dependencies.dependencies import get_current_user
 from app.config.db import get_db
 from app.models.auth import User, userRole
-from dotenv import load_dotenv
 from app.core.inngest import inngest_client
 import inngest
 from app.models.InterviewPreparation import InterviewPrep, Status
-import uuid
+
 from datetime import datetime
 import json
 from app.dependencies.redis_client import get_redis_client
