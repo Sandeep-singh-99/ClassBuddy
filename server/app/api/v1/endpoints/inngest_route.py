@@ -1,10 +1,8 @@
 from fastapi import APIRouter
 from app.core.inngest import inngest_client
 from app.inngest.student_insight_function import generate_student_insight
-# from app.inngest.cron_student_insight import cron_update_student_insights
 from app.inngest.interview_prep_function import generate_interview_questions
 from app.inngest.assignment_function import generate_assignment_questions
-from app.inngest.note_function import generate_notes_background
 import inngest.fast_api
 
 router = APIRouter()
@@ -16,7 +14,6 @@ inngest.fast_api.serve(
         generate_student_insight,
         generate_interview_questions,
         generate_assignment_questions,
-        generate_notes_background,
     ],
     serve_path="/api/inngest",
 )
