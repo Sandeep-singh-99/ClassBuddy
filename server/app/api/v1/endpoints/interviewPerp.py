@@ -190,3 +190,41 @@ def get_interview_preps(
     redis_client.set(cache_key, json.dumps(encoded_data))
 
     return interview_preps
+
+
+@router.delete("/{id}")
+@limiter.limit("10/minute")
+async def delete_interview_prep(
+    id: str,
+    request: Request,
+    redis_client=Depends(get_redis_client),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(
+            status_code=403,
+            detail="Only students can delete interview preparation entries.",
+        )
+
+    query = (
+        db.query(InterviewPrep)
+        .filter(
+            InterviewPrep.id == id,
+            InterviewPrep.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not query:
+        raise HTTPException(status_code=404, detail="Interview preparation not found.")
+
+    db.delete(query)
+    db.commit()
+
+    # Invalidate cache
+    cache_key = f"interview_preps:{current_user.id}"
+    redis_client.delete(cache_key)
+
+    return {"message": "Quiz deleted successfully", "id": id}
+

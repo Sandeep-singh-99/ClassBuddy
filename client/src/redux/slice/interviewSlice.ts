@@ -53,6 +53,22 @@ export const GetInterviewQuestion = createAsyncThunk("interview/getInterviewQues
   }
 })
 
+export const DeleteInterviewPrep = createAsyncThunk(
+  "interview/delete",
+  async (id: string, thunkApi) => {
+    try {
+      const response = await axiosClient.delete(`/interview-prep/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ?? error.message ?? "Deleting interview prep failed"
+        );
+      }
+    }
+  }
+);
+
 interface InterviewPrepState {
   loading: boolean;
   error: string | null;
@@ -78,7 +94,11 @@ const interviewSlice = createSlice({
         InterviewPrepCreate.fulfilled,
         (state, action: PayloadAction<any>) => {
           state.loading = false;
-          state.data = action.payload;
+          if (Array.isArray(state.data)) {
+            state.data = [action.payload, ...state.data];
+          } else {
+            state.data = action.payload;
+          }
         }
       )
       .addCase(
@@ -123,7 +143,16 @@ const interviewSlice = createSlice({
           state.error = action.payload;
         }
       )
+      .addCase(
+        DeleteInterviewPrep.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          if (Array.isArray(state.data) && action.payload?.id) {
+            state.data = state.data.filter((item: any) => item.id !== action.payload.id);
+          }
+        }
+      );
   },
 });
 
 export default interviewSlice.reducer;
+
