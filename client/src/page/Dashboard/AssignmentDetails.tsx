@@ -22,8 +22,8 @@ export default function AssignmentDetails() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto mt-12 px-4">
-        <BarLoader width="100%" color="#60a5fa" />
+      <div className="flex items-center justify-center p-8 bg-card rounded-xl border border-border">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
