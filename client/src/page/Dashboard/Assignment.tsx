@@ -1,4 +1,4 @@
-import AssignmentViewCard from "@/components/AssignmentViewCard";
+import AssignmentViewCard from "@/components/Assignment/AssignmentViewCard";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { fetchAssignments } from "@/redux/slice/assignmentSlice";
 import { AlertCircle, BookOpenText } from "lucide-react";
