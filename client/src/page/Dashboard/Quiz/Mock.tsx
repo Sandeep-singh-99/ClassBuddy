@@ -40,7 +40,7 @@ export default function Mock() {
         if (id) {
           dispatch(GetInterviewQuestion(id));
         }
-      }, 5000); 
+      }, 5000);
     }
 
     return () => {
@@ -71,30 +71,54 @@ export default function Mock() {
     setAnswers({ ...answers, [currentQuestionIndex]: value });
   };
 
-  // Next or Submit button
   const handleNext = async () => {
     const selectedAnswer = answers[currentQuestionIndex];
 
-    // ✅ Fix score check using .startsWith
-    if (selectedAnswer && selectedAnswer.startsWith(currentQuestion.answer)) {
-      setScore((prev) => prev + 1);
-    }
+    // Create an updated answers object
+    const updatedAnswers = {
+      ...answers,
+      [currentQuestionIndex]: selectedAnswer,
+    };
 
+    // Save latest answer
+    setAnswers(updatedAnswers);
+
+    // Move to next question
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
-    } else {
-      setQuizCompleted(true);
-      try {
-        const response = await axiosClient.post("/interview-prep/submit-quiz", {
-          id: data.id,
-          score: score,
-          user_answers: answers,
-        });
+      return;
+    }
 
-        toast.success(response.data.message);
-      } catch (error: any) {
-        toast.error(error.response?.data?.detail || error.message);
+    // -----------------------------
+    // Quiz Finished
+    // -----------------------------
+    let correctAnswers = 0;
+
+    questions.forEach((q: any, index: number) => {
+      const ans = updatedAnswers[index];
+
+      if (ans?.startsWith(q.answer)) {
+        correctAnswers++;
       }
+    });
+
+    const finalScore = Number(
+      ((correctAnswers / questions.length) * 100).toFixed(1),
+    );
+
+    setScore(finalScore);
+    setQuizCompleted(true);
+
+    try {
+      const response = await axiosClient.post("/interview-prep/submit-quiz", {
+        id: data.id,
+        score: finalScore,
+        user_answers: updatedAnswers,
+      });
+
+      toast.success(response.data.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.detail || error.message);
     }
   };
 

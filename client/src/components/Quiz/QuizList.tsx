@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 import { Suspense, lazy } from "react";
 
 const QuizFormComponents = lazy(() => import("./QuizFormComponents"));
@@ -12,10 +12,10 @@ const QuizFormComponents = lazy(() => import("./QuizFormComponents"));
 import { useAppSelector } from "@/hooks/hooks";
 import { useState } from "react";
 import { format } from "date-fns";
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import QuizResult from "./QuizResult";
-import QuizCardSkeleton from "./skeletons/QuizCardSkeleton";
-import ButtonSkeleton from "./skeletons/ButtonSkeleton";
+import QuizCardSkeleton from "@/components/skeletons/QuizCardSkeleton";
+import ButtonSkeleton from "@/components/skeletons/ButtonSkeleton";
 
 export default function QuizList() {
   const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
@@ -100,7 +100,7 @@ export default function QuizList() {
             open={!!selectedQuiz}
             onOpenChange={() => setSelectedQuiz(null)}
           >
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="min-w-2xl max-h-[90vh] overflow-y-auto">
               <QuizResult
                 result={selectedQuiz}
                 onStartNew={() => setSelectedQuiz(null)}

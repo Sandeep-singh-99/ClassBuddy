@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from app.mobile.api.v1.api import app_router
 from app.api.v1.api import app_router
+from app.api.v1.endpoints.inngest_route import router as inngest_router
 
 from app.utils import socket_manager
 
@@ -76,3 +77,6 @@ app.include_router(app_router, prefix='/api/v1', tags=['Web Route'])
 # Mobile APIs
 app.include_router(app_router, prefix="/api/v1/mobile", tags=['Mobile Route'])
 
+
+# Mount Inngest separately
+app.include_router(inngest_router, tags=['Inngest'])

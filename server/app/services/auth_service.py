@@ -12,7 +12,7 @@ class AuthService:
             raise HTTPException(status_code=400, detail="Email already registered")
         
         # Hash password
-        hashed_password = hashed_password(password)
+        hashed_password = hash_password(password)
 
         # Handle Image upload
         image_url, image_url_id = None, None

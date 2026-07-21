@@ -1,5 +1,5 @@
-import PerformanceChart from "@/components/PerformanceChart";
-import QuizList from "@/components/QuizList";
+import PerformanceChart from "@/components/Quiz/PerformanceChart";
+import QuizList from "@/components/Quiz/QuizList";
 import { useAppDispatch } from "@/hooks/hooks";
 import { GetAllInterviewPrep } from "@/redux/slice/interviewSlice";
 import { useEffect } from "react";
