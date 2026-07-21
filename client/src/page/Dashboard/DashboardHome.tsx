@@ -9,12 +9,12 @@ import ProfileCard from "@/components/ProfileCard";
 
 // Lazy load heavy components
 const AssignmentStatsChart = lazy(
-  () => import("@/components/AssignmentStatsChart")
+  () => import("@/components/Assignment/AssignmentStatsChart")
 );
 const AssignmentPerformanceStats = lazy(
-  () => import("@/components/AssignmentPerformanceStats")
+  () => import("@/components/Assignment/AssignmentPerformanceStats")
 );
-const AssignmentLists = lazy(() => import("@/components/AssignmentLists"));
+const AssignmentLists = lazy(() => import("@/components/Assignment/AssignmentLists"));
 
 import AssignmentListSkeleton from "@/components/skeletons/AssignmentListSkeleton";
 import PerformanceStatsSkeleton from "@/components/skeletons/PerformanceStatsSkeleton";
