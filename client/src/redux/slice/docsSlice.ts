@@ -58,7 +58,7 @@ export const DocsStudentFetch = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const response = await axiosClient.get(
-        "/docs/"
+        "/docs/student"
       );
       return response.data;
     } catch (error) {

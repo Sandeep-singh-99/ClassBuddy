@@ -66,21 +66,8 @@ def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: U
     docs.sort(key=lambda x: x.updated_at, reverse=True)
     return docs
 
-@router.get("/{doc_id}", response_model=DocsBase)
-@limiter.limit("10/minute")
-def get_my_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    
-    docs = db.query(DocsUpload).filter(DocsUpload.id == doc_id).first()
 
-    if not docs:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
-    
-    return docs
-
-
-@router.get("/", response_model=DocsUploadResponse, dependencies=[Depends(check_active_subscription)])
+@router.get("/student", response_model=DocsUploadResponse, dependencies=[Depends(check_active_subscription)])
 @limiter.limit("10/minute")
 def get_teacher_notes_with_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
@@ -106,6 +93,22 @@ def get_teacher_notes_with_docs(request: Request, db: Session = Depends(get_db),
         "count": len(docs_with_notes),
         "docsuploads": docs_with_notes
     }
+
+
+@router.get("/{doc_id}", response_model=DocsBase)
+@limiter.limit("10/minute")
+def get_my_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    
+    docs = db.query(DocsUpload).filter(DocsUpload.id == doc_id).first()
+
+    if not docs:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+    
+    return docs
+
+
 
 
 @router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
