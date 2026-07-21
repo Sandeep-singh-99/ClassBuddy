@@ -24,7 +24,7 @@ export const fetchTeacherAssignments = createAsyncThunk(
   "assignments/fetchTeacherAssignments",
   async (_, thunkApi) => {
     try {
-      const response = await axiosClient.get("/assignments/");
+      const response = await axiosClient.get("/assignments/t-assignment");
       return response.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
