@@ -1,14 +1,13 @@
 import {
   Card,
-  CardContent,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BookOpen } from "lucide-react";
+import { BookOpen, CheckCircle2, ShieldCheck, Mail } from "lucide-react";
 import type { IStudentGroupSubscription } from "@/types/subscription";
 import { SubscriptionPlansDialog } from "./SubscriptionPlansDialog";
+import { Badge } from "@/components/ui/badge";
 
 interface StudentGroupCardProps {
   data: IStudentGroupSubscription;
@@ -31,85 +30,112 @@ export function StudentGroupCard({ data }: StudentGroupCardProps) {
 
   const activePlanName = isSubscribed
     ? plans.find((p) => p.id === subscription?.plan_id)?.plan_name ||
-      "Custom Plan"
+      "Active Subscription"
     : null;
+
+  const teacherInitials = teacher?.name
+    ? teacher.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "TC";
 
   return (
     <Card
-      className={`flex flex-col h-full overflow-hidden transition-all duration-300 border-zinc-200 dark:border-zinc-800 ${
+      className={`group relative flex flex-col justify-between h-full overflow-hidden rounded-2xl border transition-all duration-300 ${
         isSubscribed
-          ? "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.15)] ring-1 ring-green-500/20"
-          : "hover:shadow-lg"
+          ? "border-emerald-500/50 dark:border-emerald-500/40 bg-gradient-to-b from-card to-emerald-500/5 dark:to-emerald-500/10 shadow-md ring-1 ring-emerald-500/20"
+          : "border-border/60 bg-card hover:shadow-xl hover:-translate-y-1"
       }`}
     >
-      {/* Image Section */}
-      <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-900 overflow-hidden group">
+      {/* Top Media / Banner Section */}
+      <div className="relative w-full aspect-video bg-muted overflow-hidden">
         {group.image_url ? (
           <img
             src={group.image_url}
             alt={group.name}
-            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex items-center justify-center w-full h-full text-indigo-300 dark:text-indigo-900/40">
-            <BookOpen className="h-16 w-16" />
+          <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-primary/10 via-indigo-500/10 to-violet-500/10 text-primary/60">
+            <BookOpen className="h-12 w-12 opacity-80" />
+            <span className="text-xs font-semibold mt-2 text-muted-foreground">
+              {group.name}
+            </span>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-          <p className="text-white text-sm font-medium">{teacher.name}</p>
+
+        {/* Hover overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+          <p className="text-white text-xs font-semibold flex items-center gap-1">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Teacher: {teacher.name}</span>
+          </p>
         </div>
 
-        {/* Active Badge */}
+        {/* Active Subscription Badge */}
         {isSubscribed && (
-          <div className="absolute top-3 right-3 bg-green-500/90 text-white text-xs font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm shadow-sm z-10 flex flex-col items-end">
+          <div className="absolute top-3 right-3 bg-emerald-500/90 text-white text-xs font-bold px-2.5 py-1 rounded-xl backdrop-blur-md shadow-md z-10 flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
             <span>PAID</span>
-            <span className="text-[10px] font-medium opacity-90">
+            <span className="text-[10px] font-normal opacity-90 border-l border-white/30 pl-1.5">
               ₹{subscription?.amount}
             </span>
           </div>
         )}
       </div>
 
-      <CardHeader className="">
-        <div className="flex justify-between items-start gap-2">
-          <CardTitle className="text-lg font-bold line-clamp-1 text-zinc-900 dark:text-zinc-50">
+      {/* Card Header & Content */}
+      <div className="p-6 pb-2 space-y-4">
+        <div className="space-y-1">
+          <CardTitle className="text-lg font-bold line-clamp-1 text-foreground tracking-tight">
             {group.name}
           </CardTitle>
+          {group.description && (
+            <p className="text-xs text-muted-foreground line-clamp-2">
+              {group.description}
+            </p>
+          )}
         </div>
-      </CardHeader>
 
-      <CardContent className="flex-grow ">
-        {/* Simple clean teacher row */}
-        <div className="flex items-center space-x-3 text-sm text-zinc-600 dark:text-zinc-400">
-          <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700">
+        {/* Teacher Info Row */}
+        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/40 dark:bg-muted/20 border border-border/40">
+          <Avatar className="h-9 w-9 border border-border/60">
             <AvatarImage src={teacher.image_url} alt={teacher.name} />
-            <AvatarFallback className="text-xs">
-              {teacher.name.slice(0, 2).toUpperCase()}
+            <AvatarFallback className="text-xs font-bold bg-primary/10 text-primary">
+              {teacherInitials}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="font-medium text-zinc-900 dark:text-zinc-200">
+          <div className="flex flex-col min-w-0">
+            <span className="font-semibold text-xs text-foreground truncate">
               {teacher.name}
             </span>
-            <span className="text-xs truncate max-w-[180px]">
+            <span className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
+              <Mail className="h-3 w-3 shrink-0" />
               {teacher.email}
             </span>
           </div>
         </div>
-      </CardContent>
+      </div>
 
-      <CardFooter className="pt-0 pb-4 px-6">
+      {/* Card Footer Action */}
+      <CardFooter className="p-6 pt-3">
         {isSubscribed ? (
-          <div className="w-full flex items-center justify-between bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900/30 rounded-lg p-3">
+          <div className="w-full flex items-center justify-between bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-3">
             <div className="flex flex-col">
-              <span className="text-xs text-green-600 dark:text-green-400 font-medium uppercase tracking-wider">
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" />
                 {activePlanName}
               </span>
-              <span className="text-sm font-bold text-green-700 dark:text-green-300">
-                {daysLeft} days left
+              <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 mt-0.5">
+                {daysLeft} days remaining
               </span>
             </div>
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <Badge variant="secondary" className="text-[10px] bg-emerald-500 text-white font-bold">
+              Active
+            </Badge>
           </div>
         ) : (
           <SubscriptionPlansDialog plans={plans} groupName={group.name} />
