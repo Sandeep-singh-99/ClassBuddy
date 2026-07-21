@@ -30,9 +30,24 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { InterviewPrepCreate } from "@/redux/slice/interviewSlice";
 
 const DIFFICULTY_LEVELS = [
-  { id: "Beginner", label: "Beginner", icon: "🌱", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
-  { id: "Intermediate", label: "Intermediate", icon: "⚡", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-  { id: "Advanced", label: "Advanced", icon: "🔥", color: "text-rose-500 bg-rose-500/10 border-rose-500/20" },
+  {
+    id: "Beginner",
+    label: "Beginner",
+    icon: "🌱",
+    color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+  },
+  {
+    id: "Intermediate",
+    label: "Intermediate",
+    icon: "⚡",
+    color: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+  },
+  {
+    id: "Advanced",
+    label: "Advanced",
+    icon: "🔥",
+    color: "text-rose-500 bg-rose-500/10 border-rose-500/20",
+  },
 ];
 
 export default function QuizFormComponents() {
@@ -61,7 +76,7 @@ export default function QuizFormComponents() {
         : `[Difficulty: ${difficulty}] Practice quiz for ${title.trim()}`;
 
       const result = await dispatch(
-        InterviewPrepCreate({ name: title, description: fullDescription })
+        InterviewPrepCreate({ name: title, description: fullDescription }),
       ).unwrap();
 
       toast.success("AI Quiz session created successfully!");
@@ -92,7 +107,10 @@ export default function QuizFormComponents() {
               <div className="p-2 rounded-xl bg-primary/10 text-primary">
                 <BrainCircuit className="h-5 w-5" />
               </div>
-              <Badge variant="outline" className="text-xs font-normal border-primary/20 text-primary">
+              <Badge
+                variant="outline"
+                className="text-xs font-normal border-primary/20 text-primary"
+              >
                 <Sparkles className="h-3 w-3 mr-1" /> AI Powered
               </Badge>
             </div>
@@ -100,7 +118,8 @@ export default function QuizFormComponents() {
               Generate AI Quiz
             </DialogTitle>
             <DialogDescription className="text-muted-foreground text-sm">
-              Specify your quiz details and our AI will curate tailored questions for you.
+              Specify your quiz details and our AI will curate tailored
+              questions for you.
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -108,8 +127,12 @@ export default function QuizFormComponents() {
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Title Field */}
           <div className="space-y-2">
-            <Label htmlFor="quiz-title" className="text-sm font-semibold flex items-center gap-1.5 text-foreground">
-              <BookOpen className="h-4 w-4 text-primary" /> Quiz Topic / Subject Title
+            <Label
+              htmlFor="quiz-title"
+              className="text-sm font-semibold flex items-center gap-1.5 text-foreground"
+            >
+              <BookOpen className="h-4 w-4 text-primary" /> Quiz Topic / Subject
+              Title
             </Label>
             <Input
               id="quiz-title"
@@ -124,7 +147,8 @@ export default function QuizFormComponents() {
           {/* Difficulty Preset Selector */}
           <div className="space-y-2">
             <Label className="text-sm font-semibold flex items-center gap-1.5 text-foreground">
-              <Layers className="h-4 w-4 text-primary" /> Target Difficulty Level
+              <Layers className="h-4 w-4 text-primary" /> Target Difficulty
+              Level
             </Label>
             <div className="grid grid-cols-3 gap-2">
               {DIFFICULTY_LEVELS.map((lvl) => (
@@ -147,11 +171,16 @@ export default function QuizFormComponents() {
 
           {/* Description Field */}
           <div className="space-y-2">
-            <Label htmlFor="quiz-desc" className="text-sm font-semibold flex items-center justify-between text-foreground">
+            <Label
+              htmlFor="quiz-desc"
+              className="text-sm font-semibold flex items-center justify-between text-foreground"
+            >
               <span className="flex items-center gap-1.5">
                 <Target className="h-4 w-4 text-primary" /> Focus Areas / Notes
               </span>
-              <span className="text-xs text-muted-foreground font-normal">Optional</span>
+              <span className="text-xs text-muted-foreground font-normal">
+                Optional
+              </span>
             </Label>
             <Textarea
               id="quiz-desc"
@@ -163,12 +192,18 @@ export default function QuizFormComponents() {
             />
           </div>
 
-          <DialogFooter className="pt-2 gap-2 sm:gap-0">
+          <DialogFooter className="pt-2 gap-2">
             <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={loading} className="border-border">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={loading}
+                className="border-border"
+              >
                 Cancel
               </Button>
             </DialogClose>
+
             <Button
               type="submit"
               disabled={loading || !title.trim()}
