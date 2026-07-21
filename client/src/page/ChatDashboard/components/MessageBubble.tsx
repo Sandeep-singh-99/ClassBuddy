@@ -1,5 +1,12 @@
 import { cn } from "@/lib/utils";
-import type { Message } from "../mockData";
+export interface Message {
+  id: string;
+  content: string;
+  timestamp: string | Date;
+  status?: string;
+  senderId?: string;
+  receiverId?: string;
+}
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MessageBubbleProps {

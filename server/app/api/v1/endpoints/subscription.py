@@ -271,7 +271,7 @@ def verify_payment(
     return {"message": "Subscription activated"}
 
 
-@router.get("/")
+@router.get("/stats")
 def get_teacher_subscription_stats(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
@@ -321,7 +321,7 @@ def get_teacher_subscription_stats(
     }
 
 
-@router.get("/")
+@router.get("/analytics")
 def get_teacher_subscription_analytics(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
