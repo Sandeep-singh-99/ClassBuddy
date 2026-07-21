@@ -11,7 +11,7 @@ from app.api.v1.endpoints import (
     studentInsight,
     submission,
     subscription,
-    inngest_route,
+    # inngest_route,
     interviewPerp,
     docsupload,
     health,
@@ -49,7 +49,7 @@ app_router.include_router(
 app_router.include_router(
     subscription.router, prefix="/subscription", tags=["subscription"]
 )
-app_router.include_router(inngest_route.router, tags=["Inngest"])
+# app_router.include_router(inngest_route.router, tags=["Inngest"])
 app_router.include_router(
     interviewPerp.router, prefix="/interview-prep", tags=["Interview preparation"]
 )

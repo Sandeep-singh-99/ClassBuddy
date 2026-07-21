@@ -13,9 +13,9 @@ const DashboardHome = lazy(() => import("@/page/Dashboard/DashboardHome"));
 const ViewAllTeacher = lazy(() => import("@/page/Dashboard/ViewAllTeacher"));
 const Notes = lazy(() => import("@/page/Dashboard/Notes"));
 const InterviewPerPage = lazy(
-  () => import("@/page/Dashboard/InterviewPerPage")
+  () => import("@/page/Dashboard/Quiz/InterviewPerPage")
 );
-const Mock = lazy(() => import("@/page/Dashboard/Mock"));
+const Mock = lazy(() => import("@/page/Dashboard/Quiz/Mock"));
 const DocView = lazy(() => import("@/page/Dashboard/DocView"));
 const CareerDashboard = lazy(() => import("@/page/Dashboard/CareerDashboard"));
 const Assignment = lazy(() => import("@/page/Dashboard/Assignment"));

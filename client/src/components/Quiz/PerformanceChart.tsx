@@ -19,7 +19,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useAppSelector } from "@/hooks/hooks";
-import PerformanceChartSkeleton from "./skeletons/PerformanceChartSkeleton";
+import PerformanceChartSkeleton from "../skeletons/PerformanceChartSkeleton";
 
 // Fallback colors if CSS variables aren't set
 // Blue shades palette

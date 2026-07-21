@@ -1,6 +1,6 @@
 import { Trophy, CheckCircle2, XCircle } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
-import { Progress } from "./ui/progress";
+import { Progress } from "@/components/ui/progress";
 
 interface QuizResultProps {
   result: {
