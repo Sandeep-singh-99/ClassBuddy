@@ -8,7 +8,7 @@ import { GroupJoinStudents } from "@/redux/slice/tSlice";
 import StudentsList from "./components/StudentsList";
 import { teacherNotes } from "@/redux/slice/noteSlice";
 import NotesList from "./components/NotesList";
-import { totalSubmission } from "@/redux/slice/submissionSlice";
+import { TotalAssignment } from "@/redux/slice/assignmentSlice";
 
 export default function THome() {
   const dispatch = useAppDispatch();
@@ -17,12 +17,13 @@ export default function THome() {
 
   const { count } = useAppSelector((state) => state.notes);
 
-  const { totalSubmissions } = useAppSelector((state) => state.submissions);
+  // const { totalSubmissions } = useAppSelector((state) => state.submissions);
+  const { totalAssignments } = useAppSelector((state) => state.assignments);
 
   useEffect(() => {
     dispatch(GroupJoinStudents());
     dispatch(teacherNotes());
-    dispatch(totalSubmission());
+    dispatch(TotalAssignment());
   }, [dispatch]);
 
   return (
@@ -78,7 +79,7 @@ export default function THome() {
             <RatioIcon className="w-4 h-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalSubmissions}</div>
+            <div className="text-2xl font-bold">{totalAssignments}</div>
             <p className="text-xs text-muted-foreground mt-1">
               +5 from last month
             </p>
