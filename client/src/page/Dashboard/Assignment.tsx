@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import AssignmentViewCard from "@/components/Assignment/AssignmentViewCard";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { fetchAssignments } from "@/redux/slice/assignmentSlice";
+import { fetchStudentAssignmentStats } from "@/redux/slice/submissionSlice";
 import {
   AlertCircle,
   ClipboardList,
@@ -21,38 +22,69 @@ export default function Assignment() {
   const { assignments, loading, error } = useAppSelector(
     (state) => state.assignments
   );
+  const { ownerAssignmentStats } = useAppSelector(
+    (state) => state.submissions
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterTab, setFilterTab] = useState("all");
 
   const loadData = () => {
     dispatch(fetchAssignments());
+    dispatch(fetchStudentAssignmentStats());
   };
 
   useEffect(() => {
-    if (assignments.length === 0) {
-      loadData();
-    }
-  }, [dispatch, assignments.length]);
+    loadData();
+  }, [dispatch]);
 
-  // Filter assignments by search query and active vs closed status
+  // Create lookup map for completed assignment records
+  const completionMap = useMemo(() => {
+    const map: Record<
+      string,
+      { is_completed?: boolean; is_past_due?: boolean; submitted_at?: string }
+    > = {};
+
+    if (ownerAssignmentStats?.assignments) {
+      ownerAssignmentStats.assignments.forEach((item: any) => {
+        map[item.id] = {
+          is_completed: item.is_completed,
+          is_past_due: item.is_past_due,
+          submitted_at: item.submitted_at,
+        };
+      });
+    }
+
+    return map;
+  }, [ownerAssignmentStats]);
+
+  // Filter assignments by search query and tab status (All, Open, Completed, Closed)
   const filteredAssignments = useMemo(() => {
     const now = new Date();
-    return assignments.filter((assignment) => {
+    return assignments.map((assignment) => {
+      const completionInfo = completionMap[assignment.id];
+      const isCompleted = completionInfo?.is_completed || Boolean((assignment as any).is_completed);
+      const dueDate = new Date(assignment.due_date);
+      const isPastDue = completionInfo?.is_past_due ?? (dueDate < now);
+
+      return {
+        ...assignment,
+        is_completed: isCompleted,
+        is_past_due: isPastDue,
+      };
+    }).filter((assignment) => {
       const matchesSearch = assignment.title
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
       if (!matchesSearch) return false;
 
-      const dueDate = new Date(assignment.due_date);
-      const isPastDue = dueDate < now;
-
-      if (filterTab === "open") return !isPastDue;
-      if (filterTab === "closed") return isPastDue;
+      if (filterTab === "open") return !assignment.is_completed && !assignment.is_past_due;
+      if (filterTab === "completed") return assignment.is_completed;
+      if (filterTab === "closed") return assignment.is_past_due;
       return true;
     });
-  }, [assignments, searchQuery, filterTab]);
+  }, [assignments, completionMap, searchQuery, filterTab]);
 
   return (
     <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
@@ -118,6 +150,9 @@ export default function Assignment() {
               </TabsTrigger>
               <TabsTrigger value="open" className="text-xs rounded-lg px-3 py-1">
                 Open
+              </TabsTrigger>
+              <TabsTrigger value="completed" className="text-xs rounded-lg px-3 py-1">
+                Completed
               </TabsTrigger>
               <TabsTrigger value="closed" className="text-xs rounded-lg px-3 py-1">
                 Closed

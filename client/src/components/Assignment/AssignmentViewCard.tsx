@@ -16,13 +16,17 @@ interface AssignmentCardProps {
     title: string;
     description: string;
     due_date: string;
+    is_completed?: boolean;
+    is_past_due?: boolean;
+    submitted_at?: string;
   };
 }
 
 export default function AssignmentCard({ assignment }: AssignmentCardProps) {
   const dueDate = new Date(assignment.due_date);
   const now = new Date();
-  const isPastDue = dueDate < now;
+  const isPastDue = assignment.is_past_due ?? (dueDate < now);
+  const isCompleted = Boolean(assignment.is_completed);
 
   const getTimeLeft = () => {
     const diff = dueDate.getTime() - now.getTime();
@@ -39,7 +43,15 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
 
   return (
     <Card className="group relative flex flex-col justify-between h-full overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card to-card/60 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div className={`h-1.5 w-full ${isPastDue ? "bg-amber-500" : "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500"}`} />
+      <div
+        className={`h-1.5 w-full ${
+          isCompleted
+            ? "bg-emerald-500"
+            : isPastDue
+            ? "bg-amber-500"
+            : "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500"
+        }`}
+      />
 
       <div>
         <CardHeader className="p-6 pb-3 space-y-2">
@@ -51,12 +63,14 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
             <Badge
               variant="outline"
               className={`text-[11px] font-semibold ${
-                isPastDue
+                isCompleted
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : isPastDue
                   ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400"
               }`}
             >
-              {isPastDue ? "Closed" : "Open"}
+              {isCompleted ? "Completed" : isPastDue ? "Closed" : "Open"}
             </Badge>
           </div>
 
@@ -74,7 +88,12 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
 
           <div className="p-3 rounded-xl bg-muted/40 dark:bg-muted/20 border border-border/40 flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 font-semibold">
-              {isPastDue ? (
+              {isCompleted ? (
+                <>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  <span className="text-emerald-600 dark:text-emerald-400">Submitted</span>
+                </>
+              ) : isPastDue ? (
                 <>
                   <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
                   <span className="text-amber-600 dark:text-amber-400">Deadline Passed</span>
@@ -94,8 +113,47 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
         </CardContent>
       </div>
 
-      <CardFooter className="p-6 pt-0">
-        {!isPastDue ? (
+      <CardFooter className="p-6 pt-0 flex flex-col gap-2">
+        {isCompleted ? (
+          <>
+            {/* Disabled View Assignment Button when completed */}
+            <Button
+              disabled
+              className="w-full rounded-xl gap-2 font-semibold bg-muted text-muted-foreground opacity-75 cursor-not-allowed"
+            >
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              <span>View Assignment (Disabled - Completed)</span>
+            </Button>
+
+            {/* Optional Grade & Feedback Link */}
+            <Link
+              to={`/dashboard-panel/assignments-details/${assignment.id}`}
+              className="w-full"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full rounded-xl gap-1.5 text-xs font-semibold border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
+              >
+                <span>View Grade & Feedback</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+          </>
+        ) : isPastDue ? (
+          <Link
+            to={`/dashboard-panel/assignments-details/${assignment.id}`}
+            className="w-full"
+          >
+            <Button
+              variant="outline"
+              className="w-full rounded-xl gap-2 font-semibold border-border/80 hover:bg-accent"
+            >
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <span>View Grade & Details</span>
+            </Button>
+          </Link>
+        ) : (
           <Link
             to={`/dashboard-panel/assignments/${assignment.id}`}
             className="w-full"
@@ -105,19 +163,6 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
             >
               <span>View Assignment</span>
               <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        ) : (
-          <Link
-            to={`/dashboard-panel/assignments-details/${assignment.id}`}
-            className="w-full"
-          >
-            <Button
-              variant="outline"
-              className="w-full rounded-xl gap-2 font-semibold border-border/80 hover:bg-accent"
-            >
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              <span>View Grade & Feedback</span>
             </Button>
           </Link>
         )}
