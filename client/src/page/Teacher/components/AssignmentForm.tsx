@@ -146,7 +146,7 @@ export default function AssignmentForm() {
             />
           </div>
 
-          <DialogFooter className="pt-2 gap-2 sm:gap-0">
+          <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
             <DialogClose asChild>
               <Button type="button" variant="outline" disabled={loading} className="border-border">
                 Cancel

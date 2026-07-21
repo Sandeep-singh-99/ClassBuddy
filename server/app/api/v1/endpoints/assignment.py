@@ -105,7 +105,7 @@ async def get_assignments(
 
     return assignments
 
-@router.get("/", response_model=List[AssignmentBase])
+@router.get("/t-assignment", response_model=List[AssignmentBase])
 @limiter.limit("10/minute")
 async def get_teacher_assignments(
     request: Request,

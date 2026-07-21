@@ -64,7 +64,7 @@ export default function GenerateAssignment({ id }: { id: string }) {
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className="pt-4 gap-2 sm:gap-0">
+        <DialogFooter className="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <DialogClose asChild>
             <Button variant="outline" disabled={loading} className="border-border">
               Cancel
