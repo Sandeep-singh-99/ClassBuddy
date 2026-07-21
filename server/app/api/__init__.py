@@ -1,7 +1,6 @@
 from .v1.endpoints import ai_evaluator
 from .v1.endpoints import assignment
 from .v1.endpoints import auth
-from .v1.endpoints import chat_with_pdf
 from .v1.endpoints import docsupload
 from .v1.endpoints import generate_assignment
 from .v1.endpoints import generate_notes
