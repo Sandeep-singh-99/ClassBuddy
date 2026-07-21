@@ -13,11 +13,13 @@ export const fetchAssignments = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail ?? error.message ?? "Registration failed"
+          error.response?.data?.detail ??
+            error.message ??
+            "Registration failed",
         );
       }
     }
-  }
+  },
 );
 
 export const fetchTeacherAssignments = createAsyncThunk(
@@ -29,97 +31,121 @@ export const fetchTeacherAssignments = createAsyncThunk(
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail ?? error.message ?? "Registration failed"
+          error.response?.data?.detail ??
+            error.message ??
+            "Registration failed",
         );
       }
     }
-  }
+  },
 );
 
 export const fetchAssignmentById = createAsyncThunk(
   "assignments/fetchById",
   async (id: string, thunkApi) => {
     try {
-      const response = await axiosClient.get(
-        `/assignments/${id}`
-      );
+      const response = await axiosClient.get(`/assignments/${id}`);
       return response.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail ?? error.message ?? "Registration failed"
+          error.response?.data?.detail ??
+            error.message ??
+            "Registration failed",
         );
       }
     }
-  }
+  },
 );
 
 export const CreateAssignment = createAsyncThunk(
   "assignments/create",
   async (data: FormData, thunkApi) => {
     try {
-      const response = await axiosClient.post(
-        "/assignments/",
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axiosClient.post("/assignments/", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail ?? error.message ?? "Registration failed"
+          error.response?.data?.detail ??
+            error.message ??
+            "Registration failed",
         );
       }
     }
-  }
+  },
 );
 
 export const GenerateAssignmentById = createAsyncThunk(
   "assignments/generate",
   async (id: string, thunkApi) => {
     try {
-      const response = await axiosClient.post(
-        `/assignments/${id}`
-      );
+      const response = await axiosClient.post(`/assignments/${id}`);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail ?? error.message ?? "Registration failed"
+          error.response?.data?.detail ??
+            error.message ??
+            "Registration failed",
         );
       }
     }
-  }
+  },
 );
 
 export const DeleteAssignment = createAsyncThunk(
   "assignments/delete",
   async (id: string, thunkApi) => {
     try {
-      const response = await axiosClient.delete(
-        `/assignments/${id}`
+      const response = await axiosClient.delete(`/assignments/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ??
+            error.message ??
+            "Registration failed",
+        );
+      }
+    }
+  },
+);
+
+export const TotalAssignment = createAsyncThunk(
+  "assignment/total",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get(
+        "/assignments/teacher/total-assignments",
       );
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail ?? error.message ?? "Registration failed"
+          error.response?.data?.detail ??
+            error.message ??
+            "Registration failed",
         );
       }
     }
-  }
+  },
 );
-
 
 interface AssignmentState {
   assignments: IAssignment[];
   currentAssignment: any | null;
   loading: boolean;
   error: string | null;
+  totalAssignments: number;
+}
+
+interface TotalAssignmentResponse {
+  total_assignments: number;
 }
 
 const initialState: AssignmentState = {
@@ -127,6 +153,7 @@ const initialState: AssignmentState = {
   currentAssignment: null,
   loading: false,
   error: null,
+  totalAssignments: 0,
 };
 
 const assignmentSlice = createSlice({
@@ -144,7 +171,7 @@ const assignmentSlice = createSlice({
         state.assignments = action.payload;
         state.loading = false;
         state.error = null;
-      }
+      },
     );
     builder.addCase(fetchAssignments.rejected, (state, action) => {
       state.loading = false;
@@ -162,7 +189,7 @@ const assignmentSlice = createSlice({
         state.currentAssignment = action.payload;
         state.loading = false;
         state.error = null;
-      }
+      },
     );
 
     builder.addCase(fetchAssignmentById.rejected, (state, action) => {
@@ -182,7 +209,7 @@ const assignmentSlice = createSlice({
         state.assignments = [action.payload, ...state.assignments];
         state.loading = false;
         state.error = null;
-      }
+      },
     );
 
     builder.addCase(CreateAssignment.rejected, (state, action) => {
@@ -201,7 +228,7 @@ const assignmentSlice = createSlice({
         state.currentAssignment = action.payload;
         state.loading = false;
         state.error = null;
-      }
+      },
     );
 
     builder.addCase(GenerateAssignmentById.rejected, (state, action) => {
@@ -216,7 +243,7 @@ const assignmentSlice = createSlice({
 
     builder.addCase(DeleteAssignment.fulfilled, (state, action) => {
       state.assignments = state.assignments.filter(
-        (assignment) => assignment.id !== action.meta.arg
+        (assignment) => assignment.id !== action.meta.arg,
       );
       state.loading = false;
       state.error = null;
@@ -226,7 +253,6 @@ const assignmentSlice = createSlice({
       state.loading = false;
       state.error = action.payload as string;
     });
-
 
     builder.addCase(fetchTeacherAssignments.pending, (state) => {
       state.loading = true;
@@ -239,12 +265,31 @@ const assignmentSlice = createSlice({
         state.assignments = action.payload;
         state.loading = false;
         state.error = null;
-      }
+      },
     );
 
     builder.addCase(fetchTeacherAssignments.rejected, (state, action) => {
       state.loading = false;
       state.assignments = [];
+      state.error = action.payload as string;
+    });
+
+    builder.addCase(TotalAssignment.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    builder.addCase(
+      TotalAssignment.fulfilled,
+      (state, action: PayloadAction<TotalAssignmentResponse>) => {
+        state.loading = false;
+        state.totalAssignments = action.payload.total_assignments;
+        state.error = null;
+      },
+    );
+
+    builder.addCase(TotalAssignment.rejected, (state, action) => {
+      state.loading = false;
       state.error = action.payload as string;
     });
   },

@@ -17,6 +17,7 @@ from app.models.teacherInsight import TeacherInsight
 from sqlalchemy.orm import joinedload
 from app.core.rate_limiter import limiter
 from app.dependencies.require_active_subscription import check_active_subscription
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -207,3 +208,26 @@ async def delete_assignment(
     db.commit()
 
     return assignment
+
+@router.get("/teacher/total-assignments")
+@limiter.limit("20/minute")
+async def get_total_teacher_assignments(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not current_user or current_user.role != userRole.TEACHER:
+        raise HTTPException(
+            status_code=403,
+            detail="Only teachers can access this endpoint.",
+        )
+
+    total_assignments = (
+        db.query(func.count(Assignment.id))
+        .filter(Assignment.owner_id == current_user.id)
+        .scalar()
+    )
+
+    return {
+        "total_assignments": total_assignments
+    }
