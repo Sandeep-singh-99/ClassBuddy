@@ -18,6 +18,34 @@
 ![ClassBuddy Chat](./screenshot/Screenshot%202026-04-04%20231313.png)
 
 ---
+## ✨ Key Features
+
+### 🤖 Multi-Agent AI System
+* **Automated Notes Studio**: Autonomously researches topics using Tavily Search, gathers web resources, and outputs structured study materials complete with summaries and key takeaways.
+* **Smart Assignment Architect**: Generates customized assignments based on topics, reading levels, and files uploaded.
+* **AI Evaluation Engine**: Evaluates student submissions, grading their code and responses, while generating personalized study reviews.
+* **Mock Interview prep**: Interactive terminal simulator generating dynamic interview questions matched to specific career streams or industries.
+
+### 🏫 Classroom Groups & Collaboration
+* **Group Management**: Teachers can create specific groups (e.g., "AP Computer Science") and secure access using enrollment links or subscriptions.
+* **Content Hub**: Upload and share documents, assignments, and slides directly to a centralized feed.
+* **Resource Catalog**: Students browse available teachers, preview curricula, and view active study categories.
+
+### 💬 Real-Time Communication Hub
+* **Low-Latency Chat**: Integrated group chat room using FastAPI WebSockets.
+* **Scalable Brokerage**: Backed by Redis Pub/Sub to synchronize multi-instance deployments.
+* **Persistent History**: Instant fallback to PostgreSQL, loading chat histories dynamically on viewport scroll.
+
+### 💰 Subscription Monetization
+* **Monetization Portals**: Teachers can easily define subscription tiers (up to 3 customized plans).
+* **Payment Integration**: Razorpay API integrations process student subscription transactions.
+* **Earnings Analytics**: Interactive charts display income trends, active members, renewal rates, and payment logs.
+
+### 📊 Insight Dashboards
+* **Teacher Dashboard**: Monitor group enrollments, average grades, pending submissions, and payment statistics.
+* **Student Career Hub**: Visualize career interest graphs, weekly review performance, and curated industry recommendations.
+
+---
 
 ## 🏗️ System Design Architecture
 
@@ -142,36 +170,6 @@ For intensive processing like assignment grading, mock interview analytics, or c
 1. **Trigger**: An event (`student/industry.generate` or a weekly Cron scheduler) is dispatched to Inngest.
 2. **AI Analysis**: Inngest fetches the required model data, calls the LangGraph API to run the specific profile engine (e.g., `industry_graph`), and generates tailored metrics.
 3. **Database & Cache Sync**: The result is saved directly into PostgreSQL, and the corresponding user caching keys on Redis are invalidated to guarantee updated reads.
-
----
-
-## ✨ Key Features
-
-### 🤖 Multi-Agent AI System
-* **Automated Notes Studio**: Autonomously researches topics using Tavily Search, gathers web resources, and outputs structured study materials complete with summaries and key takeaways.
-* **Smart Assignment Architect**: Generates customized assignments based on topics, reading levels, and files uploaded.
-* **AI Evaluation Engine**: Evaluates student submissions, grading their code and responses, while generating personalized study reviews.
-* **Mock Interview prep**: Interactive terminal simulator generating dynamic interview questions matched to specific career streams or industries.
-
-### 🏫 Classroom Groups & Collaboration
-* **Group Management**: Teachers can create specific groups (e.g., "AP Computer Science") and secure access using enrollment links or subscriptions.
-* **Content Hub**: Upload and share documents, assignments, and slides directly to a centralized feed.
-* **Resource Catalog**: Students browse available teachers, preview curricula, and view active study categories.
-
-### 💬 Real-Time Communication Hub
-* **Low-Latency Chat**: Integrated group chat room using FastAPI WebSockets.
-* **Scalable Brokerage**: Backed by Redis Pub/Sub to synchronize multi-instance deployments.
-* **Persistent History**: Instant fallback to PostgreSQL, loading chat histories dynamically on viewport scroll.
-
-### 💰 Subscription Monetization
-* **Monetization Portals**: Teachers can easily define subscription tiers (up to 3 customized plans).
-* **Payment Integration**: Razorpay API integrations process student subscription transactions.
-* **Earnings Analytics**: Interactive charts display income trends, active members, renewal rates, and payment logs.
-
-### 📊 Insight Dashboards
-* **Teacher Dashboard**: Monitor group enrollments, average grades, pending submissions, and payment statistics.
-* **Student Career Hub**: Visualize career interest graphs, weekly review performance, and curated industry recommendations.
-
 ---
 
 ## 🛠️ Tech Stack
