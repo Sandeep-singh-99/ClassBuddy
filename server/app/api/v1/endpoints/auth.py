@@ -10,68 +10,6 @@ from app.services.auth_service import AuthService
 
 router = APIRouter()
 
-# @router.post("/register", response_model=UserResponse)
-# @limiter.limit("10/minute")
-# async def register(
-#     request: Request,
-#     response: Response,
-#     full_name: str = Form(...),
-#     email: str = Form(...),
-#     password: str = Form(...),
-#     role: str = Form("student"),
-#     image: UploadFile = File(None),
-#     db: Session = Depends(get_db)
-# ):
-#     # check email
-#     existing_user = db.query(User).filter(User.email == email).first()
-#     if existing_user:
-#         raise HTTPException(status_code=400, detail="Email already registered")
-
-#     # hash password
-#     hashed_password = hash_password(password)
-
-#     # upload image
-#     image_url, image_url_id = None, None
-#     if image:
-#         result = upload_image(image.file, folder="ClassBuddy")
-#         image_url, image_url_id = result["url"], result["public_id"]
-
-#     # create user
-#     db_user = User(
-#         full_name=full_name,
-#         email=email,
-#         role=role,
-#         hashed_password=hashed_password,
-#         image_url=image_url,
-#         image_url_id=image_url_id
-#     )
-#     db.add(db_user)
-
-#     try:
-#         db.commit()
-#         db.refresh(db_user)
-#     except Exception as e:
-#         db.rollback()
-
-#         if image_url_id:
-#             delete_image(image_url_id)
-
-#         raise HTTPException(status_code=500, detail="Registration failed due to a server error. Please try again.")
-
-#     # create JWT
-#     access_token = create_access_token({"sub": db_user.email})
-
-#     # set cookie
-#     response.set_cookie(
-#         key="access_token",
-#         value=access_token,
-#         httponly=True,
-#         max_age=60*60*24*15,
-#         secure=True,
-#         samesite="none"
-#     )
-#     return db_user
-
 
 @router.post("/register", response_model=UserResponse)
 @limiter.limit("10/minute")
