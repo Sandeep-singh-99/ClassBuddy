@@ -14,6 +14,16 @@
 
 **ClassBuddy** is a next-generation, premium full-stack educational ecosystem that connects teachers and students through intelligent AI agents, real-time communication systems, interactive study dashboards, and built-in subscription monetization. It transforms standard classrooms into dynamic, AI-assisted workspaces.
 
+---
+
+## 🌐 App Version
+
+You can find the App application here:
+
+**🔗 https://github.com/Sandeep-singh-99/ClassBuddy_App**
+
+---
+
 ![ClassBuddy Mockup](./screenshot/Screenshot%202026-04-04%20231251.png)
 ![ClassBuddy Chat](./screenshot/Screenshot%202026-04-04%20231313.png)
 
