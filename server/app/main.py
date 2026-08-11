@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-
-from app.mobile.api.v1.api import app_router
 from app.api.v1.api import app_router
 from app.api.v1.endpoints.inngest_route import router as inngest_router
 
@@ -73,9 +71,6 @@ async def read_root():
 
 
 app.include_router(app_router, prefix='/api/v1', tags=['Web Route'])
-
-# Mobile APIs
-app.include_router(app_router, prefix="/api/v1/mobile", tags=['Mobile Route'])
 
 
 # Mount Inngest separately
