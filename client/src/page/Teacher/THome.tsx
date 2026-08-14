@@ -83,7 +83,7 @@ export default function THome() {
               <Button
                 size="lg"
                 className="rounded-xl px-8 py-6 text-base font-semibold shadow-lg shadow-primary/20 bg-primary text-primary-foreground hover:scale-105 transition-all duration-300 gap-3"
-                onClick={() => navigate("/t-insight")}
+                onClick={() => navigate("/t-insights")}
               >
                 <PlusCircle className="h-5 w-5" />
                 <span>Create Your First Group</span>
