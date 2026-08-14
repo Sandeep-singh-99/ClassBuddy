@@ -1,1 +1,9 @@
 .venv/
+
+test.db
+
+.pytest_cache/
+
+__pycache__/
+
+.env.example

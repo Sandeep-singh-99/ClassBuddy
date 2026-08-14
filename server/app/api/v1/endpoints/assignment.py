@@ -13,6 +13,7 @@ from app.models.auth import User, group_members
 from app.schemas.auth import UserResponse
 from app.models.auth import userRole
 from app.dependencies.dependencies import get_db, get_current_user
+from app.dependencies.require_teacher_group import require_teacher_group
 from app.models.teacherInsight import TeacherInsight
 from sqlalchemy.orm import joinedload
 from app.core.rate_limiter import limiter
@@ -30,20 +31,8 @@ async def create_assignment(
     description: str = Form(...),
     due_date: datetime = Form(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
 ):
-    if not current_user:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="not authorized to create assignments",
-        )
-
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="only teachers can create assignments",
-        )
-
     if not title or not description or not due_date:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="missing required fields"
@@ -111,14 +100,8 @@ async def get_assignments(
 async def get_teacher_assignments(
     request: Request,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
 ):
-    if not current_user or current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="not authorized to view assignments",
-        )
-
     assignments = db.query(Assignment).filter(Assignment.owner_id == current_user.id).all()
 
     return assignments
@@ -187,13 +170,8 @@ async def delete_assignment(
     request: Request,
     assignment_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
 ):
-    if not current_user or current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=403, detail="Only teachers can delete assignments"
-        )
-
     assignment = (
         db.query(Assignment)
         .options(joinedload(Assignment.questions), joinedload(Assignment.submissions))
@@ -214,14 +192,8 @@ async def delete_assignment(
 async def get_total_teacher_assignments(
     request: Request,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
 ):
-    if not current_user or current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=403,
-            detail="Only teachers can access this endpoint.",
-        )
-
     total_assignments = (
         db.query(func.count(Assignment.id))
         .filter(Assignment.owner_id == current_user.id)
@@ -230,4 +202,4 @@ async def get_total_teacher_assignments(
 
     return {
         "total_assignments": total_assignments
-    }
+    }
