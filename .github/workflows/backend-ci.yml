@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+
   pull_request:
     branches:
       - develop
@@ -29,11 +30,13 @@ jobs:
           docker build \
             -f server/Dockerfile \
             -t sand07/classbuddy-backend:${{ github.sha }} \
+            -t sand07/classbuddy-backend:latest \
             server
 
       - name: Push Docker image
         run: |
           docker push sand07/classbuddy-backend:${{ github.sha }}
+          docker push sand07/classbuddy-backend:latest
 
       - name: Deploy Backend to Render
         if: github.ref == 'refs/heads/main'
