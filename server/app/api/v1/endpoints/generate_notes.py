@@ -14,6 +14,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+from app.dependencies.require_teacher_group import require_teacher_group
+
 # -------------------------------
 # 6. FastAPI Router
 # -------------------------------
@@ -24,7 +26,7 @@ router = APIRouter()
 @router.post("/notes-generates", status_code=status.HTTP_201_CREATED)
 async def generate_notes(
     title: str = Form(...),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
     db: Session = Depends(get_db),
 ):
     if not title.strip():
@@ -35,13 +37,6 @@ async def generate_notes(
             status_code=400, detail="Title cannot be longer than 200 characters"
         )
 
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=403, detail="Forbidden: Only teachers can generate notes"
-        )
 
     # Find teacher group
     teacher_group = (
