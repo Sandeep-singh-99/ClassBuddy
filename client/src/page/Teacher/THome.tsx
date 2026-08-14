@@ -22,10 +22,15 @@ import NotesList from "./components/NotesList";
 import { TotalAssignment } from "@/redux/slice/assignmentSlice";
 import { Badge } from "@/components/ui/badge";
 
+import { fetchTeacherGroupStatus } from "@/redux/slice/tSlice";
+import DashboardSkeleton from "@/components/skeletons/DashboardSkeleton";
+import { useNavigate } from "react-router-dom";
+
 export default function THome() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const { teachers } = useAppSelector((state) => state.teachers);
+  const { teachers, hasGroup } = useAppSelector((state) => state.teachers);
   const { count } = useAppSelector((state) => state.notes);
   const { totalAssignments } = useAppSelector((state) => state.assignments);
 
@@ -38,10 +43,58 @@ export default function THome() {
   });
 
   useEffect(() => {
-    dispatch(GroupJoinStudents());
-    dispatch(teacherNotes());
-    dispatch(TotalAssignment());
+    dispatch(fetchTeacherGroupStatus());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (hasGroup) {
+      dispatch(GroupJoinStudents());
+      dispatch(teacherNotes());
+      dispatch(TotalAssignment());
+    }
+  }, [dispatch, hasGroup]);
+
+  // ── Loading state ────────────────────────────────────────────────────────
+  if (hasGroup === null) {
+    return <DashboardSkeleton />;
+  }
+
+  // ── Onboarding state (Teacher has no group) ──────────────────────────────
+  if (hasGroup === false) {
+    return (
+      <main className="flex-1 p-4 md:p-8 space-y-8 max-w-4xl mx-auto my-12">
+        <Card className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-card via-card/95 to-primary/5 p-8 sm:p-12 shadow-xl text-center">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+          <div className="relative z-10 space-y-6">
+            <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
+              <Sparkles className="w-10 h-10 animate-pulse" />
+            </div>
+
+            <div className="space-y-3 max-w-xl mx-auto">
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                Welcome to ClassBuddy! 👋
+              </h2>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                You haven't created a group yet. Create your first group to unlock your teacher workspace, publish notes, assign tasks, and connect with your students.
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <Button
+                size="lg"
+                className="rounded-xl px-8 py-6 text-base font-semibold shadow-lg shadow-primary/20 bg-primary text-primary-foreground hover:scale-105 transition-all duration-300 gap-3"
+                onClick={() => navigate("/t-insight")}
+              >
+                <PlusCircle className="h-5 w-5" />
+                <span>Create Your First Group</span>
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </main>
+    );
+  }
+
 
   return (
     <main className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto">

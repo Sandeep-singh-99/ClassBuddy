@@ -11,13 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { axiosClient } from "@/helper/axiosClient";
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { setHasGroup } from "@/redux/slice/tSlice";
 import { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function TInsight() {
+
   const [uploadImage, setUploadImage] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     groupName: "",
@@ -26,6 +28,7 @@ export default function TInsight() {
   });
   const [loading, setLoading] = useState(false);
 
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
@@ -67,10 +70,12 @@ export default function TInsight() {
     // Validation
     if (!formData.groupName.trim() || !formData.groupDescription.trim()) {
       toast.error("Please fill in all fields.");
+      setLoading(false);
       return;
     }
     if (!uploadImage) {
       toast.error("Please upload a group image.");
+      setLoading(false);
       return;
     }
 
@@ -91,21 +96,19 @@ export default function TInsight() {
       );
 
       toast.success(response.data.message || "Group created successfully!");
+      dispatch(setHasGroup(true));
 
-      if (response.status === 200) {
-        setLoading(false);
-        // Reset form after success
-        setFormData({
-          groupName: "",
-          groupDescription: "",
-          imageUrl: "",
-        });
-        setUploadImage(null);
-        navigate("/");
-      }
+      // Reset form after success
+      setFormData({
+        groupName: "",
+        groupDescription: "",
+        imageUrl: "",
+      });
+      setUploadImage(null);
+      navigate("/t-dashboard/home");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data?.message || error.message);
+        toast.error(error.response?.data?.detail || error.response?.data?.message || error.message);
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
@@ -113,6 +116,7 @@ export default function TInsight() {
       setLoading(false);
     }
   };
+
 
   // Redirect non-teachers away
   useEffect(() => {
