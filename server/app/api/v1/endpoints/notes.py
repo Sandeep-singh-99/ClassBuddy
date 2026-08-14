@@ -6,9 +6,9 @@ from app.models.teacherInsight import TeacherInsight
 from app.schemas.auth import UserResponse
 from app.schemas.teacherInsight import TeacherInsightResponse
 from app.dependencies.dependencies import get_current_user
+from app.dependencies.require_teacher_group import require_teacher_group
 from app.schemas.notes import NotesCreate, NotesResponse, EditNotes, NoteBaseResponse, TeacherNotesResponse
 from app.models.notes import Note
-from app.models.teacherInsight import TeacherInsight
 from datetime import datetime
 from app.core.rate_limiter import limiter
 from app.dependencies.require_active_subscription import check_active_subscription
@@ -23,7 +23,7 @@ def create_note(
     request: Request,
     note_data: NotesCreate, # Pydantic takes over parsing a pure JSON body
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_teacher_group)
 ):
     return NotesService.create_note(db, current_user, note_data)
 
@@ -34,7 +34,7 @@ def create_note(
 def get_teacher_notes(
     request: Request,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_teacher_group)
 ):
     return NotesService.get_teacher_notes(db, current_user)
 
@@ -76,7 +76,7 @@ def delete_note(
     request: Request, 
     note_id: str, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_teacher_group)
 ):
     NotesService.delete_note(db, current_user, note_id)
     return  # 204 No Content shouldn't return a body
@@ -90,8 +90,6 @@ def edit_note(
     note_id: str,
     note_data: EditNotes,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_teacher_group)
 ):
     return NotesService.edit_note(db, current_user, note_id, note_data)
-
-

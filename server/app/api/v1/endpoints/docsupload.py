@@ -15,25 +15,15 @@ from app.core.rate_limiter import limiter
 from app.dependencies.require_active_subscription import check_active_subscription
 
 
+from app.dependencies.require_teacher_group import require_teacher_group
+
 router = APIRouter()
 
 @router.post("/", response_model=DocsBase)
 @limiter.limit("10/minute")
-def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to upload documents"
-        )
-    
+def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(require_teacher_group)):
     teacher_group = db.query(TeacherInsight).filter(TeacherInsight.user_id == current_user.id).first()
 
-    if not teacher_group:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No group found for this teacher. Please create a group first."
-        )
-    
     file_url, file_url_id = None, None
     if file:
         result = upload_image(file.file, folder="ClassBuddy")
@@ -55,13 +45,7 @@ def upload_doc(request: Request, filename: str = Form(...), file: UploadFile = F
 
 @router.get("/", response_model=List[DocsBase])
 @limiter.limit("10/minute")
-def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view this resource")
-    
+def get_my_docs(request: Request, db: Session = Depends(get_db), current_user: User = Depends(require_teacher_group)):
     docs = db.query(DocsUpload).filter(DocsUpload.owner_id == current_user.id).all()
     docs.sort(key=lambda x: x.updated_at, reverse=True)
     return docs
@@ -109,17 +93,9 @@ def get_my_doc(request: Request, doc_id: str, db: Session = Depends(get_db), cur
     return docs
 
 
-
-
 @router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("10/minute")
-def delete_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this document")
-
+def delete_doc(request: Request, doc_id: str, db: Session = Depends(get_db), current_user: User = Depends(require_teacher_group)):
     doc = db.query(DocsUpload).filter(DocsUpload.id == doc_id, DocsUpload.owner_id == current_user.id).first()
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="You not authorized to delete this document")
@@ -128,4 +104,4 @@ def delete_doc(request: Request, doc_id: str, db: Session = Depends(get_db), cur
         delete_image(doc.file_url_id)
 
     db.delete(doc)
-    db.commit()
+    db.commit()

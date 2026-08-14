@@ -46,8 +46,22 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from fastapi.responses import JSONResponse
+from app.dependencies.require_teacher_group import TeacherGroupRequiredException
+
 app.state.limiter = rate_limiter.limiter
 app.add_exception_handler(RateLimitExceeded, rate_limiter.rate_limit_exceeded_handler)
+
+@app.exception_handler(TeacherGroupRequiredException)
+async def teacher_group_required_handler(request, exc: TeacherGroupRequiredException):
+    return JSONResponse(
+        status_code=403,
+        content={
+            "detail": exc.detail,
+            "code": "TEACHER_GROUP_REQUIRED"
+        }
+    )
+
 
 origins = os.getenv("CORS_ORIGINS", "").split(",")
 
