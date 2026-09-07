@@ -71,10 +71,12 @@ const dashboardSlice = createSlice({
 
     builder.addCase(
       GenerateDashboardData.fulfilled,
-      (state, action: PayloadAction<StudentInsight>) => {
+      (state, action: PayloadAction<any>) => {
         state.loading = false;
-        state.data = [action.payload, ...(state.data || [])];
         state.error = null;
+        if (action.payload && action.payload.salary_range) {
+          state.data = [action.payload, ...(state.data || [])];
+        }
       }
     );
 
@@ -88,15 +90,18 @@ const dashboardSlice = createSlice({
       state.error = null;
     });
 
-    builder.addCase(FetchDashboardData.fulfilled, (state, action) => {
+    builder.addCase(FetchDashboardData.fulfilled, (state, action: PayloadAction<any>) => {
       state.loading = false;
-      state.data = [action.payload];
       state.error = null;
+      if (Array.isArray(action.payload)) {
+        state.data = action.payload;
+      } else if (action.payload && action.payload.salary_range) {
+        state.data = [action.payload];
+      }
     });
 
     builder.addCase(FetchDashboardData.rejected, (state, action) => {
       state.loading = false;
-      state.data = null;
       state.error = action.payload as string;
     });
   },
