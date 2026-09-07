@@ -61,11 +61,14 @@ ClassBuddy operates as its own **standalone OAuth 2.0 Authorization Server** wit
 
 ## ⚡ Additional Key Features
 
-### 🤖 Multi-Agent AI System
-* **Automated Notes Studio**: Autonomously researches topics using Tavily Search, gathers web resources, and outputs structured study materials complete with summaries and key takeaways via LangGraph.
-* **Smart Assignment Architect**: Generates customized assignments based on topics, reading levels, and uploaded course files.
-* **AI Evaluation Engine**: Evaluates student submissions, grading responses and providing personalized feedback.
-* **Mock Interview Prep**: Interactive terminal simulator generating dynamic stream-matched technical interview questions.
+### 🤖 Multi-Agent AI System & AI Streaming
+* **Modular Multi-Agent Architecture**: Built on LangGraph state charts featuring self-evaluating and iterative improvement loops (Planner ➔ Research ➔ Execution ➔ Evaluator ➔ Improver ➔ Finalizer/Saver).
+  * **Automated Notes Studio (`notes_agent`)**: Autonomously researches topics using Tavily Search, evaluates note structure, iteratively refines output quality, and saves structured Markdown study guides.
+  * **Industry Insights Engine (`industry_agent`)**: Gathers market trends, analyzes skill requirements, evaluates analytical precision, and delivers real-time career guidance & skill matrices.
+  * **Mock Interview Architect (`interview_agent`)**: Conducts live research on interview questions, generates custom quizzes via Hugging Face/Gemini models, and evaluates & improves quiz quality.
+* **Real-Time AI Response Streaming**: High-performance Server-Sent Events (SSE) endpoint (`/api/v1/ai-stream`) paired with custom React streaming hooks (`useAIStream`) for instant, low-latency progressive token rendering.
+* **Smart Assignment Architect & Evaluation Engine**: Custom assignment generation based on topic/files and automated multi-criteria evaluation of student submissions.
+* **Teacher Directory & Discovery**: Dedicated student dashboard portal (`ViewAllTeacher`) to explore all onboarded teachers, classroom groups, and subscription options.
 
 ### 💬 Real-Time Communication Hub
 * **Low-Latency Chat**: Integrated group messaging powered by FastAPI WebSockets.
@@ -101,6 +104,7 @@ graph TD
         Auth_Dep[OAuth2 User / Group Guard]
         Teacher_Guard[require_teacher_group Dependency]
         WS_Manager[WebSocket Manager]
+        SSE_Stream[SSE Real-Time AI Stream]
     end
 
     subgraph Realtime_PubSub [Real-Time Broker]
@@ -116,9 +120,12 @@ graph TD
         Alembic[Alembic Database Migrations]
     end
 
-    subgraph AI_Engine [AI & Agentic Workflows]
+    subgraph AI_Engine [Modular Multi-Agent Engine]
         LG[LangGraph State Charts]
-        LLM[Gemini 2.5 Flash]
+        NotesAgent[Notes Agent Workflow]
+        IndustryAgent[Industry Agent Workflow]
+        InterviewAgent[Interview Agent Workflow]
+        LLM[Gemini 2.5 Flash / HuggingFace]
         Tavily[Tavily Search API]
     end
 
@@ -128,6 +135,7 @@ graph TD
     end
 
     Web <-->|HttpOnly Cookies / REST| FA
+    Web <-->|SSE Token Stream / ai-stream| SSE_Stream
     Android <-->|Bearer Token / REST| FA
     Web <-->|OAuth2 PKCE Flow| OAuth_Endpoint
     Android <-->|OAuth2 PKCE Flow| OAuth_Endpoint
@@ -146,8 +154,14 @@ graph TD
     FA -->|Enqueue Background Events| Inngest
     Inngest -->|Process & Save| DB
     Inngest <-->|Execute Graph State| LG
-    LG <-->|Call LLM Function| LLM
-    LG <-->|Web Search Context| Tavily
+    SSE_Stream <-->|Stream Event Chunks| LG
+    LG --> NotesAgent
+    LG --> IndustryAgent
+    LG --> InterviewAgent
+    NotesAgent <-->|Planner / Research / Generator / Evaluator| LLM
+    NotesAgent <-->|Live Search| Tavily
+    IndustryAgent <-->|Planner / Research / Analyzer / Evaluator| LLM
+    InterviewAgent <-->|Planner / Research / Quiz Generator| LLM
 ```
 
 ---
@@ -222,34 +236,46 @@ sequenceDiagram
 
 ## 🔄 Application Workflows
 
-### 1. AI-Powered Notes Generation (LangGraph Orchestration)
-Teachers can generate exhaustive, structured Markdown study guides using agentic multi-step reasoning. LangGraph manages the state machine, coordinating external search execution and context compilation before LLM notes synthesis.
+### 1. Modular Multi-Agent AI Generation & Streaming Workflow
+Teachers and students generate structured study guides, industry analyses, and interview quizzes via self-evaluating multi-node agent pipelines (`notes_agent`, `industry_agent`, `interview_agent`). Server-Sent Events (SSE) stream tokens progressively to the client interface.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Teacher
-    participant Client as React Client
-    participant API as FastAPI Backend
-    participant LG as LangGraph AI Agent
+    actor User as Teacher / Student
+    participant Client as React Client (useAIStream)
+    participant API as FastAPI Backend (/ai-stream)
+    participant Agent as LangGraph Agent Pipeline
+    participant Nodes as Modular Nodes (Planner ➔ Research ➔ Generator)
+    participant Eval as Evaluator & Improver Nodes
     participant Tavily as Tavily Search API
-    participant Gemini as Gemini 2.5 Flash
-    participant DB as PostgreSQL DB
+    participant LLM as Gemini 2.5 / Hugging Face
+    participant DB as PostgreSQL DB & Redis Cache
 
-    Teacher->>Client: Input Study Topic (e.g., "Quantum Computing")
-    Client->>API: POST /api/v1/notes (Topic & User Details)
-    API->>LG: Invoke notes_graph(topic)
-    activate LG
-    LG->>Tavily: Fetch search results/context
-    Tavily-->>LG: Search results (titles & content snippets)
-    LG->>Gemini: Send prompt with research data & markdown guidelines
-    Gemini-->>LG: Generated Markdown notes
-    deactivate LG
-    LG-->>API: Notes Content
-    API->>DB: Save Generated Notes to PostgreSQL
-    DB-->>API: Saved Notes Object
-    API-->>Client: Return Markdown Notes & Metadata
-    Client->>Teacher: Render Notes in rich MD Editor/Viewer
+    User->>Client: Request Note / Insight / Quiz Generation
+    Client->>API: GET /api/v1/ai-stream or POST endpoint
+    API->>Agent: Invoke Agent Graph (e.g. notes_agent / industry_agent)
+    activate Agent
+    Agent->>Nodes: Execute Planner & Research Node
+    Nodes->>Tavily: Query live search context & web resources
+    Tavily-->>Nodes: Search context snippets
+    Agent->>Nodes: Execute Generator / Analyzer Node
+    Nodes->>LLM: Generate initial draft output
+    LLM-->>Nodes: Draft output
+    Agent->>Eval: Execute Evaluator Node
+    Eval->>Eval: Assess quality, completeness & format rules
+    alt Quality criteria met
+        Eval-->>Agent: Approved draft
+    else Quality issues detected
+        Eval->>Nodes: Execute Improver Node to refine draft
+        Nodes->>LLM: Regenerate with targeted feedback
+        LLM-->>Nodes: Enhanced final output
+    end
+    deactivate Agent
+    Agent-->>API: Stream chunks / Return compiled payload
+    API-->>Client: Send Server-Sent Events (SSE) / JSON response
+    API->>DB: Invalidate Redis Cache & Save to DB
+    Client->>User: Render live streaming tokens / Final UI state
 ```
 
 ### 2. Scalable Real-Time Messaging Workflow
@@ -290,7 +316,7 @@ For intensive processing like assignment grading, mock interview analytics, or c
 * **Language**: [TypeScript 5.8](https://www.typescriptlang.org/)
 * **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 * **State**: [Redux Toolkit](https://redux-toolkit.js.org/) + [Redux Persist](https://github.com/rt2zz/redux-persist)
-* **Data Fetching**: [TanStack Query v5](https://tanstack.com/query) + [Axios](https://axios-http.com/) (with automatic 401 cookie refresh queue)
+* **Data Fetching & Streaming**: [TanStack Query v5](https://tanstack.com/) + [Axios](https://axios-http.com/) + Custom SSE Stream Reader (`useAIStream`)
 * **UI Controls**: [Radix UI](https://www.radix-ui.com/) + [Lucide Icons](https://lucide.dev/) + [Sonner Toasts](https://sonner.emilkowal.ski/)
 * **Rich Markdown**: [React MD Editor](https://github.com/uiwjs/react-md-editor)
 * **Charts**: [Recharts](https://recharts.org/)
@@ -298,20 +324,20 @@ For intensive processing like assignment grading, mock interview analytics, or c
 ### **Backend**
 * **Framework**: [FastAPI 0.109](https://fastapi.tiangolo.com/) (Asynchronous Python 3.10+)
 * **Auth System**: Custom OAuth 2.0 Authorization Server with PKCE & PyJWT
+* **Real-time & Caching**: WebSockets, Server-Sent Events (SSE), [Redis Pub/Sub & Caching](https://redis.io/)
 * **Database**: [PostgreSQL](https://www.postgresql.org/) (hosted on NeonDB)
 * **ORM**: [SQLAlchemy](https://www.sqlalchemy.org/) & [Alembic](https://alembic.sqlalchemy.org/)
 * **Rate Limiting**: [SlowAPI](https://github.com/laurentS/slowapi)
 
 ### **AI & Background Engine**
-* **Agentic Framework**: [LangChain](https://www.langchain.com/) & [LangGraph](https://langchain-ai.github.io/langgraph/)
-* **LLM Engine**: Google Gemini 2.5 Flash
+* **Agentic Framework**: [LangChain](https://www.langchain.com/) & [LangGraph](https://langchain-ai.github.io/langgraph/) (Modular Multi-Agent Architecture)
+* **LLM Engines**: Google Gemini 2.5 Flash & Hugging Face Models
 * **Search Context**: Tavily Search API
 * **Asynchronous Jobs**: [Inngest](https://www.inngest.com/)
 
 ### **Infrastructure & Services**
 * **Payments**: [Razorpay API](https://razorpay.com/)
 * **Media Cloud**: [Cloudinary](https://cloudinary.com/)
-* **Real-time Broker**: [Redis Pub/Sub](https://redis.io/)
 * **Containerization**: [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ---
@@ -323,12 +349,13 @@ ClassBuddy/
 ├── client/                   # React 18 Frontend Application
 │   ├── src/
 │   │   ├── components/       # UI Primitives & Role Protected Routes
-│   │   ├── helper/           # Axios client (withCredentials & 401 queue), OAuth PKCE utils
+│   │   ├── helper/           # Axios client, OAuth PKCE utils, SSE stream reader (sseStream.ts)
+│   │   ├── hooks/            # Custom hooks (useAIStream.ts)
 │   │   ├── page/             # Page view containers
 │   │   │   ├── ChatDashboard/# Real-time WebSocket chat views
-│   │   │   ├── Dashboard/    # Student views (notes, docs, career, quiz)
-│   │   │   └── Teacher/      # Teacher views (THome onboarding, TInsight group creation)
-│   │   ├── redux/            # RTK Slice state (authSlice, tSlice, noteSlice)
+│   │   │   ├── Dashboard/    # Student views (notes, docs, career, quiz, ViewAllTeacher)
+│   │   │   └── Teacher/      # Teacher views (THome onboarding, TInsight group creation, TNotes)
+│   │   ├── redux/            # RTK Slice state (authSlice, tSlice, noteSlice, dashboardSlice)
 │   │   └── routes/           # React Router v6 definitions with requireGroup guards
 │   ├── package.json
 │   └── vite.config.ts
@@ -336,11 +363,16 @@ ClassBuddy/
 ├── server/                   # FastAPI Backend & OAuth 2.0 Authorization Server
 │   ├── alembic/              # Database schema migrations
 │   ├── app/
-│   │   ├── ai/               # LangGraph multi-step agents
+│   │   ├── ai/               # Modular LangGraph Multi-Agent Workflows
+│   │   │   ├── industry_agent/# Planner, Research, Analyzer, Evaluator, Improver, Finalizer
+│   │   │   ├── interview_agent/# Planner, Research, Generator, Evaluator, Improver, Finalizer
+│   │   │   └── notes_agent/  # Planner, Research, Generator, Evaluator, Improver, Saver
 │   │   ├── api/v1/endpoints/ # API Routers:
+│   │   │   ├── ai_stream.py  # SSE Real-time AI response streaming endpoint
 │   │   │   ├── oauth.py      # OAuth2 authorization, token, revoke & userinfo
+│   │   │   ├── studentInsight.py # Synchronous AI industry insights & Redis cache clearing
 │   │   │   ├── teacher.py    # Group status endpoint (/teacher/group-status)
-│   │   │   ├── teacherInsight.py # Group creation (/insights/)
+│   │   │   ├── teacherInsight.py # Group creation & industry agent triggers
 │   │   │   └── notes.py, assignment.py, docsupload.py, subscription.py...
 │   │   ├── config/           # Database & App environment configuration
 │   │   ├── dependencies/     # require_teacher_group & OAuth get_current_user dependencies
