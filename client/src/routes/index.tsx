@@ -55,6 +55,7 @@ const OAuthCallback = lazy(() => import("@/page/OAuthCallback"));
 export const router = createBrowserRouter([
   {
     path: "/",
+    errorElement: <NotFound />,
     element: (
       <Suspense
         fallback={
@@ -76,6 +77,7 @@ export const router = createBrowserRouter([
 
   {
     path: "dashboard-panel",
+    errorElement: <NotFound />,
     element: (
       <RoleProtectedRoute allowedRoles={["student"]}>
         <Suspense fallback={<DashboardSkeleton />}>
@@ -103,6 +105,7 @@ export const router = createBrowserRouter([
 
   {
     path: "t-dashboard",
+    errorElement: <NotFound />,
     element: (
       <RoleProtectedRoute allowedRoles={["teacher"]}>
         <Suspense fallback={<DashboardSkeleton />}>
@@ -173,6 +176,7 @@ export const router = createBrowserRouter([
 
   {
     path: "t-insights",
+    errorElement: <NotFound />,
     element: (
       <RoleProtectedRoute allowedRoles={["teacher"]}>
         <Suspense fallback={<DashboardSkeleton />}>
@@ -186,6 +190,7 @@ export const router = createBrowserRouter([
 
   {
     path: "chat-panel",
+    errorElement: <NotFound />,
     element: <ChatHome />,
     children: [
       {
