@@ -62,34 +62,34 @@ export default function CareerDashboard() {
       </section>
     );
 
-  if (!data || data.length === 0 || !data[0]) {
+  const latestData = data && data.length > 0 ? data[0] : null;
+
+  if (!latestData || !Array.isArray(latestData.salary_range)) {
     return (
-      <section>
-        <div className="flex justify-end pt-20">
+      <section className="p-8">
+        <div className="flex justify-end pt-4">
           <GenerateDashboardBtn />
         </div>
-        <div className="flex items-center justify-center gap-2 p-4 my-4 bg-primary/10 text-primary border border-primary/20 rounded-lg">
-          <AlertCircle className="w-5 h-5" />
+        <div className="flex flex-col items-center justify-center gap-3 p-8 my-4 bg-primary/10 text-primary border border-primary/20 rounded-lg">
+          <AlertCircle className="w-6 h-6" />
           <span className="text-sm font-medium">
-            No insights found. Generate your first insight!
+            No valid career insights found. Click above to generate your first insight!
           </span>
         </div>
       </section>
     );
   }
 
-  const latestData = data[0];
-
-  // Helper functions
-  const salaryData = latestData.salary_range.map((range) => ({
-    name: range.role,
-    min: range.min / 1000,
-    max: range.max / 1000,
-    median: range.median / 1000,
+  // Helper functions safely handling undefined
+  const salaryData = (latestData.salary_range || []).map((range) => ({
+    name: range.role || "Role",
+    min: (range.min || 0) / 1000,
+    max: (range.max || 0) / 1000,
+    median: (range.median || 0) / 1000,
   }));
 
-  const getDemandLevelColor = (level: string) => {
-    switch (level.toLowerCase()) {
+  const getDemandLevelColor = (level?: string) => {
+    switch (level?.toLowerCase()) {
       case "high":
         return "bg-green-500";
       case "medium":
@@ -101,8 +101,8 @@ export default function CareerDashboard() {
     }
   };
 
-  const getMarketOutlookInfo = (outlook: string) => {
-    switch (outlook.toLowerCase()) {
+  const getMarketOutlookInfo = (outlook?: string) => {
+    switch (outlook?.toLowerCase()) {
       case "positive":
         return { icon: TrendingUp, color: "text-green-500" };
       case "neutral":
@@ -114,16 +114,24 @@ export default function CareerDashboard() {
     }
   };
 
-  const OutlookIcon = getMarketOutlookInfo(latestData.market_outlook).icon;
-  const outlookColor = getMarketOutlookInfo(latestData.market_outlook).color;
+  const marketOutlook = latestData.market_outlook || "Neutral";
+  const OutlookIcon = getMarketOutlookInfo(marketOutlook).icon;
+  const outlookColor = getMarketOutlookInfo(marketOutlook).color;
 
-  const lastUpdatedDate = format(new Date(latestData.updated_at), "dd/MM/yyyy");
-  const nextUpdateDistance = formatDistanceToNow(
-    new Date(latestData.updated_at),
-    {
-      addSuffix: true,
-    }
-  );
+  const lastUpdatedDate = latestData.updated_at
+    ? format(new Date(latestData.updated_at), "dd/MM/yyyy")
+    : "N/A";
+  const nextUpdateDistance = latestData.updated_at
+    ? formatDistanceToNow(new Date(latestData.updated_at), { addSuffix: true })
+    : "soon";
+
+  const ownerName = latestData.owner?.full_name || "Student";
+  const ownerIndustry = latestData.owner?.industry || "General";
+  const ownerAvatar = latestData.owner?.image_url || "";
+
+  const topSkills = latestData.top_skills || [];
+  const keyTrends = latestData.key_trends || [];
+  const recommendSkills = latestData.recommend_skills || [];
 
   return (
     <div className="space-y-6 p-8">
@@ -131,22 +139,22 @@ export default function CareerDashboard() {
       <div className="flex justify-between items-center">
         <Badge variant="outline">Last updated: {lastUpdatedDate}</Badge>
         <div className="flex items-center space-x-2">
-          <img
-            src={latestData.owner.image_url}
-            alt={latestData.owner.full_name}
-            className="h-10 w-10 rounded-full border"
-          />
+          {ownerAvatar && (
+            <img
+              src={ownerAvatar}
+              alt={ownerName}
+              className="h-10 w-10 rounded-full border"
+            />
+          )}
           <div>
-            <p className="font-semibold">{latestData.owner.full_name}</p>
-            <p className="text-xs text-muted-foreground">
-              {latestData.owner.industry}
-            </p>
+            <p className="font-semibold">{ownerName}</p>
+            <p className="text-xs text-muted-foreground">{ownerIndustry}</p>
           </div>
         </div>
       </div>
 
       {/* Market Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Market Outlook */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -156,9 +164,7 @@ export default function CareerDashboard() {
             <OutlookIcon className={`h-4 w-4 ${outlookColor}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {latestData.market_outlook}
-            </div>
+            <div className="text-2xl font-bold">{marketOutlook}</div>
             <p className="text-xs text-muted-foreground">
               Next update {nextUpdateDistance}
             </p>
@@ -174,8 +180,10 @@ export default function CareerDashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{latestData.growth_rate}%</div>
-            <Progress value={latestData.growth_rate} className="mt-2" />
+            <div className="text-2xl font-bold">
+              {latestData.growth_rate ?? 0}%
+            </div>
+            <Progress value={latestData.growth_rate ?? 0} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -186,7 +194,9 @@ export default function CareerDashboard() {
             <BriefcaseIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{latestData.demand_level}</div>
+            <div className="text-2xl font-bold">
+              {latestData.demand_level || "N/A"}
+            </div>
             <div
               className={`h-2 w-full rounded-full mt-2 ${getDemandLevelColor(
                 latestData.demand_level
@@ -194,23 +204,6 @@ export default function CareerDashboard() {
             />
           </CardContent>
         </Card>
-
-        {/* Top Skills */}
-        {/* <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Top Skills</CardTitle>
-            <Brain className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-1">
-              {latestData.top_skills.map((skill) => (
-                <Badge key={skill} variant="secondary">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card> */}
       </div>
 
       {/* Salary Chart */}
@@ -262,7 +255,7 @@ export default function CareerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-1">
-              {latestData.top_skills.map((skill) => (
+              {topSkills.map((skill) => (
                 <Badge key={skill} variant="secondary">
                   {skill}
                 </Badge>
@@ -284,9 +277,9 @@ export default function CareerDashboard() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {latestData.key_trends.map((trend, index) => (
+              {keyTrends.map((trend, index) => (
                 <li key={index} className="flex items-start space-x-2">
-                  <div className="h-2 w-2 mt-2 rounded-full bg-primary" />
+                  <div className="h-2 w-2 mt-2 rounded-full bg-primary shrink-0" />
                   <span>{trend}</span>
                 </li>
               ))}
@@ -302,7 +295,7 @@ export default function CareerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {latestData.recommend_skills.map((skill) => (
+              {recommendSkills.map((skill) => (
                 <Badge key={skill} variant="outline">
                   {skill}
                 </Badge>
