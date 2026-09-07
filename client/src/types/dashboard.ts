@@ -16,6 +16,7 @@ export interface Owner {
 }
 
 export interface StudentInsight {
+  industry?: string;
   salary_range: SalaryRange[];
   growth_rate: number;
   demand_level: "High" | "Medium" | "Low";
