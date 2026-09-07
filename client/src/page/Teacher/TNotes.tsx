@@ -56,6 +56,10 @@ export default function TNotes() {
         },
         body: formData,
         onChunk: (data) => {
+          if (data.reset) {
+            currentText = "";
+            dispatch(setGeneratedNotes(""));
+          }
           if (data.chunk) {
             currentText += data.chunk;
             dispatch(setGeneratedNotes(currentText));
