@@ -26,7 +26,6 @@ import {
   GraduationCap,
   ChevronRight,
   MessageCircle,
-  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -37,12 +36,6 @@ const MenuOptions = [
     url: "/dashboard-panel/home",
     icon: LayoutDashboard,
     badge: null,
-  },
-  {
-    title: "PDF AI Chat",
-    url: "/dashboard-panel/pdf-ai-chat",
-    icon: FileText,
-    badge: "AI",
   },
   {
     title: "Community Chat",
