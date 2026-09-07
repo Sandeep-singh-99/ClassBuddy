@@ -10,7 +10,6 @@ const Home = lazy(() => import("@/page/Home"));
 const Chat = lazy(() => import("@/page/ChatDashboard/Chat"));
 const DashboardPanel = lazy(() => import("@/page/Dashboard/DashboardPanel"));
 const DashboardHome = lazy(() => import("@/page/Dashboard/DashboardHome"));
-const PdfAiChat = lazy(() => import("@/page/Dashboard/PdfAiChat"));
 const ViewAllTeacher = lazy(() => import("@/page/Dashboard/ViewAllTeacher"));
 const Notes = lazy(() => import("@/page/Dashboard/Notes"));
 const InterviewPerPage = lazy(
@@ -88,7 +87,6 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "home", element: <DashboardHome /> },
-      { path: "pdf-ai-chat", element: <PdfAiChat /> },
       { path: "view-teachers", element: <ViewAllTeacher /> },
       { path: "notes", element: <Notes /> },
       { path: "interview-prep", element: <InterviewPerPage /> },
