@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { useAppDispatch } from "@/hooks/hooks";
-import { GenerateDashboardData } from "@/redux/slice/dashboardSlice";
+import { GenerateDashboardData, FetchDashboardData } from "@/redux/slice/dashboardSlice";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useState } from "react";
@@ -30,7 +30,13 @@ export default function GenerateDashboardBtn() {
     try {
       const res = await dispatch(GenerateDashboardData({ industry }));
       if (GenerateDashboardData.fulfilled.match(res)) {
-        toast.success("Career dashboard generated successfully");
+        toast.info("Generating industry insights... Fetching latest data shortly.");
+        setTimeout(() => {
+          dispatch(FetchDashboardData());
+        }, 3000);
+        setTimeout(() => {
+          dispatch(FetchDashboardData());
+        }, 6500);
       } else {
         toast.error(`Error: ${res.payload || "Failed to generate dashboard"}`);
       }
