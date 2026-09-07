@@ -8,16 +8,14 @@ from app.models.teacherInsight import TeacherInsight
 from fastapi.responses import StreamingResponse
 import json
 from app.ai.notes_graph import graph
-from langchain_core.messages import HumanMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
 from app.dependencies.require_teacher_group import require_teacher_group
 
 # -------------------------------
-# 6. FastAPI Router
+# FastAPI Router for AI Note Generator Agent
 # -------------------------------
 
 router = APIRouter()
@@ -36,7 +34,6 @@ async def generate_notes(
         raise HTTPException(
             status_code=400, detail="Title cannot be longer than 200 characters"
         )
-
 
     # Find teacher group
     teacher_group = (
@@ -66,21 +63,34 @@ async def generate_notes(
         async def event_generator():
             generated_content = ""
             inputs = {
-                "title": [HumanMessage(content=title)],
-                "research": [],
-                "notes": [],
+                "topic": title,
+                "plan": None,
+                "research": "",
+                "notes": "",
+                "evaluation": None,
+                "iteration": 0,
+                "max_iterations": 2,
+                "final_notes": "",
             }
             try:
                 async for event in graph.astream_events(inputs, version="v2"):
                     kind = event["event"]
-                    if kind == "on_chat_model_stream":
+                    tags = event.get("tags", [])
+
+                    # If improver node runs, reset the content stream for the refined version
+                    if kind == "on_chain_start" and event.get("name") == "improve_notes":
+                        generated_content = ""
+                        yield f"data: {json.dumps({'reset': True, 'chunk': '', 'note_id': new_note.id})}\n\n"
+
+                    # Stream LLM tokens tagged with notes_generator
+                    if kind == "on_chat_model_stream" and "notes_generator" in tags:
                         chunk = event["data"]["chunk"].content
                         if chunk:
                             generated_content += chunk
                             yield f"data: {json.dumps({'chunk': chunk, 'note_id': new_note.id})}\n\n"
-                
+
                 # Update DB with final content
-                new_note.content = generated_content
+                new_note.content = generated_content if generated_content else "No notes content generated."
                 db.commit()
                 yield f"data: {json.dumps({'chunk': '', 'note_id': new_note.id, 'done': True})}\n\n"
             except Exception as e:
@@ -89,7 +99,15 @@ async def generate_notes(
                 db.commit()
                 yield f"data: {json.dumps({'error': str(e), 'note_id': new_note.id, 'done': True})}\n\n"
 
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
+        return StreamingResponse(
+            event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

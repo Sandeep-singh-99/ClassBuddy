@@ -11,9 +11,12 @@ export const GenerateDashboardData = createAsyncThunk(
   "career/dashboard",
   async ({ industry }: { industry: string }, thunkApi) => {
     try {
+      const params = new URLSearchParams();
+      params.append("industry", industry);
+
       const response = await axiosClient.post(
         "/student-insight/",
-        { industry },
+        params,
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -24,9 +27,10 @@ export const GenerateDashboardData = createAsyncThunk(
     } catch (error) {
       if (error instanceof AxiosError) {
         return thunkApi.rejectWithValue(
-          error.response?.data?.detail ?? error.message ?? "Generating notes failed"
+          error.response?.data?.detail ?? error.message ?? "Generating industry insights failed"
         );
       }
+      return thunkApi.rejectWithValue("Generating industry insights failed");
     }
   }
 );
@@ -43,6 +47,7 @@ export const FetchDashboardData = createAsyncThunk(
           error.response?.data?.detail ?? error.message ?? "Fetching dashboard data failed"
         );
       }
+      return thunkApi.rejectWithValue("Fetching dashboard data failed");
     }
   }
 );
@@ -71,10 +76,16 @@ const dashboardSlice = createSlice({
 
     builder.addCase(
       GenerateDashboardData.fulfilled,
-      (state, action: PayloadAction<StudentInsight>) => {
+      (state, action: PayloadAction<any>) => {
         state.loading = false;
-        state.data = [action.payload, ...(state.data || [])];
         state.error = null;
+        if (action.payload && action.payload.salary_range) {
+          const current = state.data || [];
+          const filtered = current.filter(
+            (item) => item.industry?.toLowerCase() !== action.payload.industry?.toLowerCase()
+          );
+          state.data = [action.payload, ...filtered];
+        }
       }
     );
 
@@ -88,18 +99,24 @@ const dashboardSlice = createSlice({
       state.error = null;
     });
 
-    builder.addCase(FetchDashboardData.fulfilled, (state, action) => {
+    builder.addCase(FetchDashboardData.fulfilled, (state, action: PayloadAction<any>) => {
       state.loading = false;
-      state.data = [action.payload];
       state.error = null;
+      if (Array.isArray(action.payload)) {
+        state.data = action.payload;
+      } else if (action.payload && action.payload.salary_range) {
+        state.data = [action.payload];
+      } else {
+        state.data = [];
+      }
     });
 
     builder.addCase(FetchDashboardData.rejected, (state, action) => {
       state.loading = false;
-      state.data = null;
       state.error = action.payload as string;
     });
   },
 });
 
 export default dashboardSlice.reducer;
+
