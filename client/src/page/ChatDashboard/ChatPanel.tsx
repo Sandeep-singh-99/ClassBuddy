@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { ChatSidebar } from "./components/ChatSidebar";
+import { Loader2 } from "lucide-react";
 
 export default function ChatPanel() {
   const location = useLocation();
@@ -20,7 +22,16 @@ export default function ChatPanel() {
           !isChatOpen ? "hidden md:flex" : ""
         }`}
       >
-        <Outlet />
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+              <Loader2 className="h-7 w-7 animate-spin text-primary" />
+              <span className="text-sm font-medium">Loading Chat...</span>
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </div>
     </div>
   );
