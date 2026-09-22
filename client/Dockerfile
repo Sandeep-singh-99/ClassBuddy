@@ -1,13 +1,40 @@
-# Use Node.js 20 LTS instead of 18
-FROM node:20-alpine
+# ==========================================
+# Stage 1: Build production bundle
+# ==========================================
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Copy dependency definitions
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
+# Copy source code
 COPY . .
 
-EXPOSE 5173
+# Build-time Vite environment variables
+ARG VITE_API_BASE_URL
+ARG VITE_OAUTH_CLIENT_ID
+ARG VITE_OAUTH_REDIRECT_URI
 
-CMD ["npm", "run", "dev"]
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_OAUTH_CLIENT_ID=$VITE_OAUTH_CLIENT_ID
+ENV VITE_OAUTH_REDIRECT_URI=$VITE_OAUTH_REDIRECT_URI
+
+# Build application
+RUN npm run build
+
+# ==========================================
+# Stage 2: Serve with Nginx
+# ==========================================
+FROM nginx:alpine
+
+# Copy Nginx SPA configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy build artifacts from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
