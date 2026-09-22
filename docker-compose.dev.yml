@@ -3,7 +3,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile.dev
-    container_name: classbuddy_server
+    container_name: classbuddy_server_dev
     ports:
       - "8000:8000"
     healthcheck:
@@ -29,7 +29,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile.dev
-    container_name: classbuddy_client
+    container_name: classbuddy_client_dev
     ports:
       - "5173:5173"
     volumes:
