@@ -11,3 +11,4 @@ __pycache__/
 class-me.md
 
 server/tests/
+.env.example

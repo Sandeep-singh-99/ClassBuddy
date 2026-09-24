@@ -12,3 +12,4 @@ __pycache__/
 
 test.db
 tests/
+test.db
