@@ -1,9 +1,9 @@
-version: '3.9'
-
 services:
   server:
-    build: ./server
-    container_name: classbuddy_server
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    container_name: classbuddy_server_dev
     ports:
       - "8000:8000"
     healthcheck:
@@ -26,13 +26,15 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/app
 
   client:
-    build: ./client
-    container_name: classbuddy_client
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    container_name: classbuddy_client_dev
     ports:
       - "5173:5173"
     volumes:
       - ./client:/app
       - /app/node_modules
-    command: npm run dev
+    command: npm run dev -- --host
     depends_on:
       - server

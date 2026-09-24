@@ -131,9 +131,28 @@ export const updateNotes = createAsyncThunk("teacher/update-notes", async (data:
 })
 
 
+export const fetchTeacherGroupStatus = createAsyncThunk(
+  "teacher/fetchGroupStatus",
+  async (_, thunkApi) => {
+    try {
+      const response = await axiosClient.get("/teacher/group-status");
+      return response.data as { has_group: boolean; group_count: number };
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ?? error.message ?? "Fetching group status failed"
+        );
+      }
+      return thunkApi.rejectWithValue("Fetching group status failed");
+    }
+  }
+);
+
 interface TState {
   teachers: TViewAllState[];
   joinedStatus: Record<string, boolean>;
+  hasGroup: boolean | null;
+  groupCount: number;
   loading: boolean;
   error: string | null;
   generatedNotes?: string | null;
@@ -143,6 +162,8 @@ interface TState {
 const initialState: TState = {
   teachers: [],
   joinedStatus: {},
+  hasGroup: null,
+  groupCount: 0,
   loading: false,
   error: null,
   generatedNotes: null,
@@ -164,9 +185,22 @@ const tSlice = createSlice({
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
-    }
+    },
+    setHasGroup: (state, action: PayloadAction<boolean>) => {
+      state.hasGroup = action.payload;
+      state.groupCount = action.payload ? Math.max(state.groupCount, 1) : 0;
+    },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchTeacherGroupStatus.fulfilled, (state, action) => {
+      state.hasGroup = action.payload.has_group;
+      state.groupCount = action.payload.group_count;
+    });
+    builder.addCase(fetchTeacherGroupStatus.rejected, (state) => {
+      state.hasGroup = false;
+      state.groupCount = 0;
+    });
+
     builder.addCase(viewAllTeacher.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -217,8 +251,6 @@ const tSlice = createSlice({
       state.error = action.payload as string;
     });
 
-
-
     builder.addCase(getNoteById.fulfilled, (state, action) => {
       if (action.payload && action.payload.content) {
         state.generatedNotes = action.payload.content;
@@ -227,6 +259,7 @@ const tSlice = createSlice({
   },
 });
 
-export const { setLoading, setGeneratedNotes, setCurrentNoteId, setError } = tSlice.actions;
+export const { setLoading, setGeneratedNotes, setCurrentNoteId, setError, setHasGroup } = tSlice.actions;
 
 export default tSlice.reducer;
+

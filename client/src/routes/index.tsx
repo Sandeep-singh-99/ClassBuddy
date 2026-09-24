@@ -50,10 +50,12 @@ import Payment from "@/page/Dashboard/Payment";
 
 // Notes and view pages
 const ViewNoteById = lazy(() => import("@/page/Teacher/ViewNoteById"));
+const OAuthCallback = lazy(() => import("@/page/OAuthCallback"));
 
 export const router = createBrowserRouter([
   {
     path: "/",
+    errorElement: <NotFound />,
     element: (
       <Suspense
         fallback={
@@ -65,14 +67,17 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "", element: <Home /> },
+      { path: "oauth/callback", element: <OAuthCallback /> },
       { path: "view-notes/:noteId", element: <ViewNoteById /> },
       { path: "docs/:docId", element: <DocsById /> },
       { path: "*", element: <NotFound /> },
     ],
   },
 
+
   {
     path: "dashboard-panel",
+    errorElement: <NotFound />,
     element: (
       <RoleProtectedRoute allowedRoles={["student"]}>
         <Suspense fallback={<DashboardSkeleton />}>
@@ -100,6 +105,7 @@ export const router = createBrowserRouter([
 
   {
     path: "t-dashboard",
+    errorElement: <NotFound />,
     element: (
       <RoleProtectedRoute allowedRoles={["teacher"]}>
         <Suspense fallback={<DashboardSkeleton />}>
@@ -109,28 +115,82 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "home", element: <THome /> },
-      { path: "create-notes", element: <TNotes /> },
-      { path: "view-notes", element: <ViewNotes /> },
-      { path: "update-note/:noteId", element: <UpdatedNote /> },
-      { path: "assignments", element: <TAssignment /> },
-      { path: "docs", element: <Docs /> },
-      { path: "assignments/:assignmentId", element: <TAssignmentViewById /> },
-      { path: "payment", element: <PaymentPage /> },
+      {
+        path: "create-notes",
+        element: (
+          <RoleProtectedRoute allowedRoles={["teacher"]} requireGroup={true}>
+            <TNotes />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: "view-notes",
+        element: (
+          <RoleProtectedRoute allowedRoles={["teacher"]} requireGroup={true}>
+            <ViewNotes />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: "update-note/:noteId",
+        element: (
+          <RoleProtectedRoute allowedRoles={["teacher"]} requireGroup={true}>
+            <UpdatedNote />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: "assignments",
+        element: (
+          <RoleProtectedRoute allowedRoles={["teacher"]} requireGroup={true}>
+            <TAssignment />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: "docs",
+        element: (
+          <RoleProtectedRoute allowedRoles={["teacher"]} requireGroup={true}>
+            <Docs />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: "assignments/:assignmentId",
+        element: (
+          <RoleProtectedRoute allowedRoles={["teacher"]} requireGroup={true}>
+            <TAssignmentViewById />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: "payment",
+        element: (
+          <RoleProtectedRoute allowedRoles={["teacher"]} requireGroup={true}>
+            <PaymentPage />
+          </RoleProtectedRoute>
+        ),
+      },
     ],
   },
 
   {
     path: "t-insights",
+    errorElement: <NotFound />,
     element: (
-      <Suspense fallback={<DashboardSkeleton />}>
-        <InsightHome />
-      </Suspense>
+      <RoleProtectedRoute allowedRoles={["teacher"]}>
+        <Suspense fallback={<DashboardSkeleton />}>
+          <InsightHome />
+        </Suspense>
+      </RoleProtectedRoute>
     ),
     children: [{ path: "", element: <TInsight /> }],
   },
 
+
   {
     path: "chat-panel",
+    errorElement: <NotFound />,
     element: <ChatHome />,
     children: [
       {

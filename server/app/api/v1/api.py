@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     auth,
     ai_evaluator,
+    ai_stream,
     assignment,
     generate_assignment,
     generate_notes,
@@ -15,12 +16,19 @@ from app.api.v1.endpoints import (
     interviewPerp,
     docsupload,
     health,
-    notes
+    notes,
+    oauth,
+    teacher,
 )
 
 app_router = APIRouter()
 
+app_router.include_router(ai_stream.router, prefix="/ai", tags=["AI Stream"])
 app_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app_router.include_router(oauth.router, prefix="/oauth", tags=["OAuth2 Server"])
+app_router.include_router(teacher.router, prefix="/teacher", tags=["Teacher"])
+
+
 app_router.include_router(
     ai_evaluator.router, prefix="/ai-evaluator", tags=["AI Evaluator"]
 )

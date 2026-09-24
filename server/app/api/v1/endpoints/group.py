@@ -93,24 +93,14 @@ def check_if_user_joined_group(
     return {"group_id": group_id, "joined": is_member}
 
 
+from app.dependencies.require_teacher_group import require_teacher_group
+
 @router.get("/", response_model=list[TeacherInsightResponse])
 def view_students_in_teacher_groups(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_teacher_group)
 ):
-    # Ensure the user is authenticated
-    if not current_user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required."
-        )
 
-    # Only teachers can view students in their groups
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only teachers can view students in their groups."
-        )
 
     #  Fetch only groups owned by this teacher
     groups = (

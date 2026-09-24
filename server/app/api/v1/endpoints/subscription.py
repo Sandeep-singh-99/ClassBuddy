@@ -23,6 +23,8 @@ from app.models.auth import User
 from app.config.config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
 from app.services.plan import get_teacher_plans, get_plan_owned_by_teacher, delete_plan
 
+from app.dependencies.require_teacher_group import require_teacher_group
+
 router = APIRouter()
 
 
@@ -30,7 +32,7 @@ router = APIRouter()
 def create_plan(
     data: CreatePlanSchema,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
 ):
     group = (
         db.query(TeacherInsight)
@@ -74,11 +76,8 @@ def create_plan(
 @router.get("/me")
 def get_my_created_plans(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
 ):
-    if current_user.role != userRole.TEACHER:
-        raise HTTPException(status_code=403, detail="Only teachers can access plans")
-
     rows = get_teacher_plans(db, current_user.id)
 
     result = []
@@ -96,6 +95,7 @@ def get_my_created_plans(
         )
 
     return result
+
 
 
 @router.put("/{plan_id}")

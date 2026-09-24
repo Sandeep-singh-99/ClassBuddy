@@ -19,7 +19,7 @@ from app.schemas.groupMessage import (
     GroupMessageResponse,
 )
 from app.dependencies.dependencies import get_current_user
-from app.utils.utils import decode_access_token
+from app.utils.jwt_oauth import decode_oauth_access_token
 from typing import Optional, List
 import json
 from datetime import datetime
@@ -56,14 +56,17 @@ async def get_current_user_ws(
         return None
 
     try:
-        payload = decode_access_token(token)
-        email = payload.get("sub")
-        if not email:
+        payload = decode_oauth_access_token(token)
+        sub = payload.get("sub")
+        if not sub:
             return None
-        user = db.query(User).filter(User.email == email).first()
+        user = db.query(User).filter(User.id == sub).first()
+        if not user:
+            user = db.query(User).filter(User.email == sub).first()
         return user
     except Exception:
         return None
+
 
 
 # --------------------------

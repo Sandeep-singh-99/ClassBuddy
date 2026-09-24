@@ -25,11 +25,9 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Mail, Lock, User, UserCog, Loader } from "lucide-react";
-import { AxiosError } from "axios";
 import { useAppDispatch } from "@/hooks/hooks";
-import { checkAuth, login, register } from "@/redux/slice/authSlice";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner"
+import { login, register } from "@/redux/slice/authSlice";
+import { toast } from "sonner";
 
 interface IFormData {
   fullName: string;
@@ -53,7 +51,6 @@ export default function AuthComponent() {
   });
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -85,19 +82,15 @@ export default function AuthComponent() {
     }
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
     try {
-      const response = await dispatch(login(formData)).unwrap();
-      toast.success(response.message);
-      dispatch(checkAuth());
+      const response = await dispatch(login({ email, password })).unwrap();
+      if (response?.redirect_url) {
+        window.location.href = response.redirect_url;
+      }
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ detail: string }>;
       const errorMessage =
-        axiosError.response?.data?.detail || "Invalid Credentials";
+        typeof error === "string" ? error : "Invalid Credentials";
       toast.error(errorMessage);
-    } finally {
       setLoading(false);
     }
   };
@@ -107,7 +100,7 @@ export default function AuthComponent() {
 
     if (!uploadImage) {
       setLoading(false);
-      console.error("No image uploaded");
+      toast.error("Please upload a profile image");
       return;
     }
 
@@ -118,7 +111,7 @@ export default function AuthComponent() {
       !formData.role
     ) {
       setLoading(false);
-      console.error("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -133,13 +126,18 @@ export default function AuthComponent() {
 
     try {
       await dispatch(register(formDataToSend)).unwrap();
-      toast.success("Registration successful");
-      navigate("/t-insights");
+      toast.success("Registration successful! Starting OAuth login...");
+      const response = await dispatch(
+        login({ email: formData.email, password: formData.password })
+      ).unwrap();
+      if (response?.redirect_url) {
+        window.location.href = response.redirect_url;
+      }
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ detail: string }>;
       const errorMessage =
-        axiosError.response?.data?.detail || "Invalid Credentials";
+        typeof error === "string" ? error : "Registration failed";
       toast.error(errorMessage);
+      setLoading(false);
     }
   };
 
@@ -169,27 +167,22 @@ export default function AuthComponent() {
         {/* Tabs */}
         <Tabs defaultValue="login" className="w-full mt-4">
           <TabsList className="grid w-full grid-cols-2 bg-muted rounded-lg p-1">
-            <TabsTrigger
-              value="login">
-              Log In
-            </TabsTrigger>
-            <TabsTrigger
-              value="signup">
-              Sign Up
-            </TabsTrigger>
+            <TabsTrigger value="login">Log In</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
 
           {/* LOGIN */}
           <TabsContent value="login">
             <form className="space-y-4 mt-6" onSubmit={handleLoginSubmit}>
               <div className="grid gap-2 w-full">
-                <Label htmlFor="email" className="text-foreground">
+                <Label htmlFor="login_email" className="text-foreground">
                   Email ID
                 </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
                   <Input
-                    id="email"
+                    id="login_email"
+                    type="email"
                     placeholder="Enter your Email ID"
                     name="email"
                     value={email}
@@ -201,13 +194,13 @@ export default function AuthComponent() {
               </div>
 
               <div className="grid gap-2 w-full">
-                <Label htmlFor="password" className="text-foreground">
+                <Label htmlFor="login_password" className="text-foreground">
                   Password
                 </Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
                   <Input
-                    id="password"
+                    id="login_password"
                     type="password"
                     name="password"
                     value={password}
@@ -225,10 +218,8 @@ export default function AuthComponent() {
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button
-                  type="submit"
-                  disabled={loading}>
-                  {loading && <Loader className="animate-spin text-blue-900" />}
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader className="animate-spin mr-2" />}
                   Log In
                 </Button>
               </DialogFooter>
@@ -288,13 +279,13 @@ export default function AuthComponent() {
 
               {/* Email */}
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-foreground">
+                <Label htmlFor="signup_email" className="text-foreground">
                   Email
                 </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
                   <Input
-                    id="email"
+                    id="signup_email"
                     type="email"
                     name="email"
                     placeholder="Enter your email"
@@ -346,13 +337,13 @@ export default function AuthComponent() {
 
               {/* Password */}
               <div className="grid gap-2">
-                <Label htmlFor="password" className="text-foreground">
+                <Label htmlFor="signup_password" className="text-foreground">
                   Password
                 </Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
                   <Input
-                    id="password"
+                    id="signup_password"
                     type="password"
                     name="password"
                     value={formData.password}
@@ -370,10 +361,8 @@ export default function AuthComponent() {
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button
-                  type="submit"
-                  disabled={loading}>
-                  {loading && <Loader className="animate-spin text-blue-900" />}
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader className="animate-spin mr-2" />}
                   Sign Up
                 </Button>
               </DialogFooter>

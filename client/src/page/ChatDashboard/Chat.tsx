@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Send, MessageSquare } from "lucide-react";
+import { Send, MessageSquare, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,7 +22,7 @@ export default function Chat() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useAppDispatch();
-  const { messages, activeGroup, groups, messageLoading } = useAppSelector(
+  const { messages, activeGroup, groups, messageLoading, loading } = useAppSelector(
     (state) => state.chat
   );
   const { user } = useAppSelector((state) => state.auth);
@@ -115,7 +115,7 @@ export default function Chat() {
     }
   };
 
-  if (!groupId || !activeGroup) {
+  if (!groupId) {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-background/30 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-slate-100/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10 dark:bg-grid-slate-700/20" />
@@ -138,6 +138,15 @@ export default function Chat() {
             </p>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!activeGroup || loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground bg-background/30">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="text-sm font-medium">Loading group chat...</span>
       </div>
     );
   }

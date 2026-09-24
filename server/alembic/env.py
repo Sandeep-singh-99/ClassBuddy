@@ -15,7 +15,8 @@ dotenv.load_dotenv()
 
 # Import Base and models so Alembic can detect them
 from app.config.db import Base
-from app.models import auth, notes, teacherInsight
+import app.models  # Registers all models with Base.metadata
+
 
 # Alembic Config object
 config = context.config

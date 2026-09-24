@@ -29,7 +29,7 @@ class UserLogin(BaseModel):
 class UserResponse(BaseModel):
     id: str
     full_name: str
-    email: EmailStr
+    email: str
     role: userRole
     image_url: str | None = None
 
