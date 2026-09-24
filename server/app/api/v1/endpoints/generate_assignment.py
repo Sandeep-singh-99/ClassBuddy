@@ -14,6 +14,8 @@ import inngest
 load_dotenv()
 
 
+from app.dependencies.require_teacher_group import require_teacher_group
+
 # --------------------------
 # FastAPI Router
 # --------------------------
@@ -28,15 +30,10 @@ async def generate_question(
     request: Request,
     assignment_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_teacher_group),
 ):
     """Generate structured assignment questions (JSON format)."""
 
-    if not current_user or current_user.role != userRole.TEACHER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only teachers can generate questions.",
-        )
 
     assignment = (
         db.query(Assignment)

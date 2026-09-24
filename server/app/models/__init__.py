@@ -8,3 +8,7 @@ from app.models.assignment import Assignment, AssignmentQuestion, Submission
 from app.models.groupMessage import GroupMessage
 from app.models.student_subscription import StudentSubscription
 from app.models.subscription import SubscriptionPlan
+from app.models.oauth_client import OAuthClient, ClientType
+from app.models.oauth_authorization_code import OAuthAuthorizationCode
+from app.models.oauth_refresh_token import OAuthRefreshToken
+

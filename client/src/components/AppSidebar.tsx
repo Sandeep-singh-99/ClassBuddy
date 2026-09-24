@@ -25,6 +25,7 @@ import {
   IndianRupee,
   GraduationCap,
   ChevronRight,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,12 @@ const MenuOptions = [
     url: "/dashboard-panel/home",
     icon: LayoutDashboard,
     badge: null,
+  },
+  {
+    title: "Community Chat",
+    url: "/chat-panel/chat",
+    icon: MessageCircle,
+    badge: "Live",
   },
   {
     title: "Teachers",
@@ -168,6 +175,8 @@ export default function AppSidebar() {
                                   "text-[10px] font-bold px-1.5 py-0 rounded-md border-0",
                                   option.badge === "AI" &&
                                     "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400",
+                                  option.badge === "Live" &&
+                                    "bg-rose-500/15 text-rose-600 dark:text-rose-400",
                                   option.badge === "New" &&
                                     "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                                 )}
