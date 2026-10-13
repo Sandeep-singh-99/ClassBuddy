@@ -41,7 +41,6 @@
 - [Testing & Quality Assurance](#-testing--quality-assurance)
 - [Troubleshooting & FAQ](#-troubleshooting--faq)
 - [Contributing](#-contributing)
-- [License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
@@ -926,19 +925,7 @@ We welcome contributions from the open-source community! Follow these steps to c
 
 ---
 
-## 📄 License & Acknowledgments
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for full details.
-
-### Acknowledgments
-- [FastAPI](https://fastapi.tiangolo.com/) for the asynchronous backend framework.
-- [LangChain & LangGraph](https://www.langchain.com/) for stateful multi-agent orchestration.
-- [Google Gemini](https://ai.google.dev/) for high-speed generative intelligence.
-- [Tavily](https://tavily.com/) for search context retrieval.
-- [Radix UI](https://www.radix-ui.com/) and [Tailwind CSS](https://tailwindcss.com/) for modern UI primitives.
-
----
-
 <div align="center">
   <sub>Built with ❤️ by Sandeep Singh and contributors for the future of education.</sub>
 </div>
+
