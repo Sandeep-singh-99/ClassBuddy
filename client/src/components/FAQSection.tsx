@@ -69,23 +69,30 @@ export default function FAQSection() {
             >
               {/* Question Row */}
               <button
+                id={`faq-btn-${index}`}
+                type="button"
                 onClick={() => toggleFAQ(index)}
-                className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none transition-colors hover:bg-muted/10"
+                aria-expanded={openIndex === index}
+                aria-controls={`faq-answer-${index}`}
+                className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none transition-colors hover:bg-muted/10 cursor-pointer"
               >
                 <span className={`text-lg font-semibold transition-colors ${openIndex === index ? 'text-primary' : 'text-foreground'}`}>
                   {faq.question}
                 </span>
                 <div className={`p-1 rounded-full transition-colors ${openIndex === index ? 'bg-primary/10 text-primary' : 'bg-muted/50 text-muted-foreground'}`}>
                   {openIndex === index ? (
-                    <ChevronUp className="w-5 h-5" />
+                    <ChevronUp className="w-5 h-5" aria-hidden="true" />
                   ) : (
-                    <ChevronDown className="w-5 h-5" />
+                    <ChevronDown className="w-5 h-5" aria-hidden="true" />
                   )}
                 </div>
               </button>
 
               {/* Answer Section */}
               <div
+                id={`faq-answer-${index}`}
+                role="region"
+                aria-labelledby={`faq-btn-${index}`}
                 className={`px-6 text-muted-foreground text-[15px] leading-relaxed transition-all duration-300 ease-in-out ${
                   openIndex === index
                     ? "max-h-40 pb-6 opacity-100"

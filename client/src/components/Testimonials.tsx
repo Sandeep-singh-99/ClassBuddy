@@ -60,11 +60,12 @@ export default function Testimonials() {
 
               <div>
                 {/* Star Rating */}
-                <div className="flex justify-center gap-1 mb-3">
+                <div className="flex justify-center gap-1 mb-3" aria-label="5 out of 5 stars">
                   {[...Array(5)].map((_, index) => (
                     <Star
                       key={index}
                       size={16}
+                      aria-hidden="true"
                       className="text-yellow-500 fill-yellow-500"
                     />
                   ))}

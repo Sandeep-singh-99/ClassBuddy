@@ -1,0 +1,16 @@
+{
+  "name": "ClassBuddy - AI Study Companion",
+  "short_name": "ClassBuddy",
+  "description": "Your ultimate classroom companion for teachers and students",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c1729",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
