@@ -20,30 +20,42 @@ export default defineConfig({
     },
   },
   build: {
+    target: "es2020",
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 1200,
+    modulePreload: {
+      resolveDependencies(_filename, deps) {
+        // Prevent preloading heavy non-critical vendors on initial page load
+        return deps.filter(
+          (dep) =>
+            !dep.includes("markdown-vendor") &&
+            !dep.includes("recharts-vendor")
+        );
+      },
+    },
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom", "react-router-dom"],
-          ui: [
-            "@radix-ui/react-accordion",
-            "@radix-ui/react-alert-dialog",
-            "@radix-ui/react-avatar",
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-label",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-progress",
-            "@radix-ui/react-radio-group",
-            "@radix-ui/react-scroll-area",
-            "@radix-ui/react-select",
-            "@radix-ui/react-separator",
-            "@radix-ui/react-slot",
-            "@radix-ui/react-tabs",
-            "@radix-ui/react-toast",
-            "@radix-ui/react-tooltip",
-            "lucide-react",
-          ],
-          utils: ["axios", "date-fns", "clsx", "tailwind-merge"],
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (/[\\/]node_modules[\\/](@uiw|@codemirror|codemirror)[\\/]/.test(id)) {
+              return "markdown-vendor";
+            }
+            if (/[\\/]node_modules[\\/](recharts|d3-[^\\/]+)[\\/]/.test(id)) {
+              return "recharts-vendor";
+            }
+            if (/[\\/]node_modules[\\/](@reduxjs|redux|redux-persist)[\\/]/.test(id)) {
+              return "redux-vendor";
+            }
+            if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom)[\\/]/.test(id)) {
+              return "react-core";
+            }
+            if (/[\\/]node_modules[\\/]lucide-react[\\/]/.test(id)) {
+              return "icons-vendor";
+            }
+            if (/[\\/]node_modules[\\/]@radix-ui[\\/]/.test(id)) {
+              return "radix-vendor";
+            }
+          }
         },
       },
     },

@@ -12,14 +12,18 @@ export default function HeroComponent() {
       <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
       {/* Announcement Badge */}
-      <div className="group inline-flex items-center gap-3 px-4 py-2 mb-8 rounded-full bg-white/60 dark:bg-white/5 border border-primary/20 dark:border-white/10 text-sm font-medium text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 transition-all cursor-pointer select-none backdrop-blur-md shadow-sm hover:shadow-md hover:shadow-primary/10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <span className="relative flex h-2 w-2">
+      <a
+        href="#features"
+        aria-label="ClassBuddy AI 2.0 is now live - view features"
+        className="group inline-flex items-center gap-3 px-4 py-2 mb-8 rounded-full bg-white/60 dark:bg-white/5 border border-primary/20 dark:border-white/10 text-sm font-medium text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 transition-all cursor-pointer select-none backdrop-blur-md shadow-sm hover:shadow-md hover:shadow-primary/10 animate-in fade-in slide-in-from-bottom-4 duration-700"
+      >
+        <span className="relative flex h-2 w-2" aria-hidden="true">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
         </span>
         <span className="tracking-tight">ClassBuddy AI 2.0 is now live</span>
-        <ArrowRight className="w-4 h-4 ml-1 opacity-60 group-hover:opacity-100 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-      </div>
+        <ArrowRight className="w-4 h-4 ml-1 opacity-60 group-hover:opacity-100 group-hover:text-primary group-hover:translate-x-0.5 transition-all" aria-hidden="true" />
+      </a>
 
       {/* Main Heading */}
       <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-8 tracking-tight max-w-5xl mx-auto leading-[1.05] animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150 fill-mode-both">

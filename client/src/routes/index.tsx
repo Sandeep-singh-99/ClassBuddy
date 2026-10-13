@@ -3,11 +3,10 @@ import { Suspense, lazy } from "react";
 import App from "@/App";
 import RoleProtectedRoute from "@/components/ProtectedRoute/RoleProtectedRoute";
 import NotFound from "@/page/NotFound";
-import ChatHome from "@/page/ChatDashboard/ChatPanel";
-
 // Lazy-loaded pages
 const Home = lazy(() => import("@/page/Home"));
 const Chat = lazy(() => import("@/page/ChatDashboard/Chat"));
+const ChatHome = lazy(() => import("@/page/ChatDashboard/ChatPanel"));
 const DashboardPanel = lazy(() => import("@/page/Dashboard/DashboardPanel"));
 const DashboardHome = lazy(() => import("@/page/Dashboard/DashboardHome"));
 const ViewAllTeacher = lazy(() => import("@/page/Dashboard/ViewAllTeacher"));
@@ -45,8 +44,8 @@ const TInsight = lazy(() => import("@/page/Teacher/Insight/TInsight"));
 
 // Skeletons
 import DashboardSkeleton from "@/components/skeletons/DashboardSkeleton";
-import PaymentPage from "@/page/Teacher/PaymentPage";
-import Payment from "@/page/Dashboard/Payment";
+const PaymentPage = lazy(() => import("@/page/Teacher/PaymentPage"));
+const Payment = lazy(() => import("@/page/Dashboard/Payment"));
 
 // Notes and view pages
 const ViewNoteById = lazy(() => import("@/page/Teacher/ViewNoteById"));
@@ -191,7 +190,11 @@ export const router = createBrowserRouter([
   {
     path: "chat-panel",
     errorElement: <NotFound />,
-    element: <ChatHome />,
+    element: (
+      <Suspense fallback={<DashboardSkeleton />}>
+        <ChatHome />
+      </Suspense>
+    ),
     children: [
       {
         path: "chat",
