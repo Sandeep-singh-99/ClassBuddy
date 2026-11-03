@@ -51,7 +51,7 @@ export default function FeaturesComponents() {
   ];
 
   return (
-    <section className="w-full relative bg-background text-foreground border-y border-border/50 py-20 sm:py-28 overflow-hidden">
+    <section id="features" className="w-full relative bg-background text-foreground border-y border-border/50 py-20 sm:py-28 overflow-hidden">
       {/* Background Decorative Mesh Blobs */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[900px] h-[400px] bg-primary/5 dark:bg-primary/10 blur-[130px] rounded-full pointer-events-none z-0" />
 
