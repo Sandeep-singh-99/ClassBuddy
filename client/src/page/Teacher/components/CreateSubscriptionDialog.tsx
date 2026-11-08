@@ -84,20 +84,20 @@ export function CreateSubscriptionDialog() {
       <DialogTrigger asChild>
         <Button
           size="lg"
-          className="rounded-xl gap-2 font-semibold shadow-md hover:shadow-lg bg-primary text-primary-foreground transition-all duration-300"
+          className="rounded-xl gap-2 font-semibold shadow-sm hover:shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Create Plan</span>
-          <Sparkles className="h-3.5 w-3.5 opacity-70" />
+          <Sparkles className="h-3.5 w-3.5 opacity-80" />
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[500px] rounded-2xl border-border/80 p-0 overflow-hidden">
         {/* Header decoration */}
-        <div className="bg-gradient-to-r from-primary/10 via-blue-500/10 to-indigo-500/10 p-6 pb-4 border-b border-border/50">
+        <div className="bg-gradient-to-br from-primary/10 via-indigo-500/10 to-violet-500/10 dark:from-primary/15 dark:via-indigo-500/10 dark:to-violet-500/15 p-6 pb-4 border-b border-border/50">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
-              <div className="p-2 rounded-xl bg-primary text-primary-foreground">
+              <div className="p-2 rounded-xl bg-gradient-to-tr from-primary via-indigo-600 to-violet-600 text-white shadow-md">
                 <Sparkles className="h-4 w-4" />
               </div>
               Create Subscription Plan
@@ -213,14 +213,14 @@ export function CreateSubscriptionDialog() {
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="rounded-xl"
+              className="rounded-xl cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="rounded-xl gap-2 min-w-[130px]"
+              className="rounded-xl gap-2 min-w-[130px] bg-gradient-to-r from-primary via-indigo-600 to-violet-600 hover:from-primary/95 hover:via-indigo-600/95 hover:to-violet-600/95 text-white shadow-sm hover:shadow-md cursor-pointer transition-all duration-300"
             >
               {loading ? (
                 <>
