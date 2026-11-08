@@ -5,43 +5,99 @@ on:
     branches:
       - develop
       - main
+    paths:
+      - "server/**"
+      - ".github/workflows/backend-ci.yml"
 
   pull_request:
     branches:
       - develop
       - main
+    paths:
+      - "server/**"
+      - ".github/workflows/backend-ci.yml"
+
+permissions:
+  contents: read
 
 jobs:
-  backend:
+  # ─────────────────────────────────────────────────────────────
+  # 1. CI: Quality Gate (Syntax & Tests)
+  # ─────────────────────────────────────────────────────────────
+  test:
+    name: Backend Tests & Lint
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "server/uv.lock"
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Install Dependencies
+        run: uv sync
+
+      - name: Bytecode Syntax Verification
+        run: uv run python -m compileall -q app
+
+      - name: Run Pytest Suite
+        run: uv run pytest || [ $? -eq 5 ]
+
+  # ─────────────────────────────────────────────────────────────
+  # 2. CD: Build Docker Image, Push to Registry & Deploy to Render
+  # ─────────────────────────────────────────────────────────────
+  build-and-deploy:
+    name: Build & Deploy
+    needs: test
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to Docker Hub
-        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker image
-        run: |
-          docker build \
-            -f server/Dockerfile.prod \
-            -t sand07/classbuddy-server:${{ github.sha }} \
-            -t sand07/classbuddy-server:latest \
-            ./server
+      - name: Extract Docker Metadata (Tags & Labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME || 'sand07' }}/classbuddy-server
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
-      - name: Push Docker image
-        if: github.event_name == 'push'
-        run: |
-          docker push sand07/classbuddy-server:${{ github.sha }}
-          docker push sand07/classbuddy-server:latest
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          file: ./server/Dockerfile.prod
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Deploy Backend to Render
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      - name: Trigger Render Deploy Hook
+        if: github.ref == 'refs/heads/main'
         run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-
+          curl -s -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
