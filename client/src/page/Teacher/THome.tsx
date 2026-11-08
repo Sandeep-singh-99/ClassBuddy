@@ -75,7 +75,7 @@ export default function THome() {
                 Welcome to ClassBuddy! 👋
               </h2>
               <p className="text-base text-muted-foreground leading-relaxed">
-                You haven't created a group yet. Create your first group to unlock your teacher workspace, publish notes, assign tasks, and connect with your students.
+                You haven&apos;t created a group yet. Create your first group to unlock your teacher workspace, publish notes, assign tasks, and connect with your students.
               </p>
             </div>
 
@@ -94,7 +94,6 @@ export default function THome() {
       </main>
     );
   }
-
 
   return (
     <main className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
@@ -237,52 +236,52 @@ export default function THome() {
         </Card>
       </div>
 
-      {/* ── 3. Quick Action Navigation Bar ──────────────────────────────── */}
+      {/* ── 3. Quick Action Navigation Bar (Centered Cards) ──────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Link to="/t-dashboard/create-notes" className="group">
-          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
-              <PlusCircle className="h-4 w-4" />
+          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2.5">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform flex items-center justify-center">
+              <PlusCircle className="h-5 w-5" />
             </div>
-            <div>
+            <div className="flex flex-col items-center text-center">
               <p className="text-xs font-bold text-foreground">New Note</p>
-              <p className="text-[11px] text-muted-foreground">Publish material</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Publish material</p>
             </div>
           </Card>
         </Link>
 
         <Link to="/t-dashboard/assignments" className="group">
-          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-500 group-hover:scale-110 transition-transform">
-              <ClipboardList className="h-4 w-4" />
+          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2.5">
+            <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-500 group-hover:scale-110 transition-transform flex items-center justify-center">
+              <ClipboardList className="h-5 w-5" />
             </div>
-            <div>
+            <div className="flex flex-col items-center text-center">
               <p className="text-xs font-bold text-foreground">Assignments</p>
-              <p className="text-[11px] text-muted-foreground">Check tasks</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Check tasks</p>
             </div>
           </Card>
         </Link>
 
         <Link to="/t-dashboard/docs" className="group">
-          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
-              <FolderOpen className="h-4 w-4" />
+          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2.5">
+            <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform flex items-center justify-center">
+              <FolderOpen className="h-5 w-5" />
             </div>
-            <div>
+            <div className="flex flex-col items-center text-center">
               <p className="text-xs font-bold text-foreground">Resources</p>
-              <p className="text-[11px] text-muted-foreground">Course files</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Course files</p>
             </div>
           </Card>
         </Link>
 
         <Link to="/t-dashboard/payment" className="group">
-          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 group-hover:scale-110 transition-transform">
-              <DollarSign className="h-4 w-4" />
+          <Card className="p-4 rounded-xl border border-border/60 bg-card hover:bg-accent/50 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2.5">
+            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 group-hover:scale-110 transition-transform flex items-center justify-center">
+              <DollarSign className="h-5 w-5" />
             </div>
-            <div>
+            <div className="flex flex-col items-center text-center">
               <p className="text-xs font-bold text-foreground">Payments</p>
-              <p className="text-[11px] text-muted-foreground">Plans & revenue</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Plans & revenue</p>
             </div>
           </Card>
         </Link>

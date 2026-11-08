@@ -49,7 +49,9 @@ class TokenResponse(BaseModel):
 
 class UserInfoResponse(BaseModel):
     sub: str
+    id: Optional[str] = None
     name: Optional[str] = None
+    full_name: Optional[str] = None
     email: Optional[str] = None
     role: Optional[str] = None
     image_url: Optional[str] = None

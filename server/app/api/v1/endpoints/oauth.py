@@ -225,7 +225,9 @@ def userinfo(
     """
     return UserInfoResponse(
         sub=str(current_user.id),
+        id=str(current_user.id),
         name=current_user.full_name,
+        full_name=current_user.full_name,
         email=current_user.email,
         role=current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role),
         image_url=current_user.image_url
@@ -252,4 +254,3 @@ def revoke(
 
     clear_auth_cookies(response)
     return {"message": "Token revoked successfully"}
-

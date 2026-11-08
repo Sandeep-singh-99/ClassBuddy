@@ -84,19 +84,22 @@ export default function Payment() {
   return (
     <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
       {/* ── 1. Hero Header Banner ──────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-r from-card via-card/90 to-indigo-500/10 dark:to-indigo-500/20 p-6 sm:p-8 shadow-sm">
-        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 blur-3xl pointer-events-none" />
-        <div className="absolute right-1/3 -bottom-20 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-primary/10 via-indigo-500/10 to-violet-500/10 dark:from-primary/15 dark:via-indigo-500/10 dark:to-violet-500/15 p-6 sm:p-8 shadow-sm">
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+        <div className="absolute right-1/3 -bottom-20 h-48 w-48 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/25 bg-primary/15 text-primary text-xs font-semibold shadow-2xs">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Student Subscription Portal</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-              My Class Subscriptions
+              My Class{" "}
+              <span className="bg-gradient-to-r from-primary via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                Subscriptions
+              </span>
             </h1>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -109,7 +112,7 @@ export default function Payment() {
               variant="outline"
               size="icon"
               onClick={loadData}
-              className="rounded-xl border-border/80 hover:bg-accent"
+              className="rounded-xl border-border/80 hover:bg-accent cursor-pointer"
               title="Refresh Subscription Data"
             >
               <RefreshCw className="h-4 w-4" />
@@ -118,47 +121,43 @@ export default function Payment() {
         </div>
       </div>
 
-      {/* ── 2. Quick Summary Metrics Row ───────────────────────────────── */}
+      {/* ── 2. Quick Summary Metrics Row (Centered Cards) ───────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border border-border/60 bg-card/60 rounded-2xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary/10 text-primary border border-primary/20">
+        <Card className="border border-border/60 bg-card/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-300">
+          <div className="p-3 rounded-2xl bg-primary/10 text-primary border border-primary/20 mb-2 flex items-center justify-center">
             <Users className="h-5 w-5" />
           </div>
-          <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-              Joined Groups
-            </span>
-            <span className="text-2xl font-extrabold text-foreground">
-              {studentGroups.length}
-            </span>
-          </div>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Joined Groups
+          </span>
+          <span className="text-3xl font-extrabold tracking-tight text-foreground mt-1">
+            {studentGroups.length}
+          </span>
         </Card>
 
-        <Card className="border border-border/60 bg-card/60 rounded-2xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+        <Card className="border border-border/60 bg-card/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-300">
+          <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 mb-2 flex items-center justify-center">
             <CheckCircle2 className="h-5 w-5" />
           </div>
-          <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-              Active Subscriptions
-            </span>
-            <span className="text-2xl font-extrabold text-foreground">
-              {activeSubscriptionsCount}
-            </span>
-          </div>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Active Subscriptions
+          </span>
+          <span className="text-3xl font-extrabold tracking-tight text-foreground mt-1">
+            {activeSubscriptionsCount}
+          </span>
         </Card>
 
-        <Card className="border border-border/60 bg-card/60 rounded-2xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+        <Card className="border border-border/60 bg-card/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-300">
+          <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 mb-2 flex items-center justify-center">
             <CreditCard className="h-5 w-5" />
           </div>
-          <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-              Status
-            </span>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Status
+          </span>
+          <div className="mt-2 flex items-center justify-center">
             <Badge
               variant="outline"
-              className="mt-1 text-xs font-semibold border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+              className="text-xs font-semibold border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full shadow-2xs"
             >
               {activeSubscriptionsCount > 0 ? "Access Granted" : "Plans Available"}
             </Badge>
@@ -197,7 +196,7 @@ export default function Payment() {
               <div className="space-y-1 max-w-sm mx-auto">
                 <h3 className="font-semibold text-base text-foreground">No Groups Found</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  You haven't joined any student groups yet, or your groups don't have active subscription plans.
+                  You haven&apos;t joined any student groups yet, or your groups don&apos;t have active subscription plans.
                 </p>
               </div>
             </CardContent>
@@ -207,7 +206,7 @@ export default function Payment() {
             <CardContent className="py-12 text-center space-y-2">
               <p className="font-semibold text-sm text-foreground">No matching groups</p>
               <p className="text-xs text-muted-foreground">
-                No groups matched your search query "{searchQuery}".
+                No groups matched your search query &ldquo;{searchQuery}&rdquo;.
               </p>
             </CardContent>
           </Card>

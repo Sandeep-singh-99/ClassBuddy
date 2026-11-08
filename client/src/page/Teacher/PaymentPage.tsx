@@ -67,21 +67,24 @@ export default function PaymentPage() {
   return (
     <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-10">
       {/* ── 1. Hero Header Banner ──────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-r from-card via-card/90 to-primary/10 dark:to-primary/20 p-6 sm:p-8 shadow-sm">
-        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 dark:bg-primary/20 blur-3xl pointer-events-none" />
-        <div className="absolute right-1/3 -bottom-20 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-primary/10 via-indigo-500/10 to-violet-500/10 dark:from-primary/15 dark:via-indigo-500/10 dark:to-violet-500/15 p-6 sm:p-8 shadow-sm">
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+        <div className="absolute right-1/3 -bottom-20 h-48 w-48 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/10 text-primary text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/25 bg-primary/15 text-primary text-xs font-semibold shadow-2xs">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Subscription & Monetization</span>
             </div>
-            
+
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-              Payment & Subscription Manager
+              Payment &{" "}
+              <span className="bg-gradient-to-r from-primary via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                Subscription Manager
+              </span>
             </h1>
-            
+
             <p className="text-sm text-muted-foreground leading-relaxed">
               Create, configure, and monitor subscription plans for your student batches. Track earnings and daily revenue trends in real-time.
             </p>
@@ -92,7 +95,7 @@ export default function PaymentPage() {
               variant="outline"
               size="icon"
               onClick={loadData}
-              className="rounded-xl border-border/80 hover:bg-accent"
+              className="rounded-xl border-border/80 hover:bg-accent cursor-pointer"
               title="Refresh Data"
             >
               <RefreshCw className="h-4 w-4" />

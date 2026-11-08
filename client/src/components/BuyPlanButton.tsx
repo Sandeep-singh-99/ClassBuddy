@@ -5,14 +5,25 @@ import { createOrder } from "@/services/payment";
 import { axiosClient } from "@/helper/axiosClient";
 import { useAppSelector } from "@/hooks/hooks";
 import { toast } from "sonner";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, Zap, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   plan_id: string;
   planName: string;
+  className?: string;
+  variant?: "default" | "secondary" | "outline";
+  buttonText?: string;
+  isPopular?: boolean;
 };
 
-export default function BuyPlanButton({ plan_id, planName }: Props) {
+export default function BuyPlanButton({
+  plan_id,
+  planName,
+  className,
+  variant = "default",
+  buttonText,
+}: Props) {
   const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
 
@@ -90,16 +101,23 @@ export default function BuyPlanButton({ plan_id, planName }: Props) {
     <Button
       onClick={handlePayment}
       disabled={loading}
-      className="w-full rounded-xl gap-2 font-semibold shadow-md bg-primary text-primary-foreground hover:opacity-95 transition-all duration-300"
+      variant={variant}
+      className={cn(
+        "group relative w-full h-11 rounded-xl font-semibold transition-all duration-300 shadow-sm active:scale-[0.99] cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md",
+        className
+      )}
     >
       {loading ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin" /> Processing Payment...
-        </>
+        <span className="flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin text-current" />
+          <span>Opening Checkout...</span>
+        </span>
       ) : (
-        <>
-          <ShieldCheck className="h-4 w-4" /> Subscribe Now
-        </>
+        <span className="flex items-center justify-center gap-2">
+          <Zap className="h-4 w-4 transition-transform group-hover:scale-110" />
+          <span>{buttonText || "Subscribe Now"}</span>
+          <ArrowRight className="h-3.5 w-3.5 opacity-60 transition-transform group-hover:translate-x-1" />
+        </span>
       )}
     </Button>
   );
