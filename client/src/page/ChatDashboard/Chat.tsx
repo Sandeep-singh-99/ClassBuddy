@@ -29,6 +29,9 @@ export default function Chat() {
 
   const [inputValue, setInputValue] = useState("");
 
+  // Current logged in user ID for message alignment
+  const currentUserId = user?.id || user?.sub;
+
   // Sync URL groupId with Redux activeGroup and fetch messages
   useEffect(() => {
     if (groupId) {
@@ -187,7 +190,6 @@ export default function Chat() {
               {activeGroup.group_name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          {/* Status indicator removed for groups */}
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="font-semibold tracking-tight">
@@ -201,28 +203,39 @@ export default function Chat() {
 
       {/* Message List */}
       <ScrollArea className="flex-1 p-4 min-h-0" ref={scrollRef}>
-        <div className="flex flex-col gap-4 max-w-4xl mx-auto pb-4">
+        <div className="flex flex-col gap-2 max-w-4xl mx-auto pb-4">
           {messageLoading && messages.length === 0 ? (
             <div className="text-center text-muted-foreground text-sm mt-10">
               Loading messages...
             </div>
           ) : (
-            messages.map((msg) => (
-              <MessageBubble
-                key={msg.id}
-                message={{
-                  id: msg.id,
-                  content: msg.message,
-                  timestamp: msg.created_at,
-                  status: "read",
-                  senderId: msg.sender_id,
-                  receiverId: msg.group_id,
-                }}
-                isCurrentUser={msg.sender_id === user?.id}
-                senderName={msg.sender?.full_name || "Unknown"}
-                senderAvatar={msg.sender?.image_url || ""}
-              />
-            ))
+            messages.map((msg) => {
+              const isCurrentUser = Boolean(
+                currentUserId &&
+                  (msg.sender_id === currentUserId ||
+                    msg.sender?.id === currentUserId ||
+                    String(msg.sender_id) === String(currentUserId) ||
+                    String(msg.sender?.id) === String(currentUserId) ||
+                    (user?.email && msg.sender?.email && msg.sender.email === user.email))
+              );
+
+              return (
+                <MessageBubble
+                  key={msg.id}
+                  message={{
+                    id: msg.id,
+                    content: msg.message,
+                    timestamp: msg.created_at,
+                    status: "read",
+                    senderId: msg.sender_id,
+                    receiverId: msg.group_id,
+                  }}
+                  isCurrentUser={isCurrentUser}
+                  senderName={msg.sender?.full_name || "Unknown"}
+                  senderAvatar={msg.sender?.image_url || ""}
+                />
+              );
+            })
           )}
         </div>
       </ScrollArea>

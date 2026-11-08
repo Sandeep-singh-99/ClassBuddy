@@ -92,8 +92,17 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<IUser | null>) => {
-      state.user = action.payload;
-      state.isLoggedIn = !!action.payload;
+      if (action.payload) {
+        state.user = {
+          ...action.payload,
+          id: action.payload.id || action.payload.sub || "",
+          full_name: action.payload.full_name || action.payload.name || "",
+        };
+        state.isLoggedIn = true;
+      } else {
+        state.user = null;
+        state.isLoggedIn = false;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -118,7 +127,12 @@ const authSlice = createSlice({
     builder.addCase(
       checkAuth.fulfilled,
       (state, action: PayloadAction<IUser>) => {
-        state.user = action.payload;
+        const payload = action.payload;
+        state.user = {
+          ...payload,
+          id: payload.id || payload.sub || "",
+          full_name: payload.full_name || payload.name || "",
+        };
         state.isLoggedIn = true;
         state.error = null;
       }
