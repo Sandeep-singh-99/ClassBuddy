@@ -84,11 +84,8 @@ export default function DashboardHome() {
           </div>
 
           {/* Profile Card Container */}
-          <div className="w-full xl:w-auto relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-violet-500/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none" />
-            <div className="relative bg-card/60 backdrop-blur-xl border border-border/60 rounded-2xl p-2 sm:p-3 shadow-xs">
-              <ProfileCard />
-            </div>
+          <div className="w-full xl:w-auto shrink-0">
+            <ProfileCard />
           </div>
         </div>
       </div>
