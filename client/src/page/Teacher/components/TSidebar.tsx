@@ -22,6 +22,7 @@ import {
   IndianRupee,
   GraduationCap,
   ChevronRight,
+  MessageCircle,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,12 @@ const MenuOptions = [
     url: "/t-dashboard/home",
     icon: Home,
     badge: null,
+  },
+  {
+    title: "Community Chat",
+    url: "/chat-panel/chat",
+    icon: MessageCircle,
+    badge: "Live",
   },
   {
     title: "New Note",
@@ -183,7 +190,11 @@ export default function TSideBar() {
                                 className={cn(
                                   "text-[10px] font-bold px-1.5 py-0 rounded-md border-0",
                                   option.badge === "Pro" &&
-                                    "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                                    "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+                                  option.badge === "Create" &&
+                                    "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+                                  option.badge === "Live" &&
+                                    "bg-rose-500/15 text-rose-600 dark:text-rose-400"
                                 )}
                               >
                                 {option.badge}
