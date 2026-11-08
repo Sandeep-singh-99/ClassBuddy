@@ -121,47 +121,43 @@ export default function Payment() {
         </div>
       </div>
 
-      {/* ── 2. Quick Summary Metrics Row ───────────────────────────────── */}
+      {/* ── 2. Quick Summary Metrics Row (Centered Cards) ───────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border border-border/60 bg-card/60 rounded-2xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary/10 text-primary border border-primary/20">
+        <Card className="border border-border/60 bg-card/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-300">
+          <div className="p-3 rounded-2xl bg-primary/10 text-primary border border-primary/20 mb-2 flex items-center justify-center">
             <Users className="h-5 w-5" />
           </div>
-          <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-              Joined Groups
-            </span>
-            <span className="text-2xl font-extrabold text-foreground">
-              {studentGroups.length}
-            </span>
-          </div>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Joined Groups
+          </span>
+          <span className="text-3xl font-extrabold tracking-tight text-foreground mt-1">
+            {studentGroups.length}
+          </span>
         </Card>
 
-        <Card className="border border-border/60 bg-card/60 rounded-2xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+        <Card className="border border-border/60 bg-card/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-300">
+          <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 mb-2 flex items-center justify-center">
             <CheckCircle2 className="h-5 w-5" />
           </div>
-          <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-              Active Subscriptions
-            </span>
-            <span className="text-2xl font-extrabold text-foreground">
-              {activeSubscriptionsCount}
-            </span>
-          </div>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Active Subscriptions
+          </span>
+          <span className="text-3xl font-extrabold tracking-tight text-foreground mt-1">
+            {activeSubscriptionsCount}
+          </span>
         </Card>
 
-        <Card className="border border-border/60 bg-card/60 rounded-2xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+        <Card className="border border-border/60 bg-card/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-300">
+          <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 mb-2 flex items-center justify-center">
             <CreditCard className="h-5 w-5" />
           </div>
-          <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-              Status
-            </span>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Status
+          </span>
+          <div className="mt-2 flex items-center justify-center">
             <Badge
               variant="outline"
-              className="mt-1 text-xs font-semibold border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+              className="text-xs font-semibold border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full shadow-2xs"
             >
               {activeSubscriptionsCount > 0 ? "Access Granted" : "Plans Available"}
             </Badge>
