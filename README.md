@@ -928,4 +928,3 @@ We welcome contributions from the open-source community! Follow these steps to c
 <div align="center">
   <sub>Built with ❤️ by Sandeep Singh and contributors for the future of education.</sub>
 </div>
-
