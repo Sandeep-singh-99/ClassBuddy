@@ -1,112 +1,130 @@
-import { Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { Github, Twitter, Linkedin, Mail, Command } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-50 dark:bg-[#08101F] border-t border-border/50 text-muted-foreground relative overflow-hidden">
-      {/* Subtle Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/5 blur-[100px] rounded-full pointer-events-none -z-10" />
+    <footer className="w-full bg-card border-t border-black/[0.08] dark:border-white/[0.08] text-muted-foreground">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+          {/* Brand Info */}
+          <div className="lg:col-span-2 space-y-3">
+            <Link to="/" className="inline-flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-foreground text-background flex items-center justify-center font-bold text-xs">
+                <Command className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-sm font-semibold tracking-tight text-foreground">
+                ClassBuddy
+              </span>
+            </Link>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-16 grid grid-cols-1 lg:grid-cols-4 gap-10 lg:gap-12 relative z-10">
-        {/* Brand Section */}
-        <div className="lg:col-span-2">
-          <h3 className="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-violet-500 mb-4 inline-block">
-            ClassBuddy
-          </h3>
-          <p className="text-muted-foreground mb-6 text-[15px] leading-relaxed max-w-sm">
-            Your AI-powered study companion – helping students learn smarter,
-            faster, and effortlessly.
-          </p>
-          {/* Social Icons */}
-          <div className="flex gap-4 mt-6">
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Twitter profile"
-              className="text-muted-foreground hover:text-primary transition-colors hover:-translate-y-1 transform duration-300"
-            >
-              <Twitter size={20} aria-hidden="true" />
-            </a>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub repository"
-              className="text-muted-foreground hover:text-primary transition-colors hover:-translate-y-1 transform duration-300"
-            >
-              <Github size={20} aria-hidden="true" />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn profile"
-              className="text-muted-foreground hover:text-primary transition-colors hover:-translate-y-1 transform duration-300"
-            >
-              <Linkedin size={20} aria-hidden="true" />
-            </a>
-            <a
-              href="mailto:hello@classbuddy.ai"
-              aria-label="Send email to ClassBuddy support"
-              className="text-muted-foreground hover:text-primary transition-colors hover:-translate-y-1 transform duration-300"
-            >
-              <Mail size={20} aria-hidden="true" />
-            </a>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
+              The AI operating system for modern academic workflows. Synthesizing
+              lectures, testing retention, and automating evaluations.
+            </p>
+
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter"
+                className="w-7 h-7 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Twitter className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="w-7 h-7 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Github className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="w-7 h-7 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Linkedin className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href="mailto:support@classbuddy.ai"
+                aria-label="Email"
+                className="w-7 h-7 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
-        </div>
 
-        {/* Links Container (Side by Side on Mobile) */}
-        <div className="grid grid-cols-2 gap-8 lg:col-span-2">
-          {/* Product */}
-          <div>
-            <h4 className="text-foreground font-semibold mb-4 text-[15px]">Product</h4>
-            <ul className="space-y-3 text-[14px]">
+          {/* Links 1 */}
+          <div className="space-y-2.5 text-xs">
+            <h4 className="font-mono uppercase tracking-wider text-foreground font-semibold">
+              Product
+            </h4>
+            <ul className="space-y-2">
               <li>
-                <a href="#features" className="hover:text-primary transition-colors block">
-                  Features
+                <a href="#features" className="hover:text-foreground transition-colors">
+                  Capabilities
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-primary transition-colors block">
+                <a href="#how-it-works" className="hover:text-foreground transition-colors">
+                  How It Works
+                </a>
+              </li>
+              <li>
+                <a href="#showcase" className="hover:text-foreground transition-colors">
+                  Showcase
+                </a>
+              </li>
+              <li>
+                <a href="#pricing" className="hover:text-foreground transition-colors">
                   Pricing
                 </a>
               </li>
-              <li>
-                <a href="#faq" className="hover:text-primary transition-colors block">
-                  FAQ
-                </a>
-              </li>
             </ul>
           </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="text-foreground font-semibold mb-4 text-[15px]">Company</h4>
-            <ul className="space-y-3 text-[14px]">
-              <li>
-                <a href="#about" className="hover:text-primary transition-colors block">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#careers" className="hover:text-primary transition-colors block">
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a href="mailto:hello@classbuddy.ai" className="hover:text-primary transition-colors block">
-                  Contact
-                </a>
-              </li>
+          {/* Links 2 */}
+          <div className="space-y-2.5 text-xs">
+            <h4 className="font-mono uppercase tracking-wider text-foreground font-semibold">
+              Platform
+            </h4>
+            <ul className="space-y-2">
+              <li className="text-muted-foreground">Students & Cohorts</li>
+              <li className="text-muted-foreground">Educator Portals</li>
+              <li className="text-muted-foreground">Rubric Auto-Grading</li>
+              <li className="text-muted-foreground">AI Mock Interviews</li>
+            </ul>
+          </div>
+
+          {/* Links 3 */}
+          <div className="space-y-2.5 text-xs">
+            <h4 className="font-mono uppercase tracking-wider text-foreground font-semibold">
+              Security
+            </h4>
+            <ul className="space-y-2">
+              <li className="text-muted-foreground">RFC 7636 PKCE</li>
+              <li className="text-muted-foreground">Tenant Privacy</li>
+              <li className="text-muted-foreground">Terms of Service</li>
+              <li className="text-muted-foreground">Privacy Policy</li>
             </ul>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-border/40 text-center py-8 text-sm text-muted-foreground relative z-10">
-        © {new Date().getFullYear()}{" "}
-        <span className="text-foreground font-medium">ClassBuddy</span>. All rights reserved.
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-6 border-t border-black/[0.06] dark:border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-muted-foreground">
+          <p>© 2026 ClassBuddy AI Inc. All rights reserved.</p>
+
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-muted border border-black/[0.06] dark:border-white/[0.06]">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-foreground">All systems operational</span>
+          </div>
+        </div>
       </div>
     </footer>
   );

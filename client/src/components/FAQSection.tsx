@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 interface FAQItem {
   question: string;
@@ -8,101 +8,93 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    question: "What is ClassBuddy?",
+    question: "How does ClassBuddy extract formulas and notes from my slides?",
     answer:
-      "ClassBuddy is a platform that helps teachers and students collaborate seamlessly. Teachers can create groups, share AI-powered notes, and manage classes, while students can join groups, access shared resources, and stay updated in real-time.",
+      "ClassBuddy leverages vision-enabled LangGraph agents and Gemini 2.5 Flash. It parses PDF equations, tables, slide hierarchies, and lecture audio into structured markdown notes with zero hallucinated fluff.",
   },
   {
-    question: "How can teachers generate AI-powered notes?",
+    question: "Can educators customize the grading rubric for assignments?",
     answer:
-      "Teachers can use our built-in AI notes generator to quickly create structured notes. Simply input your topic, and the AI will generate clear, concise, and accurate notes that can be shared with students instantly.",
+      "Yes. Educators define customized grading rubrics with weighted criteria (e.g. proof correctness, algorithm efficiency, code quality). The AI auto-evaluates submissions line-by-line while leaving 100% override authority with the instructor.",
   },
   {
-    question: "Can students join multiple groups?",
+    question: "How do classroom groups work with 6-character codes?",
     answer:
-      "Yes! Students can join multiple groups created by different teachers, making it easier to manage subjects and stay connected across various classes.",
+      "Teachers create a cohort group in 10 seconds. ClassBuddy generates a secure 6-character code (e.g. 'CS101B'). Students enter this code to immediately sync broadcasted notes, study materials, and assignments.",
   },
   {
-    question: "Is ClassBuddy secure for sharing notes?",
+    question: "Is my coursework, student data, and research content secure?",
     answer:
-      "Absolutely. We use secure authentication and encrypted storage to ensure that only authorized members of a group can view and edit the shared notes.",
+      "Yes. ClassBuddy enforces RFC 7636 PKCE OAuth 2.0 authorization, encrypted token cookies, and tenant-isolated databases. Your uploaded course documents are never shared or used to train public foundation models.",
   },
   {
-    question: "Does ClassBuddy support real-time updates?",
+    question: "What is included in the Free Starter plan?",
     answer:
-      "Yes. When a teacher updates a note or adds new content, all students in the group are notified in real-time so everyone stays on the same page.",
+      "Individual students can synthesize up to 15 full lecture note decks per month, generate 30 adaptive practice quizzes, and join up to 3 classroom groups with zero time limit and no credit card required.",
   },
 ];
 
 export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <section id="faq" className="w-full py-24 relative bg-white dark:bg-[#08101F] border-t border-border/40 overflow-hidden">
-      {/* Background divider line at top */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-      
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="max-w-3xl mx-auto mt-2 mb-12">
-          {/* Section Heading */}
-          <h2 className="text-4xl md:text-5xl tracking-tight font-extrabold text-center mb-6 text-foreground">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-muted-foreground text-lg font-medium text-center">
-            Here are some common questions about how ClassBuddy works for teachers
-            and students.
+    <section id="faq" className="py-24 sm:py-32 bg-background border-t border-black/[0.08] dark:border-white/[0.08]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        {/* Section Header */}
+        <div className="text-left space-y-3">
+          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-primary font-semibold">
+            // FAQ
           </p>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.03em] text-foreground leading-[1.1]">
+            Frequently answered questions.
+          </h2>
         </div>
 
-        {/* FAQ Items */}
-        <div className="space-y-4 max-w-3xl mx-auto">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className={`border bg-card/40 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 ${
-                openIndex === index ? "border-primary/30 shadow-sm" : "border-border/50 hover:border-border"
-              }`}
-            >
-              {/* Question Row */}
-              <button
-                id={`faq-btn-${index}`}
-                type="button"
-                onClick={() => toggleFAQ(index)}
-                aria-expanded={openIndex === index}
-                aria-controls={`faq-answer-${index}`}
-                className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none transition-colors hover:bg-muted/10 cursor-pointer"
-              >
-                <span className={`text-lg font-semibold transition-colors ${openIndex === index ? 'text-primary' : 'text-foreground'}`}>
-                  {faq.question}
-                </span>
-                <div className={`p-1 rounded-full transition-colors ${openIndex === index ? 'bg-primary/10 text-primary' : 'bg-muted/50 text-muted-foreground'}`}>
-                  {openIndex === index ? (
-                    <ChevronUp className="w-5 h-5" aria-hidden="true" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5" aria-hidden="true" />
-                  )}
-                </div>
-              </button>
+        {/* Minimalist Accordion */}
+        <div className="divide-y divide-black/[0.08] dark:divide-white/[0.08] border-y border-black/[0.08] dark:border-white/[0.08]">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <div key={index} className="py-5">
+                <button
+                  id={`faq-btn-${index}`}
+                  type="button"
+                  onClick={() => toggleFAQ(index)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${index}`}
+                  className="w-full flex items-center justify-between text-left cursor-pointer focus:outline-none group"
+                >
+                  <span
+                    className={`text-sm sm:text-base font-semibold transition-colors pr-6 ${
+                      isOpen ? "text-primary" : "text-foreground group-hover:text-primary"
+                    }`}
+                  >
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${
+                      isOpen ? "rotate-180 text-primary" : ""
+                    }`}
+                  />
+                </button>
 
-              {/* Answer Section */}
-              <div
-                id={`faq-answer-${index}`}
-                role="region"
-                aria-labelledby={`faq-btn-${index}`}
-                className={`px-6 text-muted-foreground text-[15px] leading-relaxed transition-all duration-300 ease-in-out ${
-                  openIndex === index
-                    ? "max-h-40 pb-6 opacity-100"
-                    : "max-h-0 pb-0 opacity-0 overflow-hidden"
-                }`}
-              >
-                {faq.answer}
+                {isOpen && (
+                  <div
+                    id={`faq-answer-${index}`}
+                    role="region"
+                    aria-labelledby={`faq-btn-${index}`}
+                    className="pt-3 text-xs sm:text-sm text-muted-foreground leading-relaxed animate-in fade-in duration-150"
+                  >
+                    {faq.answer}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

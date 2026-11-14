@@ -1,39 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <link rel="apple-touch-icon" href="/vite.svg" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#7c3aed" />
+    <meta name="theme-color" content="#8b5e3c" />
 
-    <title>ClassBuddy - Your Ultimate Classroom Companion</title>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>ClassBuddy - AI-Powered Classroom & Study Companion for Teachers & Students</title>
     <meta
       name="description"
-      content="ClassBuddy is the ultimate classroom companion for students and teachers, offering seamless management of assignments, quizzes, and resources."
+      content="ClassBuddy empowers students and educators with AI-generated study notes, adaptive practice quizzes, real-time mock interviews, and automated assignment grading."
     />
     <link rel="canonical" href="https://classbuddy.ai/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://classbuddy.ai/" />
-    <meta property="og:title" content="ClassBuddy - Your Ultimate Classroom Companion" />
+    <meta property="og:title" content="ClassBuddy - AI-Powered Classroom & Study Companion" />
     <meta
       property="og:description"
-      content="ClassBuddy bridges teachers and students with AI-powered study notes, interactive practice quizzes, and career guidance."
+      content="Turn notes into quizzes, practice real-time AI mock interviews, and manage classrooms with automated grading."
     />
     <meta property="og:image" content="/vite.svg" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="ClassBuddy - Your Ultimate Classroom Companion" />
+    <meta name="twitter:title" content="ClassBuddy - AI-Powered Classroom & Study Companion" />
     <meta
       name="twitter:description"
-      content="ClassBuddy bridges teachers and students with AI-powered study notes, interactive practice quizzes, and career guidance."
+      content="Turn notes into quizzes, practice real-time AI mock interviews, and manage classrooms with automated grading."
     />
+
+    <!-- Anti-flash script for Dark/Light Theme -->
+    <script>
+      (function () {
+        try {
+          const stored = localStorage.getItem("vite-ui-theme");
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const theme = stored === "dark" || (!stored && prefersDark) || (stored === "system" && prefersDark) ? "dark" : "light";
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        } catch (_) {}
+      })();
+    </script>
   </head>
-  <body>
+  <body class="font-sans antialiased selection:bg-primary/20 selection:text-primary">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,85 +1,73 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function Testimonials() {
-  const testimonials = [
+  const reviews = [
     {
-      name: "Aarav",
-      quote: "ClassBuddy helped me prepare faster for exams with AI summaries. The interactive quizzes are game-changing.",
-    },
-    {
-      name: "Meera",
-      quote: "The quiz generator is a lifesaver for teachers like me! It saves me hours of manual work every week.",
-    },
-    {
-      name: "Karan",
+      name: "Aarav Sharma",
+      role: "B.Tech Computer Science, IIT Roorkee",
+      initials: "AS",
       quote:
-        "The career guidance feature showed me the exact skills to focus on. Highly recommend to any student planning their future.",
+        "ClassBuddy condensed 60-page slide decks into structured markdown notes with instant practice quizzes. It helped me land the highest score in our distributed systems cohort.",
+    },
+    {
+      name: "Dr. Meera Iyer",
+      role: "Associate Professor, Delhi University",
+      initials: "MI",
+      quote:
+        "Automated rubric grading saves me 10+ hours every single week. My students receive line-by-line feedback within minutes instead of waiting two weeks for manual paper reviews.",
+    },
+    {
+      name: "Karan Malhotra",
+      role: "Software Engineer Intern @ FinTech",
+      initials: "KM",
+      quote:
+        "The real-time AI mock interview practice gave me the exact confidence I needed. The constructive critique on algorithms and system design directly helped me land my dream internship.",
     },
   ];
 
   return (
-    <section className="w-full relative bg-slate-50 dark:bg-[#0c1729] overflow-hidden">
-      {/* Decorative Glow */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none z-0" />
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none z-0" />
+    <section className="py-24 sm:py-32 border-t border-black/[0.08] dark:border-white/[0.08] bg-background">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+        {/* Section Header */}
+        <div className="text-left max-w-2xl space-y-3">
+          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-primary font-semibold">
+            // Feedback
+          </p>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.03em] text-foreground leading-[1.1]">
+            Trusted by learners and educators at scale.
+          </h2>
+        </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
-        {/* Section Heading */}
-      <div className="text-center max-w-2xl mx-auto mb-16 relative z-10">
-        <h2 className="text-4xl md:text-5xl tracking-tight pb-2 font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 mb-4">
-          What Students Say
-        </h2>
-        <p className="text-muted-foreground text-lg font-medium">
-          Loved by learners & educators. Here’s how ClassBuddy is making a
-          difference globally.
-        </p>
-      </div>
+        {/* 3 Editorial Testimonial Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {reviews.map((rev, idx) => (
+            <div
+              key={idx}
+              className="p-7 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-card flex flex-col justify-between space-y-6 shadow-xs hover:border-black/[0.15] dark:hover:border-white/[0.15] transition-all"
+            >
+              <p className="text-sm text-foreground/90 leading-relaxed font-normal">
+                "{rev.quote}"
+              </p>
 
-      {/* Testimonials Grid */}
-      <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto relative z-10">
-        {testimonials.map((t, i) => (
-          <Card
-            key={i}
-            className="bg-card/40 backdrop-blur-xl border border-border/50 rounded-2xl shadow-sm hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300"
-          >
-            <CardContent className="p-8 text-center flex flex-col items-center h-full justify-between">
-              <div className="flex flex-col items-center">
-                {/* Fake Avatar Placeholder (optional) */}
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-violet-500/20 border border-primary/20 flex items-center justify-center mb-6 shadow-inner">
-                  <span className="text-foreground font-bold text-lg">
-                    {t.name[0]}
-                  </span>
+              <div className="pt-4 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-muted text-foreground flex items-center justify-center font-mono text-xs font-bold shrink-0">
+                  {rev.initials}
                 </div>
-
-                {/* Quote */}
-                <p className="text-muted-foreground mb-8 leading-relaxed text-[15px]">
-                  "{t.quote}"
-                </p>
-              </div>
-
-              <div>
-                {/* Star Rating */}
-                <div className="flex justify-center gap-1 mb-3" aria-label="5 out of 5 stars">
-                  {[...Array(5)].map((_, index) => (
-                    <Star
-                      key={index}
-                      size={16}
-                      aria-hidden="true"
-                      className="text-yellow-500 fill-yellow-500"
-                    />
-                  ))}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-foreground truncate">
+                      {rev.name}
+                    </span>
+                    <CheckCircle2 className="w-3 h-3 text-primary shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    {rev.role}
+                  </p>
                 </div>
-
-                {/* Name */}
-                <h4 className="font-semibold text-foreground tracking-wide">
-                  {t.name}
-                </h4>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
