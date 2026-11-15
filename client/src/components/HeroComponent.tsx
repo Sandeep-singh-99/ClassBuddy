@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import AuthComponent from "./AuthComponent";
 import { useAppSelector } from "@/hooks/hooks";
 import { Link } from "react-router-dom";
+import { DottedGlowBackground } from "@/components/ui/dotted-glow-background";
 
 export default function HeroComponent() {
   const { user } = useAppSelector((state) => state.auth);
@@ -10,15 +11,27 @@ export default function HeroComponent() {
     user?.role === "teacher" ? "/t-dashboard/home" : "/dashboard-panel/home";
 
   return (
-    <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+    <section className="relative isolate pt-32 sm:pt-40 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
       {/* Subtle radial ambient light behind hero (Linear style, single brown accent) */}
       <div
         aria-hidden="true"
         className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[var(--hero-glow)] blur-[140px] rounded-full pointer-events-none -z-10"
       />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-20 dot-grid opacity-60 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_15%,#000_60%,transparent_100%)]"
+      {/* Dotted glow background canvas */}
+      <DottedGlowBackground
+        className="pointer-events-none -z-20 [mask-image:radial-gradient(ellipse_75%_65%_at_50%_20%,#000_40%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_75%_65%_at_50%_20%,#000_40%,transparent_100%)]"
+        opacity={0.85}
+        gap={14}
+        radius={1.8}
+        color="#71717a"
+        darkColor="#a1a1aa"
+        glowColor="#8b5e3c"
+        darkGlowColor="#c08a5b"
+        glowColorLightVar="--primary"
+        glowColorDarkVar="--primary"
+        speedMin={0.3}
+        speedMax={1.4}
+        speedScale={1}
       />
 
       <div className="max-w-4xl mx-auto space-y-6">
