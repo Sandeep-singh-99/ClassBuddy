@@ -37,7 +37,12 @@ interface IFormData {
   imageUrl: string;
 }
 
-export default function AuthComponent() {
+interface AuthComponentProps {
+  trigger?: React.ReactNode;
+  defaultTab?: "login" | "signup";
+}
+
+export default function AuthComponent({ trigger, defaultTab = "login" }: AuthComponentProps) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -145,27 +150,31 @@ export default function AuthComponent() {
     <Dialog>
       {/* Trigger */}
       <DialogTrigger asChild>
-        <Button
-          variant="secondary"
-          className="rounded-xl px-6 py-2 bg-gradient-to-r from-primary to-violet-600 text-white hover:from-primary/90 hover:to-violet-600/90 shadow-md shadow-violet-500/20 cursor-pointer transition-all hover:scale-105 active:scale-95"
-        >
-          Login
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button
+            variant="default"
+            className="rounded-xl px-5 py-2 font-semibold bg-primary hover:bg-[var(--primary-hover)] text-primary-foreground shadow-sm cursor-pointer transition-all hover:scale-105 active:scale-95"
+          >
+            Log In / Sign Up
+          </Button>
+        )}
       </DialogTrigger>
 
       {/* Content */}
       <DialogContent className="sm:max-w-md bg-card border-border text-card-foreground rounded-2xl shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">
+          <DialogTitle className="text-2xl font-bold text-center text-foreground">
             Welcome to ClassBuddy
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground">
-            Please log in to your account or sign up to get started.
+            Please log in to your account or create a new student or educator account.
           </DialogDescription>
         </DialogHeader>
 
         {/* Tabs */}
-        <Tabs defaultValue="login" className="w-full mt-4">
+        <Tabs defaultValue={defaultTab} className="w-full mt-4">
           <TabsList className="grid w-full grid-cols-2 bg-muted rounded-lg p-1">
             <TabsTrigger value="login">Log In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -179,7 +188,7 @@ export default function AuthComponent() {
                   Email ID
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
                   <Input
                     id="login_email"
                     type="email"
@@ -187,7 +196,7 @@ export default function AuthComponent() {
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-primary focus:ring-primary"
                     required
                   />
                 </div>
@@ -198,7 +207,7 @@ export default function AuthComponent() {
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
                   <Input
                     id="login_password"
                     type="password"
@@ -206,7 +215,7 @@ export default function AuthComponent() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-primary focus:ring-primary"
                     required
                   />
                 </div>
@@ -264,14 +273,14 @@ export default function AuthComponent() {
                   FullName
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
                   <Input
                     id="fullName"
                     placeholder="Enter your Full Name"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-primary focus:ring-primary"
                     required
                   />
                 </div>
@@ -283,13 +292,13 @@ export default function AuthComponent() {
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
                   <Input
                     id="signup_email"
                     type="email"
                     name="email"
                     placeholder="Enter your email"
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-primary focus:ring-primary"
                     required
                     value={formData.email}
                     onChange={handleInputChange}
@@ -302,14 +311,14 @@ export default function AuthComponent() {
                   Role
                 </Label>
                 <div className="relative">
-                  <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
+                  <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
                   <Select
                     value={formData.role}
                     onValueChange={(e) =>
                       setFormData((prev) => ({ ...prev, role: e }))
                     }
                   >
-                    <SelectTrigger className="w-full pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500">
+                    <SelectTrigger className="w-full pl-10 bg-background border-input rounded-lg text-foreground focus:border-primary focus:ring-primary">
                       <SelectValue placeholder="Select a Role" />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border">
@@ -341,7 +350,7 @@ export default function AuthComponent() {
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
                   <Input
                     id="signup_password"
                     type="password"
@@ -349,7 +358,7 @@ export default function AuthComponent() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Enter your password"
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-primary focus:ring-primary"
                     required
                   />
                 </div>
