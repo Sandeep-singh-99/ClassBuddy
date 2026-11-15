@@ -15,6 +15,8 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
@@ -83,7 +85,7 @@ export default function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="rounded-full p-0.5 border border-black/[0.08] dark:border-white/[0.08] hover:border-foreground/30 transition-all cursor-pointer focus:outline-none"
+                      className="rounded-full p-0.5 border border-black/[0.08] dark:border-white/[0.08] hover:border-foreground/30 hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer focus:outline-none"
                       aria-label="Open user menu"
                     >
                       {user.image_url ? (
@@ -98,16 +100,27 @@ export default function Navbar() {
                       )}
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" sideOffset={8} className="w-44 rounded-xl">
+                  <DropdownMenuContent align="end" sideOffset={8} className="w-52 p-1.5 rounded-xl shadow-lg border border-black/[0.08] dark:border-white/[0.08]">
+                    <DropdownMenuLabel className="font-normal px-2 py-1.5">
+                      <div className="flex flex-col space-y-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-xs font-semibold leading-none truncate text-foreground">
+                            {user.full_name || "My Account"}
+                          </p>
+                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 capitalize shrink-0">
+                            {user.role}
+                          </span>
+                        </div>
+                        <p className="text-[11px] leading-none text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="my-1" />
                     <DropdownMenuGroup>
-                      <DropdownMenuItem asChild>
-                        <Link to={dashboardPath} className="flex items-center gap-2 cursor-pointer text-xs">
-                          <LayoutDashboard className="w-3.5 h-3.5" />
-                          <span>Workspace</span>
-                        </Link>
-                      </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="text-destructive focus:text-destructive cursor-pointer flex items-center gap-2 text-xs"
+                        variant="destructive"
+                        className="cursor-pointer flex items-center gap-2 text-xs rounded-lg"
                         onClick={handleLogout}
                       >
                         <LogOutIcon className="w-3.5 h-3.5" />
