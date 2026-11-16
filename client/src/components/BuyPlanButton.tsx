@@ -3,9 +3,10 @@ import { loadRazorpay } from "@/helper/loadRazorPay";
 import { Button } from "./ui/button";
 import { createOrder } from "@/services/payment";
 import { axiosClient } from "@/helper/axiosClient";
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { fetchStudentSubscriptionPlans } from "@/redux/slice/subscriptionSlice";
 import { toast } from "sonner";
-import { Loader2, Zap, ArrowRight } from "lucide-react";
+import { Loader2, Zap, ArrowRight, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -15,6 +16,8 @@ type Props = {
   variant?: "default" | "secondary" | "outline";
   buttonText?: string;
   isPopular?: boolean;
+  disabled?: boolean;
+  onSuccess?: () => void;
 };
 
 export default function BuyPlanButton({
@@ -23,9 +26,26 @@ export default function BuyPlanButton({
   className,
   variant = "default",
   buttonText,
+  disabled = false,
+  onSuccess,
 }: Props) {
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
+  const [isPaymentVerified, setIsPaymentVerified] = useState(false);
+
+  // Check if student already has an active subscription for this group/plan
+  const isAlreadySubscribed = useAppSelector((state) => {
+    return state.subscription.studentGroups.some((groupItem) => {
+      if (!groupItem.subscription?.is_active) return false;
+      const validTill = new Date(groupItem.subscription.valid_till);
+      if (validTill.getTime() <= Date.now()) return false;
+      return groupItem.plans.some((p) => p.id === plan_id);
+    });
+  });
+
+  const isSubscribedOrVerified = isPaymentVerified || isAlreadySubscribed;
+  const isButtonDisabled = disabled || loading || isSubscribedOrVerified;
 
   useEffect(() => {
     loadRazorpay();
@@ -65,7 +85,9 @@ export default function BuyPlanButton({
             });
 
             toast.success("Payment successful! Access granted 🎉");
-            window.location.reload();
+            setIsPaymentVerified(true);
+            await dispatch(fetchStudentSubscriptionPlans());
+            onSuccess?.();
           } catch (err: any) {
             toast.error(err?.response?.data?.detail || "Payment verification failed");
           } finally {
@@ -100,10 +122,13 @@ export default function BuyPlanButton({
   return (
     <Button
       onClick={handlePayment}
-      disabled={loading}
+      disabled={isButtonDisabled}
       variant={variant}
       className={cn(
-        "group relative w-full h-11 rounded-xl font-semibold transition-all duration-300 shadow-sm active:scale-[0.99] cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md",
+        "group relative w-full h-11 rounded-xl font-semibold transition-all duration-300 shadow-sm",
+        isSubscribedOrVerified
+          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-not-allowed hover:bg-emerald-500/15 shadow-none"
+          : "active:scale-[0.99] cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md",
         className
       )}
     >
@@ -111,6 +136,11 @@ export default function BuyPlanButton({
         <span className="flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin text-current" />
           <span>Opening Checkout...</span>
+        </span>
+      ) : isSubscribedOrVerified ? (
+        <span className="flex items-center justify-center gap-2 font-bold">
+          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <span>Active Subscription</span>
         </span>
       ) : (
         <span className="flex items-center justify-center gap-2">

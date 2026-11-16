@@ -81,17 +81,28 @@ export async function fetchSSEStream({
             const dataStr = trimmed.slice(6).trim();
             if (!dataStr) continue;
 
+            let data: SSEEventData;
             try {
-              const data: SSEEventData = JSON.parse(dataStr);
-              if (data.error) {
-                throw new Error(data.error);
-              }
-              onChunk(data);
-              if (data.done && onDone) {
-                onDone();
-              }
+              data = JSON.parse(dataStr);
             } catch (err) {
               console.error("Error parsing SSE JSON chunk:", err, "Raw data:", dataStr);
+              continue;
+            }
+
+            if (data.error) {
+              const err = new Error(data.error);
+              await reader.cancel().catch(() => {});
+              if (onError) {
+                onError(err);
+                return;
+              }
+              throw err;
+            }
+
+            onChunk(data);
+            if (data.done) {
+              if (onDone) onDone();
+              return;
             }
           }
         }
@@ -102,17 +113,26 @@ export async function fetchSSEStream({
     if (buffer.trim().startsWith("data: ")) {
       const dataStr = buffer.trim().slice(6).trim();
       if (dataStr) {
+        let data: SSEEventData | undefined;
         try {
-          const data: SSEEventData = JSON.parse(dataStr);
-          if (data.error) {
-            throw new Error(data.error);
-          }
-          onChunk(data);
-          if (data.done && onDone) {
-            onDone();
-          }
+          data = JSON.parse(dataStr);
         } catch (err) {
           console.error("Error parsing final SSE JSON chunk:", err);
+        }
+        if (data) {
+          if (data.error) {
+            const err = new Error(data.error);
+            if (onError) {
+              onError(err);
+              return;
+            }
+            throw err;
+          }
+          onChunk(data);
+          if (data.done) {
+            if (onDone) onDone();
+            return;
+          }
         }
       }
     }

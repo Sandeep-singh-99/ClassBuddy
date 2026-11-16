@@ -199,9 +199,7 @@ const subscriptionSlice = createSlice({
 
     // Delete Plan
     builder.addCase(deleteSubscriptionPlan.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.plans = state.plans.filter((p) => p.id !== action.payload);
-      }
+      state.plans = state.plans.filter((p) => p.id !== action.meta.arg);
     });
 
     // Fetch Student Plans

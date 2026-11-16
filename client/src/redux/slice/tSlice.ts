@@ -91,23 +91,21 @@ export const getNoteById = createAsyncThunk("teacher/get-note-by-id", async (not
   }
 })
 
-export const saveNotes = createAsyncThunk("teacher/save-notes", async (formData: FormData, thunkApi) => {
-  try {
-    const response = await axiosClient.post("/notes/", formData, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+export const saveNotes = createAsyncThunk(
+  "teacher/save-notes",
+  async (data: { title: string; content: string }, thunkApi) => {
+    try {
+      const response = await axiosClient.post("/notes/", data);
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ?? error.message ?? "Saving notes failed"
+        );
       }
-    })
-
-    return response.data;
-  } catch (error: unknown) {
-    if (error instanceof AxiosError) {
-      return thunkApi.rejectWithValue(
-        error.response?.data?.detail ?? error.message ?? "Saving notes failed"
-      );
     }
   }
-})
+);
 
 
 export const updateNotes = createAsyncThunk("teacher/update-notes", async (data: { noteId: string; title?: string; content?: string }, thunkApi) => {

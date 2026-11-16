@@ -191,9 +191,11 @@ export const router = createBrowserRouter([
     path: "chat-panel",
     errorElement: <NotFound />,
     element: (
-      <Suspense fallback={<DashboardSkeleton />}>
-        <ChatHome />
-      </Suspense>
+      <RoleProtectedRoute allowedRoles={["student", "teacher"]}>
+        <Suspense fallback={<DashboardSkeleton />}>
+          <ChatHome />
+        </Suspense>
+      </RoleProtectedRoute>
     ),
     children: [
       {

@@ -26,7 +26,9 @@ export function StudentGroupCard({ data }: StudentGroupCardProps) {
   };
 
   const daysLeft = getDaysLeft();
-  const isSubscribed = subscription && subscription.is_active && daysLeft > 0;
+  const isSubscribed = Boolean(
+    subscription && subscription.is_active && daysLeft > 0
+  );
 
   const activePlanName = isSubscribed
     ? plans.find((p) => p.id === subscription?.plan_id)?.plan_name ||
@@ -138,7 +140,11 @@ export function StudentGroupCard({ data }: StudentGroupCardProps) {
             </Badge>
           </div>
         ) : (
-          <SubscriptionPlansDialog plans={plans} groupName={group.name} />
+          <SubscriptionPlansDialog
+            plans={plans}
+            groupName={group.name}
+            isSubscribed={isSubscribed}
+          />
         )}
       </CardFooter>
     </Card>

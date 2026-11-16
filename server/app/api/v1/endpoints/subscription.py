@@ -183,6 +183,7 @@ def get_all_plans(
                 StudentSubscription.user_id == current_user.id,
                 StudentSubscription.is_active == True,
             )
+            .order_by(StudentSubscription.created_at.desc())
             .first()
         )
 

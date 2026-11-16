@@ -76,11 +76,15 @@ export const oauthService = {
     params.append("code_verifier", verifier);
 
     // Endpoint sets HttpOnly Secure cookies automatically
-    await axiosClient.post("/oauth/token", params, {
+    const tokenResponse = await axiosClient.post<ITokenResponse>("/oauth/token", params, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
+
+    if (tokenResponse.data?.access_token) {
+      sessionStorage.setItem("access_token", tokenResponse.data.access_token);
+    }
 
     oauthStorage.clearPKCEContext();
 
@@ -106,6 +110,7 @@ export const oauthService = {
       console.warn("Failed to revoke session on server:", error);
     } finally {
       oauthStorage.clearPKCEContext();
+      sessionStorage.removeItem("access_token");
     }
   },
 
