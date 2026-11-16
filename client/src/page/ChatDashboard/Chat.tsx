@@ -52,10 +52,21 @@ export default function Chat() {
   useEffect(() => {
     if (!groupId) return;
 
-    const baseUrl =
+    const rawBaseUrl =
       import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-    const wsUrl = baseUrl.replace(/^http/, "ws").replace(/^https/, "wss");
-    const socketUrl = `${wsUrl}/group-messages/ws/${groupId}`;
+    const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, "").replace(/\/api\/v1$/, "");
+    const wsUrl = cleanBaseUrl.replace(/^http/, "ws").replace(/^https/, "wss");
+
+    const cookieMatch = document.cookie.match(/(?:^|;\s*)access_token=([^;]+)/);
+    const token =
+      cookieMatch?.[1] ||
+      sessionStorage.getItem("access_token") ||
+      localStorage.getItem("access_token") ||
+      "";
+
+    const socketUrl = `${wsUrl}/api/v1/group-messages/ws/${groupId}${
+      token ? `?token=${encodeURIComponent(token)}` : ""
+    }`;
 
     const ws = new WebSocket(socketUrl);
 

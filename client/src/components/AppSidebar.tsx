@@ -9,10 +9,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-  SidebarFooter,
 } from "./ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
-import { SidebarThemeToggle } from "@/components/SidebarThemeToggle";
 import {
   LayoutDashboard,
   Users,
@@ -231,32 +229,6 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      {/* ── 3. Sidebar Footer / Theme Toggle ────────────────────────────── */}
-      <SidebarFooter
-        className={cn(
-          "border-t border-sidebar-border/40 transition-all duration-300",
-          open ? "p-3" : "p-2"
-        )}
-      >
-        <SidebarMenu className={cn(!open && "items-center")}>
-          <SidebarMenuItem className={cn(!open && "flex justify-center w-full")}>
-            <div
-              className={cn(
-                "flex items-center rounded-xl bg-sidebar-accent/50 border border-sidebar-border/40 transition-all duration-300",
-                open ? "justify-between gap-2 p-1.5" : "justify-center p-1 w-full"
-              )}
-            >
-              {open && (
-                <span className="text-xs font-medium text-muted-foreground pl-2">
-                  Theme Mode
-                </span>
-              )}
-              <SidebarThemeToggle />
-            </div>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }

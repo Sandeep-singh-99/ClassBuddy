@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -37,13 +37,17 @@ interface SubscriptionPlansDialogProps {
   plans: IPlan[];
   groupName: string;
   trigger?: React.ReactNode;
+  isSubscribed?: boolean;
 }
 
 export function SubscriptionPlansDialog({
   plans,
   groupName,
   trigger,
+  isSubscribed = false,
 }: SubscriptionPlansDialogProps) {
+  const [open, setOpen] = useState(false);
+
   // Sort plans by validity duration ascending for intuitive progression
   const sortedPlans = useMemo(() => {
     return [...plans].sort((a, b) => a.validity_days - b.validity_days);
@@ -88,7 +92,7 @@ export function SubscriptionPlansDialog({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger ? (
           trigger
@@ -331,6 +335,8 @@ export function SubscriptionPlansDialog({
                           plan_id={plan.id}
                           planName={plan.plan_name}
                           isPopular={isBestValue}
+                          disabled={isSubscribed}
+                          onSuccess={() => setOpen(false)}
                           buttonText={
                             isBestValue
                               ? `Subscribe (${formatDuration(plan.validity_days)})`

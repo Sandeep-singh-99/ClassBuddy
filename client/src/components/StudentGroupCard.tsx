@@ -8,13 +8,28 @@ import { BookOpen, CheckCircle2, ShieldCheck, Mail } from "lucide-react";
 import type { IStudentGroupSubscription } from "@/types/subscription";
 import { SubscriptionPlansDialog } from "./SubscriptionPlansDialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
+import { useAppDispatch } from "@/hooks/hooks";
+import { cancelSubscription } from "@/redux/slice/subscriptionSlice";
+import { toast } from "sonner";
 
 interface StudentGroupCardProps {
   data: IStudentGroupSubscription;
 }
 
 export function StudentGroupCard({ data }: StudentGroupCardProps) {
+  const dispatch = useAppDispatch();
   const { group, teacher, plans, subscription } = data;
+
+  const handleCancelSub = async () => {
+    try {
+      await dispatch(cancelSubscription(group.id)).unwrap();
+      toast.success("Subscription cancelled. You can now choose a new plan.");
+    } catch (err: any) {
+      toast.error(err || "Failed to cancel subscription");
+    }
+  };
 
   const getDaysLeft = () => {
     if (!subscription) return 0;
@@ -26,7 +41,9 @@ export function StudentGroupCard({ data }: StudentGroupCardProps) {
   };
 
   const daysLeft = getDaysLeft();
-  const isSubscribed = subscription && subscription.is_active && daysLeft > 0;
+  const isSubscribed = Boolean(
+    subscription && subscription.is_active && daysLeft > 0
+  );
 
   const activePlanName = isSubscribed
     ? plans.find((p) => p.id === subscription?.plan_id)?.plan_name ||
@@ -123,22 +140,45 @@ export function StudentGroupCard({ data }: StudentGroupCardProps) {
       {/* Card Footer Action */}
       <CardFooter className="p-6 pt-3">
         {isSubscribed ? (
-          <div className="w-full flex items-center justify-between bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-3">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                {activePlanName}
+          <div className="w-full flex items-center justify-between bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-3 gap-2">
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 truncate">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{activePlanName}</span>
               </span>
               <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 mt-0.5">
                 {daysLeft} days remaining
               </span>
             </div>
-            <Badge variant="secondary" className="text-[10px] bg-emerald-500 text-white font-bold">
-              Active
-            </Badge>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Badge variant="secondary" className="text-[10px] bg-emerald-500 text-white font-bold">
+                Active
+              </Badge>
+              <ConfirmDeleteDialog
+                title="Cancel Subscription?"
+                description={`Are you sure you want to cancel your active subscription for ${group.name}? Once cancelled, you will be able to subscribe again or choose another payment plan.`}
+                confirmText="Cancel Subscription"
+                cancelText="Keep Subscription"
+                triggerTooltip="Cancel Subscription"
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-[11px] text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                  >
+                    Cancel
+                  </Button>
+                }
+                onConfirm={handleCancelSub}
+              />
+            </div>
           </div>
         ) : (
-          <SubscriptionPlansDialog plans={plans} groupName={group.name} />
+          <SubscriptionPlansDialog
+            plans={plans}
+            groupName={group.name}
+            isSubscribed={isSubscribed}
+          />
         )}
       </CardFooter>
     </Card>

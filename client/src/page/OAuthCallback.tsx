@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { oauthService } from "@/services/oauthService";
 import { useAppDispatch } from "@/hooks/hooks";
-import { checkAuth } from "@/redux/slice/authSlice";
+import { setUser } from "@/redux/slice/authSlice";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 
@@ -37,7 +37,7 @@ export default function OAuthCallback() {
     const processOAuth = async () => {
       try {
         const user = await oauthService.exchangeAuthorizationCode(code, state);
-        await dispatch(checkAuth()).unwrap();
+        dispatch(setUser(user));
 
         toast.success("Successfully logged in with ClassBuddy OAuth2!");
 

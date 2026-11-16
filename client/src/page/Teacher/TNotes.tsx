@@ -105,12 +105,8 @@ export default function TNotes() {
         toast.error("Failed to save notes. Please try again.");
       }
     } else {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("content", generatedNotes ?? "");
-
       try {
-        await dispatch(saveNotes(formData)).unwrap();
+        await dispatch(saveNotes({ title, content: generatedNotes ?? "" })).unwrap();
         setTitle("");
         setVisible(false);
         toast.success("Notes saved successfully!");

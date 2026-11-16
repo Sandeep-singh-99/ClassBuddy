@@ -134,11 +134,9 @@ const noteSlice = createSlice({
     });
 
     builder.addCase(deleteNoteById.fulfilled, (state, action) => {
-      const deletedId = action.payload?.id;
-      if (deletedId) {
-        state.notes = state.notes.filter((n) => n.id !== deletedId);
-        if (state.count && state.count > 0) state.count -= 1;
-      }
+      const deletedId = action.meta.arg;
+      state.notes = state.notes.filter((n) => n.id !== deletedId);
+      if (state.count && state.count > 0) state.count -= 1;
     });
   },
 });

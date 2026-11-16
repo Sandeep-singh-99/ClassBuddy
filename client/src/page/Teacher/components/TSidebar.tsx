@@ -9,9 +9,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   useSidebar,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
-import { SidebarThemeToggle } from "@/components/SidebarThemeToggle";
 import {
   Home,
   FilePlus,
@@ -217,32 +215,6 @@ export default function TSideBar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      {/* ── 3. Sidebar Footer / Theme Toggle ────────────────────────────── */}
-      <SidebarFooter
-        className={cn(
-          "border-t border-sidebar-border/40 transition-all duration-300",
-          open ? "p-3" : "p-2"
-        )}
-      >
-        <SidebarMenu className={cn(!open && "items-center")}>
-          <SidebarMenuItem className={cn(!open && "flex justify-center w-full")}>
-            <div
-              className={cn(
-                "flex items-center rounded-xl bg-sidebar-accent/50 border border-sidebar-border/40 transition-all duration-300",
-                open ? "justify-between gap-2 p-1.5" : "justify-center p-1 w-full"
-              )}
-            >
-              {open && (
-                <span className="text-xs font-medium text-muted-foreground pl-2">
-                  Theme Mode
-                </span>
-              )}
-              <SidebarThemeToggle />
-            </div>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }

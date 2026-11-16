@@ -99,6 +99,7 @@ const authSlice = createSlice({
           full_name: action.payload.full_name || action.payload.name || "",
         };
         state.isLoggedIn = true;
+        state.error = null;
       } else {
         state.user = null;
         state.isLoggedIn = false;
