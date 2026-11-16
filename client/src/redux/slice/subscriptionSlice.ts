@@ -104,6 +104,25 @@ export const fetchStudentSubscriptionPlans = createAsyncThunk(
   }
 );
 
+export const cancelSubscription = createAsyncThunk(
+  "subscription/cancel",
+  async (groupId: string, thunkApi) => {
+    try {
+      const response = await axiosClient.post(`/subscription/cancel/${groupId}`);
+      return { groupId, data: response.data };
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.detail ??
+            error.message ??
+            "Cancelling subscription failed"
+        );
+      }
+      return thunkApi.rejectWithValue("Cancelling subscription failed");
+    }
+  }
+);
+
 export const teacherSubscriptionStats = createAsyncThunk(
   "subscription/stats",
   async (_, thunkApi) => {
@@ -217,6 +236,18 @@ const subscriptionSlice = createSlice({
     builder.addCase(fetchStudentSubscriptionPlans.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+    });
+
+    // Cancel Subscription
+    builder.addCase(cancelSubscription.fulfilled, (state, action) => {
+      if (action.payload) {
+        const item = state.studentGroups.find(
+          (g) => g.group.id === action.payload.groupId
+        );
+        if (item && item.subscription) {
+          item.subscription.is_active = false;
+        }
+      }
     });
 
     // Fetch Stats

@@ -181,7 +181,6 @@ def get_all_plans(
             .filter(
                 StudentSubscription.group_id == group.id,
                 StudentSubscription.user_id == current_user.id,
-                StudentSubscription.is_active == True,
             )
             .order_by(StudentSubscription.created_at.desc())
             .first()
@@ -222,6 +221,23 @@ def create_order(
     if not plan:
         raise HTTPException(404, "Plan not found")
 
+    # Prevent paying again if current subscription has not expired and is still active
+    active_sub = (
+        db.query(StudentSubscription)
+        .filter(
+            StudentSubscription.user_id == current_user.id,
+            StudentSubscription.group_id == plan.group_id,
+            StudentSubscription.is_active == True,
+            StudentSubscription.valid_till > datetime.utcnow(),
+        )
+        .first()
+    )
+    if active_sub:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You already have an active subscription for this teacher's group. You can subscribe again after it expires or is cancelled.",
+        )
+
     order = client.order.create(
         {
             "amount": plan.amount * 100,
@@ -253,6 +269,25 @@ def verify_payment(
         raise HTTPException(400, "Invalid payment signature")
 
     plan = db.get(SubscriptionPlan, data.plan_id)
+    if not plan:
+        raise HTTPException(404, "Plan not found")
+
+    # Prevent duplicate payment verification for an active unexpired subscription
+    active_sub = (
+        db.query(StudentSubscription)
+        .filter(
+            StudentSubscription.user_id == user.id,
+            StudentSubscription.group_id == plan.group_id,
+            StudentSubscription.is_active == True,
+            StudentSubscription.valid_till > datetime.utcnow(),
+        )
+        .first()
+    )
+    if active_sub:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You already have an active subscription for this group.",
+        )
 
     valid_till = datetime.utcnow() + timedelta(days=plan.validity_days)
 
@@ -270,6 +305,37 @@ def verify_payment(
     db.commit()
 
     return {"message": "Subscription activated"}
+
+
+@router.post("/cancel/{group_id}")
+def cancel_student_subscription(
+    group_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(status_code=403, detail="Only students can cancel their subscriptions")
+
+    active_sub = (
+        db.query(StudentSubscription)
+        .filter(
+            StudentSubscription.user_id == current_user.id,
+            StudentSubscription.group_id == group_id,
+            StudentSubscription.is_active == True,
+            StudentSubscription.valid_till > datetime.utcnow(),
+        )
+        .order_by(StudentSubscription.created_at.desc())
+        .first()
+    )
+
+    if not active_sub:
+        raise HTTPException(status_code=404, detail="No active unexpired subscription found to cancel")
+
+    active_sub.is_active = False
+    active_sub.updated_at = datetime.utcnow()
+    db.commit()
+
+    return {"message": "Subscription cancelled successfully"}
 
 
 @router.get("/stats")
