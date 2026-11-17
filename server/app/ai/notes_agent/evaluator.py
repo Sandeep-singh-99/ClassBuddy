@@ -1,13 +1,18 @@
-import json
 import re
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 from dotenv import load_dotenv
 from app.ai.notes_agent.state import NotesState
+from pydantic import BaseModel, Field, StrictInt, ValidationError
+
+
+class NotesEvaluation(BaseModel):
+    score: StrictInt = Field(ge=0, le=100)
+    feedback: str = Field(min_length=1, max_length=4000)
 
 load_dotenv()
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1, timeout=45, max_retries=0, max_output_tokens=1500)
 
 
 async def evaluate_notes_node(state: NotesState) -> dict:
@@ -52,22 +57,12 @@ Return ONLY valid JSON with no markdown syntax wrapping or extra text.
     response = await llm.ainvoke([HumanMessage(content=prompt)])
     content = response.content.strip()
 
-    eval_data = {
-        "score": 85,
-        "is_good": True,
-        "feedback": "Notes meet quality standards.",
-    }
-
     try:
         json_match = re.search(r"\{.*\}", content, re.DOTALL)
-        if json_match:
-            parsed = json.loads(json_match.group())
-            eval_data.update(parsed)
-            # Ensure boolean is_good matches score threshold
-            if "score" in parsed and "is_good" not in parsed:
-                eval_data["is_good"] = parsed["score"] >= 75
-    except Exception as e:
-        print(f"Evaluator JSON parse error: {e}")
+        checked = NotesEvaluation.model_validate_json(json_match.group() if json_match else content)
+        eval_data = {**checked.model_dump(), "is_good": checked.score >= 75}
+    except (ValidationError, ValueError, TypeError):
+        eval_data = {"score": 0, "is_good": False, "feedback": "Evaluation was invalid. Return a valid score and feedback."}
 
     return {
         "evaluation": eval_data,

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
-from sqlalchemy.orm import Session
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, contains_eager
 from app.config.db import get_db
-from app.models.auth import User, userRole
+from app.models.auth import User, userRole, group_members
 from app.dependencies.dependencies import get_current_user
 from app.models.teacherInsight import TeacherInsight
 from app.schemas.teacherInsight import TeacherInsightCreate, TeacherInsightResponse, TeacherInsightBase
@@ -80,28 +81,30 @@ def get_teacher_insights(
             detail="Authentication required",
         )
 
-    # Only return groups created by teachers who have explicitly created a TeacherInsight record
+    students_count = (
+        select(func.count())
+        .select_from(group_members.join(User, group_members.c.user_id == User.id))
+        .where(
+            group_members.c.group_id == TeacherInsight.id,
+            User.role == userRole.STUDENT,
+        )
+        .correlate(TeacherInsight)
+        .scalar_subquery()
+    )
     insights = (
-        db.query(TeacherInsight)
+        db.query(TeacherInsight, students_count)
         .join(User, TeacherInsight.user_id == User.id)
+        .options(contains_eager(TeacherInsight.owner))
+        .order_by(TeacherInsight.created_at.desc())
         .all()
     )
 
     if not insights:
         return []
 
-    insights.sort(key=lambda x: x.created_at, reverse=True)
-
     result = []
-    for insight in insights:
+    for insight, count in insights:
         owner_data = UserResponse.from_orm(insight.owner)
-        student_members = [
-            UserResponse.from_orm(member)
-            for member in (insight.members or [])
-            if hasattr(member, "role") and (
-                member.role == userRole.STUDENT or str(member.role) == "student"
-            )
-        ]
 
         insight_response = TeacherInsightResponse(
             id=str(insight.id),
@@ -111,8 +114,7 @@ def get_teacher_insights(
             created_at=insight.created_at,
             updated_at=insight.updated_at,
             owner=owner_data,
-            members=student_members,
-            students_count=len(student_members),
+            students_count=count,
         )
         result.append(insight_response)
 

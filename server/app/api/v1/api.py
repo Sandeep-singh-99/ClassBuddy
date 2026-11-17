@@ -15,6 +15,7 @@ from app.api.v1.endpoints import (
     # inngest_route,
     interviewPerp,
     docsupload,
+    document_qa,
     health,
     notes,
     oauth,
@@ -62,5 +63,6 @@ app_router.include_router(
     interviewPerp.router, prefix="/interview-prep", tags=["Interview preparation"]
 )
 app_router.include_router(docsupload.router, prefix="/docs", tags=["Document Upload"])
+app_router.include_router(document_qa.router, prefix="/document-qa", tags=["Document Q&A"])
 app_router.include_router(health.router)
 app_router.include_router(notes.router, prefix='/notes', tags=['Notes'])

@@ -129,6 +129,8 @@ export default function Docs() {
             size="icon"
             onClick={() => dispatch(DocsFetch())}
             title="Refresh Documents"
+            aria-label="Refresh documents"
+            disabled={loading}
             className="border-border hover:bg-muted"
           >
             <RotateCw className={`h-4 w-4 ${loading ? "animate-spin text-primary" : ""}`} />
@@ -234,7 +236,7 @@ export default function Docs() {
       </div>
 
       {/* Loading Skeleton */}
-      {loading && (
+      {loading && docs.length === 0 && (
         <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
           {Array.from({ length: 6 }).map((_, index) => (
             <DocCardSkeleton key={index} />
@@ -261,7 +263,7 @@ export default function Docs() {
       )}
 
       {/* Document Grid & List Views */}
-      {!loading && processedDocs.length > 0 && (
+      {processedDocs.length > 0 && (
         <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
           {processedDocs.map((doc) => {
             const { ext, color, icon: FileTypeIcon } = getFileTypeInfo(doc.filename);

@@ -90,6 +90,7 @@ export default function DocsForm() {
             </DialogTitle>
             <DialogDescription className="text-muted-foreground text-sm">
               Upload course PDFs, notes, slides, or documents for student access.
+              {" "}Text-based PDFs up to 10 MB and 100 pages also enable Document Q&A.
             </DialogDescription>
           </DialogHeader>
         </div>

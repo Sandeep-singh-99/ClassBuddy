@@ -1,95 +1,50 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+import asyncio
+import inngest
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-
-from app.models.assignment import Assignment, AssignmentQuestion
-from app.models.auth import User, userRole
-from app.dependencies.dependencies import get_db, get_current_user
-from dotenv import load_dotenv
-
-from app.core.rate_limiter import limiter
+from app.config.db import get_db
 from app.core.inngest import inngest_client
-import inngest
-
-load_dotenv()
-
-
+from app.core.rate_limiter import ai_rate_limit_key, limiter
 from app.dependencies.require_teacher_group import require_teacher_group
+from app.models.assignment import Assignment, AssignmentQuestion
+from app.models.auth import User
 
-# --------------------------
-# FastAPI Router
-# --------------------------
 router = APIRouter()
 
 
-@router.post(
-    "/{assignment_id}"
-)
-@limiter.limit("10/minute")
-async def generate_question(
-    request: Request,
-    assignment_id: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_teacher_group),
-):
-    """Generate structured assignment questions (JSON format)."""
-
-
-    assignment = (
-        db.query(Assignment)
-        .filter(Assignment.id == assignment_id, Assignment.owner_id == current_user.id)
-        .first()
-    )
+@router.post("/{assignment_id}")
+@limiter.limit("10/minute", key_func=ai_rate_limit_key)
+async def generate_question(request: Request, assignment_id: str, db: Session = Depends(get_db), current_user: User = Depends(require_teacher_group)):
+    assignment = db.query(Assignment).filter_by(id=assignment_id, owner_id=current_user.id).first()
     if not assignment:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Assignment not found."
-        )
-
-    # Prevent duplicate generation
-    existing = (
-        db.query(AssignmentQuestion)
-        .filter(AssignmentQuestion.assignment_id == assignment_id)
-        .first()
-    )
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Questions already generated for this assignment.",
-        )
-
-    if not assignment.description:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Assignment description is empty.",
-        )
-
+        raise HTTPException(404, "Assignment not found.")
+    if db.query(AssignmentQuestion).filter_by(assignment_id=assignment_id).first():
+        raise HTTPException(400, "Questions already generated for this assignment.")
+    if not assignment.description or len(assignment.description) > 10_000:
+        raise HTTPException(400, "Assignment description must contain 1 to 10,000 characters.")
+    description = assignment.description
+    claimed = db.query(Assignment).filter(
+        Assignment.id == assignment_id, Assignment.owner_id == current_user.id,
+        or_(Assignment.is_generating.is_(False), Assignment.is_generating.is_(None)),
+    ).update({"is_generating": True}, synchronize_session=False)
+    if not claimed:
+        db.rollback()
+        raise HTTPException(409, "Questions are already being generated.")
+    db.commit()
+    bind = db.get_bind()
+    db.close()
     try:
-        # Prevent starting again if already generating
-        if assignment.is_generating:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Questions are already being generated for this assignment.",
-            )
-
-        assignment.is_generating = True
-        db.commit()
-        db.refresh(assignment)
-
-        # Trigger Inngest Event
-        await inngest_client.send(
-            inngest.Event(
-                name="assignment/question.generate",
-                data={
-                    "assignment_id": assignment.id,
-                    "description": assignment.description,
-                },
-            )
-        )
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error starting background job: {str(e)}",
-        )
-
-    return {"message": "Assignment question generation started in the background.", "assignment_id": assignment.id}
+        async with asyncio.timeout(15):
+            await inngest_client.send(inngest.Event(
+                name="assignment/question.generate", data={"assignment_id": assignment_id, "description": description},
+            ))
+    except (Exception, asyncio.CancelledError) as error:
+        with Session(bind=bind) as session:
+            session.query(Assignment).filter_by(id=assignment_id).update({"is_generating": False})
+            session.commit()
+        if isinstance(error, asyncio.CancelledError):
+            raise
+        raise HTTPException(503, "Could not queue question generation. Please retry.")
+    return {"message": "Assignment question generation started in the background.", "assignment_id": assignment_id}

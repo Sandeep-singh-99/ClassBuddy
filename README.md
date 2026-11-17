@@ -183,7 +183,7 @@ graph TD
         IndustryAgent[Career Insights Agent]
         InterviewAgent[Mock Interview Agent]
         EvaluatorNode[Self-Evaluation & Quality Loop]
-        LLM[Gemini 2.5 Flash / Groq / HuggingFace]
+        LLM[Gemini 2.5 Flash / Groq]
         TavilyAPI[Tavily Search API]
     end
 
@@ -827,6 +827,41 @@ VITE_OAUTH_REDIRECT_URI=http://localhost:5173/oauth/callback
 ```
 
 ---
+
+## Document Q&A with page citations
+
+Teachers and students can open **Document Q&A** from their dashboard sidebar. Teachers upload course PDFs through **Resources**; Inngest extracts selectable text into page-aware chunks. Students must belong to the selected classroom and have an active subscription to that classroom. Teachers can preview answers for their own classroom.
+
+Setup after pulling this feature:
+
+1. In `server`, run `uv sync` and `uv run alembic upgrade head`.
+2. Run the API and the existing Inngest dev server: `npx inngest-cli@latest dev -u http://127.0.0.1:8000/api/inngest`.
+3. Configure the existing `GOOGLE_API_KEY` for Gemini answers and Cloudinary credentials for uploads.
+4. Upload a **text-based PDF up to 10 MB and 100 pages**. The Q&A workspace shows preparation status and lets the owner retry failed or stalled jobs.
+
+With `docker-compose.dev.yml`, run the Inngest CLI on the host machine. The API container uses `host.docker.internal:8288` for Inngest API and event requests; `localhost:8288` inside the container would point to the container itself. Keep the CLI terminal running while using background jobs.
+
+Answers include validated quotations, document titles, and page links. If keywords find no passages, retrieval supplies the opening passage of up to six recent indexed documents so questions such as "What is the person's name?" can use a résumé header. If no indexed text is available, no LLM call is made. The model must decline questions unsupported by the excerpts. Citation IDs and quoted text are checked against the retrieved passages before an answer is returned.
+
+The first version uses keyword retrieval within the selected classroom; paraphrases without matching course terms may not retrieve relevant material. It does not perform OCR or index other file formats. Previously uploaded files remain readable but need to be uploaded again as PDFs to enable Q&A. Original PDF bytes are staged in the database for background processing and removed after successful indexing; failed jobs retain them for retry until the document is deleted. Extracted text and chunks are deleted with the document. Page navigation depends on the browser's PDF viewer.
+
+API routes under `/api/v1/document-qa`:
+
+- `GET /groups`: accessible classroom names and subscription availability.
+- `GET /groups/{group_id}/documents`: document preparation status (owner or subscribed member).
+- `POST /groups/{group_id}/ask`: `{ "question": "..." }`, returning an answer and supporting page citations.
+- `POST /documents/{document_id}/retry`: owner-only indexing retry.
+
+## AI reliability and grading
+
+- Assignment grading requires membership in the assignment's classroom. One database-backed reservation prevents concurrent grading of the same submission; stale reservations can be retried after five minutes. Pending evaluations are excluded from completion counts and grade history.
+- Gemini returns bounded integer marks for each stored question ID. The API validates those IDs and calculates the total itself. Provider errors, invalid output, and interrupted evaluations do not save a zero grade or consume the student's attempt.
+- Generation routes use per-user, per-worker rate limits, input limits, output token caps, and deadlines. Limits are not global quotas across workers; configure shared Redis rate-limit storage before relying on a global usage budget.
+- Database connections are released while notes, grades, and industry reports wait for AI. Synchronous database and Redis work in background steps runs in worker threads.
+- Assignment and interview jobs mark exhausted failures as retryable/error states. Interview generation and repair both use the configured Gemini or Groq model; the undeclared Hugging Face path was removed. Invalid evaluations are never treated as approval.
+- Quiz question and history endpoints omit correct answers. Submitting a quiz returns the server score and review material; subsequent review requires ownership and a submitted attempt. A submitted quiz can be reviewed, while a new practice attempt requires a new quiz.
+
+Apply migration `c8a5d4e1206b` with `uv run alembic upgrade head` before running the updated API. It preserves existing grades and adds uniqueness constraints for submissions and generated question sets. If duplicate legacy rows exist, the migration fails without deleting them; resolve those duplicates deliberately before retrying. Restart the Inngest dev server/API so the failure handlers are synchronized.
 
 ## 🧪 Testing & Quality Assurance
 

@@ -19,7 +19,7 @@ async def student_submissions_stats(db: Session = Depends(get_db), current_user:
     
     submissions = (
         db.query(Submission)
-        .filter(Submission.student_id == current_user.id)
+        .filter(Submission.student_id == current_user.id, Submission.status == "completed")
         .order_by(Submission.submitted_at.asc())
         .all()
     )
@@ -30,7 +30,7 @@ async def student_submissions_stats(db: Session = Depends(get_db), current_user:
     completion_stats = (
         db.query(func.date(Submission.submitted_at).label("date"),
                  func.count(Submission.id).label("count"))
-        .filter(Submission.student_id == current_user.id)
+        .filter(Submission.student_id == current_user.id, Submission.status == "completed")
         .group_by(func.date(Submission.submitted_at))
         .order_by(func.date(Submission.submitted_at).asc())
         .all()
@@ -59,7 +59,7 @@ def get_student_performance_stats(
         # Fetch all submissions by student
         submissions = (
             db.query(Submission)
-            .filter(Submission.student_id == current_user.id)
+            .filter(Submission.student_id == current_user.id, Submission.status == "completed")
             .all()
         )
 
@@ -78,7 +78,7 @@ def get_student_performance_stats(
                 extract('month', Submission.submitted_at).label('month'),
                 func.count(Submission.id).label('count')
             )
-            .filter(Submission.student_id == current_user.id)
+            .filter(Submission.student_id == current_user.id, Submission.status == "completed")
             .group_by('month')
             .all()
         )
@@ -126,7 +126,7 @@ def get_student_assignments(
     # Fetch all student's submissions
     student_submissions = (
         db.query(Submission)
-        .filter(Submission.student_id == current_user.id)
+        .filter(Submission.student_id == current_user.id, Submission.status == "completed")
         .all()
     )
 
@@ -156,7 +156,7 @@ async def get_submissions(assignment_id: str, db: Session = Depends(get_db), cur
     if current_user.role != userRole.STUDENT:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view submissions")
     
-    submissions = db.query(Submission).filter(Submission.assignment_id == assignment_id, Submission.student_id == current_user.id).all()
+    submissions = db.query(Submission).filter(Submission.assignment_id == assignment_id, Submission.student_id == current_user.id, Submission.status == "completed").all()
 
     if not submissions:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No submissions found for this assignment")
@@ -180,6 +180,9 @@ async def assignment_stats(
     if not assignment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Assignment not found")
 
+    if assignment.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not own this assignment")
+
     group = assignment.group
     if not group:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found for this assignment")
@@ -188,7 +191,7 @@ async def assignment_stats(
 
     # Count students who submitted
     students_completed = db.query(Submission).filter(
-        Submission.assignment_id == assignment_id
+        Submission.assignment_id == assignment_id, Submission.status == "completed"
     ).count()
 
     return {
@@ -219,6 +222,9 @@ async def get_assignment_marks(
     if not assignment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Assignment not found")
 
+    if assignment.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not own this assignment")
+
     group = assignment.group
     if not group:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
@@ -227,7 +233,7 @@ async def get_assignment_marks(
     submissions = (
         db.query(Submission)
         .join(User, Submission.student_id == User.id)
-        .filter(Submission.assignment_id == assignment_id)
+        .filter(Submission.assignment_id == assignment_id, Submission.status == "completed")
         .options(joinedload(Submission.student))
         .all()
     )
@@ -271,7 +277,7 @@ async def total_submissions(
 
     total_submissions = (
         db.query(Submission)
-        .filter(Submission.assignment_id.in_(assignment_ids))
+        .filter(Submission.assignment_id.in_(assignment_ids), Submission.status == "completed")
         .count()
     )
 

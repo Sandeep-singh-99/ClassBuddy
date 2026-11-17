@@ -20,3 +20,4 @@ class DocsUpload(Base):
 
     owner = relationship("User", back_populates="docsuploads")
     group = relationship("TeacherInsight", back_populates="docsuploads")
+    qa_index = relationship("DocumentIndex", back_populates="document", uselist=False, cascade="all, delete-orphan")

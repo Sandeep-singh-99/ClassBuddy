@@ -18,6 +18,7 @@ interface QuizResultProps {
   result: {
     id?: string;
     name?: string;
+    score?: number;
     questions?: {
       question: string;
       answer: string;
@@ -55,11 +56,11 @@ export default function QuizResult({ result, onStartNew }: QuizResultProps) {
       const mapped = questions.map((q, idx) => {
         const userAnswer = userAnswers[idx];
         // Check matching answer
-        const isCorrect = userAnswer ? userAnswer.startsWith(q.answer) : false;
+        const isCorrect = Boolean(userAnswer && q.options.includes(userAnswer) && (userAnswer === q.answer || userAnswer.split(". ")[0] === q.answer));
         if (isCorrect) correct++;
 
         const correctAnswerText =
-          q.options?.find((opt) => opt.startsWith(q.answer)) || q.answer;
+          q.options?.find((opt) => opt === q.answer || opt.split(". ")[0] === q.answer) || q.answer;
 
         return {
           id: idx,
@@ -73,7 +74,7 @@ export default function QuizResult({ result, onStartNew }: QuizResultProps) {
         };
       });
 
-      const scorePercent = total > 0 ? ((correct / total) * 100).toFixed(1) : "0";
+      const scorePercent = result.score !== undefined ? String(result.score) : total > 0 ? ((correct / total) * 100).toFixed(1) : "0";
 
       return {
         totalQuestions: total,

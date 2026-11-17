@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.config.db import Base
 from uuid import uuid4
@@ -6,6 +6,10 @@ from datetime import datetime, timedelta
 
 class StudentSubscription(Base):
     __tablename__ = "student_subscriptions"
+    __table_args__ = (
+        UniqueConstraint("razorpay_order_id", name="uq_student_subscriptions_order"),
+        UniqueConstraint("razorpay_payment_id", name="uq_student_subscriptions_payment"),
+    )
 
     id = Column(String, primary_key=True, index=True, default=lambda: str(uuid4()))
 
@@ -17,7 +21,7 @@ class StudentSubscription(Base):
     start_date = Column(DateTime, default=datetime.utcnow)
     valid_till = Column(DateTime)
     is_active = Column(Boolean, default=True)
-    
+
     razorpay_order_id = Column(String, nullable=True)
     razorpay_payment_id = Column(String, nullable=True)
 
@@ -27,4 +31,4 @@ class StudentSubscription(Base):
     user = relationship("User", back_populates="student_subscriptions")
     group = relationship("TeacherInsight", back_populates="student_subscriptions")
     plan = relationship("SubscriptionPlan", back_populates="student_subscriptions")
-    
+

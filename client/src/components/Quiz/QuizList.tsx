@@ -25,9 +25,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { DeleteInterviewPrep } from "@/redux/slice/interviewSlice";
+import { DeleteInterviewPrep, fetchInterviewReview, setQuizReview } from "@/redux/slice/interviewSlice";
 import QuizResult from "./QuizResult";
 import QuizCardSkeleton from "@/components/skeletons/QuizCardSkeleton";
 import ButtonSkeleton from "@/components/skeletons/ButtonSkeleton";
@@ -39,12 +39,17 @@ type StatusFilter = "all" | "completed" | "generating" | "error";
 export default function QuizList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { data, loading } = useAppSelector((state) => state.interview);
+  const { data, loading, review, reviewLoading, reviewError } = useAppSelector((state) => state.interview);
 
-  const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
+  const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  function showResults(id: string) {
+    setSelectedQuiz(id);
+    void dispatch(fetchInterviewReview(id));
+  }
 
   // Filter quizzes by search query & status
   const filteredQuizzes = useMemo(() => {
@@ -167,6 +172,7 @@ export default function QuizList() {
                 const isGenerating = quiz.status === "generating";
                 const isError = quiz.status === "error";
                 const isCompleted = quiz.status === "completed" || !quiz.status;
+                const hasSubmitted = Boolean(quiz.submitted_at || (quiz.user_answers && Object.keys(quiz.user_answers).length));
 
                 let displayScore = quiz.score;
                 if (displayScore <= 2 && displayScore > 0) displayScore = displayScore * 50;
@@ -203,7 +209,7 @@ export default function QuizList() {
                           <AlertCircle className="h-3 w-3" /> Error
                         </Badge>
                       )}
-                      {isCompleted && (
+                      {isCompleted && hasSubmitted && (
                         <Badge variant="outline" className={`gap-1 font-semibold text-xs border ${getScoreColor(quiz.score)}`}>
                           <Award className="h-3.5 w-3.5" /> {displayScore}%
                         </Badge>
@@ -211,7 +217,7 @@ export default function QuizList() {
                     </div>
 
                     {/* Score Progress Bar if Completed */}
-                    {isCompleted && (
+                    {isCompleted && hasSubmitted && (
                       <div className="space-y-1.5">
                         <div className="flex justify-between text-xs font-medium">
                           <span className="text-muted-foreground">Accuracy Score</span>
@@ -240,7 +246,8 @@ export default function QuizList() {
                               variant="ghost"
                               size="sm"
                               className="h-8 px-2.5 text-xs gap-1 hover:bg-primary/10 hover:text-primary"
-                              onClick={() => setSelectedQuiz(quiz)}
+                              disabled={!hasSubmitted}
+                              onClick={() => showResults(quiz.id)}
                               title="View Quiz Results"
                             >
                               <Eye className="h-3.5 w-3.5" />
@@ -251,11 +258,11 @@ export default function QuizList() {
                               variant="secondary"
                               size="sm"
                               className="h-8 px-2.5 text-xs gap-1 bg-primary/10 text-primary hover:bg-primary/20"
-                              onClick={() => navigate(`/dashboard-panel/mock/${quiz.id}`)}
-                              title="Take / Retake Quiz"
+                              onClick={() => hasSubmitted ? showResults(quiz.id) : navigate(`/dashboard-panel/mock/${quiz.id}`)}
+                              title={hasSubmitted ? "Review submitted quiz" : "Take quiz"}
                             >
                               <Play className="h-3.5 w-3.5" />
-                              <span>Practice</span>
+                              <span>{hasSubmitted ? "Review" : "Practice"}</span>
                             </Button>
                           </>
                         )}
@@ -293,14 +300,17 @@ export default function QuizList() {
           )}
 
           {/* Quiz Result Modal */}
-          <Dialog open={!!selectedQuiz} onOpenChange={() => setSelectedQuiz(null)}>
+          <Dialog open={!!selectedQuiz} onOpenChange={() => { setSelectedQuiz(null); dispatch(setQuizReview(null)); }}>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 border-border/80 bg-card text-card-foreground shadow-2xl rounded-2xl">
+              <DialogTitle className="sr-only">Quiz results</DialogTitle>
+              <DialogDescription className="sr-only">Your server-calculated score, answers, and explanations.</DialogDescription>
               {selectedQuiz && (
                 <div className="p-6">
-                  <QuizResult
-                    result={selectedQuiz}
+                  {review ? <QuizResult
+                    result={review}
                     onStartNew={() => setSelectedQuiz(null)}
-                  />
+                  /> : <p role="status">{reviewLoading ? "Loading results…" : reviewError || "Results are unavailable."}</p>}
+                  {!review && !reviewLoading && <Button onClick={() => dispatch(fetchInterviewReview(selectedQuiz))}>Retry loading results</Button>}
                 </div>
               )}
             </DialogContent>

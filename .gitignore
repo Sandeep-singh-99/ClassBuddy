@@ -9,5 +9,3 @@ __pycache__/
 .env.example
 
 class-me.md
-
-server/tests/

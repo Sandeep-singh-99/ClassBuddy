@@ -21,6 +21,7 @@ import {
   GraduationCap,
   ChevronRight,
   MessageCircle,
+  BookOpen,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -56,6 +57,12 @@ const MenuOptions = [
     url: "/t-dashboard/docs",
     icon: FolderOpen,
     badge: null,
+  },
+  {
+    title: "Document Q&A",
+    url: "/t-dashboard/document-qa",
+    icon: BookOpen,
+    badge: "AI",
   },
   {
     title: "Assignments",

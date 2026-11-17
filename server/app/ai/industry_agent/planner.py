@@ -8,7 +8,7 @@ from app.ai.industry_agent.state import IndustryState
 load_dotenv()
 
 # Using Groq AI ChatGroq model
-llm = ChatGroq(model="groq/compound", temperature=0.2)
+llm = ChatGroq(model="groq/compound", temperature=0.2, timeout=45, max_retries=0, max_tokens=1000)
 
 
 def extract_industry_name(raw_industry) -> str:

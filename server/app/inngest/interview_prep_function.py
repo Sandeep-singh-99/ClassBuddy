@@ -1,68 +1,54 @@
+import asyncio
+from datetime import datetime
 import inngest
-from app.core import inngest as core_inngest
-from app.config import db
+
+from app.core.inngest import inngest_client
+from app.config.db import SessionLocal
 from app.models.InterviewPreparation import InterviewPrep, Status
 from app.ai.interview_graph import graph
 from langchain_core.messages import HumanMessage
-import json
-from datetime import datetime
+from app.schemas.interviewpreparation import QuizPayload
 
 
-@core_inngest.inngest_client.create_function(
+async def interview_generation_failed(ctx: inngest.Context):
+    prep_id = ctx.event.data["event"]["data"]["interview_prep_id"]
+    def fail():
+        with SessionLocal() as session:
+            session.query(InterviewPrep).filter(InterviewPrep.id == prep_id, InterviewPrep.status != Status.COMPLETED).update({
+                "status": Status.ERROR, "updated_at": datetime.utcnow(),
+            })
+            session.commit()
+    await asyncio.to_thread(fail)
+
+
+@inngest_client.create_function(
     fn_id="generate-interview-questions",
     trigger=inngest.TriggerEvent(event="interview/prep.create"),
+    on_failure=interview_generation_failed,
+    retries=2,
 )
 async def generate_interview_questions(ctx: inngest.Context):
+    prep_id = ctx.event.data["interview_prep_id"]
 
-    interview_prep_id = ctx.event.data["interview_prep_id"]
-    description = ctx.event.data["description"]
-
-    # AI Generation Step
     async def run_ai_generation():
-        inputs = {"description": [HumanMessage(content=description)]}
-        final_state = await graph.ainvoke(inputs)
-        quiz_raw = final_state["quiz"][-1].content
-        return json.loads(quiz_raw)
+        async with asyncio.timeout(120):
+            state = await graph.ainvoke({"description": [HumanMessage(content=ctx.event.data["description"])]})
+        return QuizPayload.model_validate_json(state["quiz"][-1].content).model_dump()
 
-    quiz_json = await ctx.step.run("ai-generate-questions", run_ai_generation)
+    payload = await ctx.step.run("ai-generate-questions", run_ai_generation)
 
-    # DB Update Step
-    def update_db():
-        with db.SessionLocal() as session:
-            interview_prep = (
-                session.query(InterviewPrep)
-                .filter(InterviewPrep.id == interview_prep_id)
-                .first()
-            )
-            if interview_prep:
-                interview_prep.questions = quiz_json["questions"]
-                interview_prep.status = Status.COMPLETED
-                interview_prep.updated_at = datetime.utcnow()
+    async def update_db():
+        def persist():
+            with SessionLocal() as session:
+                prep = session.query(InterviewPrep).filter_by(id=prep_id).with_for_update().first()
+                if not prep or prep.status == Status.COMPLETED:
+                    return False
+                prep.questions = payload["questions"]
+                prep.status = Status.COMPLETED
+                prep.updated_at = datetime.utcnow()
                 session.commit()
                 return True
-            return False
+        return await asyncio.to_thread(persist)
 
-    try:
-        success = await ctx.step.run("db-update-questions", update_db)
-    except Exception as e:
-
-        def update_error():
-            with db.SessionLocal() as session:
-                interview_prep = (
-                    session.query(InterviewPrep)
-                    .filter(InterviewPrep.id == interview_prep_id)
-                    .first()
-                )
-                if interview_prep:
-                    interview_prep.status = Status.ERROR
-                    session.commit()
-
-        await ctx.step.run("db-update-error", update_error)
-        raise e
-
-    return {
-        "status": "success",
-        "interview_prep_id": interview_prep_id,
-        "questions_generated": len(quiz_json.get("questions", [])),
-        "questions": quiz_json.get("questions", []),
-    }
+    saved = await ctx.step.run("db-update-questions", update_db)
+    return {"status": "success" if saved else "skipped", "interview_prep_id": prep_id, "questions_generated": len(payload["questions"])}

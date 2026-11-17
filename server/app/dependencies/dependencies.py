@@ -69,6 +69,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
             headers={"WWW-Authenticate": "Bearer"}
         )
 
+    request.state.user_id = user.id
     return user
 
 def get_optional_current_user(request: Request, db: Session = Depends(get_db)) -> Optional[User]:

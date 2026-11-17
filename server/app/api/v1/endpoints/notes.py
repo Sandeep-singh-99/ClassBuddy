@@ -64,7 +64,7 @@ def get_note_by_id(
     db: Session = Depends(get_db), 
     current_user: User = Depends(get_current_user)
 ):
-    return NotesService.get_note_by_id(db, note_id)
+    return NotesService.get_note_by_id(db, note_id, current_user)
 
 
 

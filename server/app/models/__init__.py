@@ -4,10 +4,12 @@ from app.models.studentInsight import StudentInsight
 from app.models.notes import Note
 from app.models.InterviewPreparation import InterviewPrep
 from app.models.docsupload import DocsUpload
+from app.models.document_index import DocumentIndex, DocumentChunk
 from app.models.assignment import Assignment, AssignmentQuestion, Submission
 from app.models.groupMessage import GroupMessage
 from app.models.student_subscription import StudentSubscription
 from app.models.subscription import SubscriptionPlan
+from app.models.payment_order import PaymentOrder
 from app.models.oauth_client import OAuthClient, ClientType
 from app.models.oauth_authorization_code import OAuthAuthorizationCode
 from app.models.oauth_refresh_token import OAuthRefreshToken

@@ -7,7 +7,7 @@ from app.ai.notes_agent.state import NotesState
 
 load_dotenv()
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2, timeout=45, max_retries=0, max_output_tokens=1000)
 
 
 async def planner_node(state: NotesState) -> dict:

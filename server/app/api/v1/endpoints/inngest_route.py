@@ -3,6 +3,7 @@ from app.core.inngest import inngest_client
 from app.inngest.student_insight_function import generate_student_insight
 from app.inngest.interview_prep_function import generate_interview_questions
 from app.inngest.assignment_function import generate_assignment_questions
+from app.inngest.document_index_function import index_classroom_document
 import inngest.fast_api
 
 router = APIRouter()
@@ -14,6 +15,7 @@ inngest.fast_api.serve(
         generate_student_insight,
         generate_interview_questions,
         generate_assignment_questions,
+        index_classroom_document,
     ],
     serve_path="/api/inngest",
 )

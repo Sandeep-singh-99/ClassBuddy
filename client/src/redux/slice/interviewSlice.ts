@@ -2,6 +2,17 @@ import { axiosClient } from "@/helper/axiosClient";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
+import type { QuizReview } from "@/types/quiz";
+
+export const fetchInterviewReview = createAsyncThunk<QuizReview, string, { rejectValue: string }>(
+  "interview/review", async (id, { rejectWithValue }) => {
+    try { return (await axiosClient.get<QuizReview>(`/interview-prep/${id}/result`)).data; }
+    catch (error) {
+      return rejectWithValue(error instanceof AxiosError && typeof error.response?.data?.detail === "string"
+        ? error.response.data.detail : "Could not load quiz results. Please retry.");
+    }
+  },
+);
 
 export const InterviewPrepCreate = createAsyncThunk(
   "interview/create",
@@ -73,20 +84,45 @@ interface InterviewPrepState {
   loading: boolean;
   error: string | null;
   data: any | null;
+  review: QuizReview | null;
+  reviewLoading: boolean;
+  reviewError: string | null;
+  reviewRequestId?: string;
 }
 
 const initialState: InterviewPrepState = {
   loading: false,
   error: null,
   data: null,
+  review: null,
+  reviewLoading: false,
+  reviewError: null,
 };
 
 const interviewSlice = createSlice({
   name: "interview",
   initialState,
-  reducers: {},
+  reducers: {
+    setQuizReview(state, action: PayloadAction<QuizReview | null>) {
+      state.review = action.payload;
+      state.reviewError = null;
+      state.reviewLoading = false;
+      state.reviewRequestId = undefined;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchInterviewReview.pending, (state, action) => {
+        state.review = null; state.reviewLoading = true; state.reviewError = null; state.reviewRequestId = action.meta.requestId;
+      })
+      .addCase(fetchInterviewReview.fulfilled, (state, action) => {
+        if (state.reviewRequestId !== action.meta.requestId) return;
+        state.review = action.payload; state.reviewLoading = false;
+      })
+      .addCase(fetchInterviewReview.rejected, (state, action) => {
+        if (state.reviewRequestId !== action.meta.requestId) return;
+        state.reviewLoading = false; state.reviewError = action.payload ?? "Could not load quiz results.";
+      })
       .addCase(InterviewPrepCreate.pending, (state) => {
         state.loading = true;
       })
@@ -155,4 +191,5 @@ const interviewSlice = createSlice({
 });
 
 export default interviewSlice.reducer;
+export const { setQuizReview } = interviewSlice.actions;
 

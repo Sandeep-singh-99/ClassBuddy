@@ -1,7 +1,5 @@
-import json
-import os
+import asyncio
 from datetime import datetime
-from sqlalchemy.orm import Session
 import inngest
 from app.core import inngest as core_inngest
 from app.config import db
@@ -9,6 +7,7 @@ from app.models import StudentInsight
 from app.dependencies import redis_client
 from langchain_core.messages import HumanMessage
 from app.ai import industry_graph
+from app.schemas.studentInsight import StudentInsightBase
 
 
 @core_inngest.inngest_client.create_function(
@@ -42,7 +41,9 @@ async def generate_student_insight(ctx: inngest.Context):
                     {"user_id": str(r.user_id), "industry": r.industry} for r in results
                 ]
 
-        user_tasks = await step.run("fetch-refresh-targets", fetch_all_targets)
+        async def fetch_targets():
+            return await asyncio.to_thread(fetch_all_targets)
+        user_tasks = await step.run("fetch-refresh-targets", fetch_targets)
 
     # 2. Loop through tasks (Fan-out pattern is better for scale, but this works for starters)
     for task in user_tasks:
@@ -53,9 +54,10 @@ async def generate_student_insight(ctx: inngest.Context):
         async def run_ai():
             state = {"industry": [HumanMessage(content=current_industry)]}
             # Use ainvoke for async Gemini calls
-            result = await industry_graph.industry_graph.ainvoke(state)
+            async with asyncio.timeout(120):
+                result = await industry_graph.industry_graph.ainvoke(state)
             content = result["getIndustry"][-1].content
-            return json.loads(content)
+            return StudentInsightBase.model_validate_json(content).model_dump()
 
         # Unique step ID per user to avoid Inngest memoization conflicts
         insight_data = await step.run(f"ai-research-{current_user_id}", run_ai)
@@ -75,8 +77,7 @@ async def generate_student_insight(ctx: inngest.Context):
                 if insight:
                     # Update existing
                     for key, value in insight_data.items():
-                        if hasattr(insight, key):
-                            setattr(insight, key, value)
+                        setattr(insight, key, value)
                     insight.updated_at = datetime.utcnow()
                 else:
                     # Create new
@@ -90,14 +91,13 @@ async def generate_student_insight(ctx: inngest.Context):
                 session.commit()
                 return True
 
-        await step.run(f"db-sync-{current_user_id}", sync_to_db)
+        async def persist_insight():
+            return await asyncio.to_thread(sync_to_db)
+        await step.run(f"db-sync-{current_user_id}", persist_insight)
 
         # Cache Clear Step
-        await step.run(
-            f"clear-cache-{current_user_id}",
-            lambda: redis_client.get_redis_client().delete(
-                f"student_insights:{current_user_id}"
-            ),
-        )
+        async def clear_cache():
+            return await asyncio.to_thread(redis_client.get_redis_client().delete, f"student_insights:{current_user_id}")
+        await step.run(f"clear-cache-{current_user_id}", clear_cache)
 
     return {"status": "success", "count": len(user_tasks)}

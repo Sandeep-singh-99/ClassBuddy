@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException, status
 from datetime import datetime, timezone
-from app.models.auth import User
+from app.models.auth import User, group_members
 from app.schemas.auth import userRole
 from app.models.notes import Note
 from app.models.teacherInsight import TeacherInsight
@@ -38,10 +38,32 @@ class NotesService:
         return {"count": len(teacher_notes), "notes": teacher_notes}
 
     @staticmethod
-    def get_note_by_id(db: Session, note_id: str) -> Note:
+    def get_note_by_id(db: Session, note_id: str, current_user: User) -> Note:
+        if not current_user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+
         note = db.query(Note).filter(Note.id == note_id).first()
         if not note:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+
+        # Owner teacher can always access
+        if note.owner_id == current_user.id:
+            return note
+
+        # Verify group membership for students
+        is_member = (
+            db.query(group_members)
+            .filter(
+                group_members.c.group_id == note.group_id,
+                group_members.c.user_id == current_user.id,
+            )
+            .first()
+            is not None
+        )
+
+        if not is_member:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this note")
+
         return note
 
     @staticmethod
