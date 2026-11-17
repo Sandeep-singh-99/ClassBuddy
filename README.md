@@ -72,14 +72,11 @@ The mobile app integrates directly with the authorization server via deep linkin
 <div align="center">
 
 ### Educator & Student Interactive Hub
-![ClassBuddy Dashboard Showcase](./screenshot/Screenshot%202026-04-04%20231251.png)
+![ClassBuddy Dashboard Showcase](./screenshot/image.png)
 *Unified classroom dashboard with analytics, notes studio, assignment distribution, and group management.*
 
 <br/>
 
-### Real-Time Classroom Chat & Collaborative Study
-![ClassBuddy Real-Time Chat](./screenshot/Screenshot%202026-04-04%20231313.png)
-*High-throughput group channels backed by WebSockets, Redis Pub/Sub, and persistent PostgreSQL storage.*
 
 </div>
 
