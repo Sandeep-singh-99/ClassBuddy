@@ -34,6 +34,7 @@ class InterviewPrep(Base):
     nullable=False,
     )
     user_answers = Column(JSON, nullable=False, default=dict)
+    submitted_at = Column(DateTime, nullable=True)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

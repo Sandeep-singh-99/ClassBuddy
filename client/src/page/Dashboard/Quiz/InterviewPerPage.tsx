@@ -27,7 +27,7 @@ export default function InterviewPerPage() {
       return { totalQuizzes: 0, avgScore: 0, topScore: 0, completedCount: 0 };
     }
 
-    const completed = data.filter((q) => typeof q.score === "number" && !isNaN(q.score));
+    const completed = data.filter((q) => q.submitted_at || (q.user_answers && Object.keys(q.user_answers).length > 0));
     const scores = completed.map((q) => {
       let s = q.score;
       if (s <= 2 && s > 0) s = s * 50;

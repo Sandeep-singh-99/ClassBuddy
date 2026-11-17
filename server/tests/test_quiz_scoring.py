@@ -22,8 +22,8 @@ async def test_quiz_score_comes_from_stored_answers(db_session, student_user, an
         user_id=student_user.id,
         status=Status.COMPLETED,
         questions=[
-            {"options": ["A. Right", "B. Wrong"], "answer": "A. Right"},
-            {"options": ["A. Right", "B. Wrong"], "answer": "A"},
+            {"question": "First question", "options": ["A. Right", "B. Wrong"], "answer": "A. Right"},
+            {"question": "Second question", "options": ["A. Right", "B. Wrong"], "answer": "A"},
         ],
     )
     db_session.add(quiz)

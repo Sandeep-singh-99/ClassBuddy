@@ -183,7 +183,7 @@ graph TD
         IndustryAgent[Career Insights Agent]
         InterviewAgent[Mock Interview Agent]
         EvaluatorNode[Self-Evaluation & Quality Loop]
-        LLM[Gemini 2.5 Flash / Groq / HuggingFace]
+        LLM[Gemini 2.5 Flash / Groq]
         TavilyAPI[Tavily Search API]
     end
 
@@ -851,6 +851,17 @@ API routes under `/api/v1/document-qa`:
 - `GET /groups/{group_id}/documents`: document preparation status (owner or subscribed member).
 - `POST /groups/{group_id}/ask`: `{ "question": "..." }`, returning an answer and supporting page citations.
 - `POST /documents/{document_id}/retry`: owner-only indexing retry.
+
+## AI reliability and grading
+
+- Assignment grading requires membership in the assignment's classroom. One database-backed reservation prevents concurrent grading of the same submission; stale reservations can be retried after five minutes. Pending evaluations are excluded from completion counts and grade history.
+- Gemini returns bounded integer marks for each stored question ID. The API validates those IDs and calculates the total itself. Provider errors, invalid output, and interrupted evaluations do not save a zero grade or consume the student's attempt.
+- Generation routes use per-user, per-worker rate limits, input limits, output token caps, and deadlines. Limits are not global quotas across workers; configure shared Redis rate-limit storage before relying on a global usage budget.
+- Database connections are released while notes, grades, and industry reports wait for AI. Synchronous database and Redis work in background steps runs in worker threads.
+- Assignment and interview jobs mark exhausted failures as retryable/error states. Interview generation and repair both use the configured Gemini or Groq model; the undeclared Hugging Face path was removed. Invalid evaluations are never treated as approval.
+- Quiz question and history endpoints omit correct answers. Submitting a quiz returns the server score and review material; subsequent review requires ownership and a submitted attempt. A submitted quiz can be reviewed, while a new practice attempt requires a new quiz.
+
+Apply migration `c8a5d4e1206b` with `uv run alembic upgrade head` before running the updated API. It preserves existing grades and adds uniqueness constraints for submissions and generated question sets. If duplicate legacy rows exist, the migration fails without deleting them; resolve those duplicates deliberately before retrying. Restart the Inngest dev server/API so the failure handlers are synchronized.
 
 ## 🧪 Testing & Quality Assurance
 

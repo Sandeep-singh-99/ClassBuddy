@@ -4,6 +4,11 @@ from slowapi.errors import RateLimitExceeded
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+
+def ai_rate_limit_key(request: Request) -> str:
+    return str(getattr(request.state, "user_id", get_remote_address(request)))
+
+# shortcut: limits are per process; configure shared Redis storage before enforcing global quotas.
 limiter = Limiter(key_func=get_remote_address)
 
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime, Table, ForeignKey, JSON
+from sqlalchemy import Boolean, Column, Enum, Integer, String, DateTime, Table, ForeignKey, JSON, UniqueConstraint
 from sqlalchemy.orm import relationship
 from ..config.db import Base
 import uuid
@@ -30,6 +30,7 @@ class Assignment(Base):
 
 class AssignmentQuestion(Base):
     __tablename__ ="assignment_questions"
+    __table_args__ = (UniqueConstraint("assignment_id", name="uq_assignment_questions_assignment"),)
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     assignment_id = Column(String, ForeignKey("assignments.id", ondelete="CASCADE"), nullable=False)
@@ -42,6 +43,7 @@ class AssignmentQuestion(Base):
 
 class Submission(Base):
     __tablename__ = "submissions"
+    __table_args__ = (UniqueConstraint("student_id", "assignment_id", name="uq_submissions_student_assignment"),)
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     assignment_id = Column(String, ForeignKey("assignments.id", ondelete="CASCADE"), nullable=False)
@@ -50,6 +52,7 @@ class Submission(Base):
     submitted_at = Column(DateTime, default=datetime.utcnow)
     grade = Column(Integer)
     feedback = Column(String)
+    status = Column(String, nullable=False, default="completed", server_default="completed")
 
     assignment = relationship("Assignment", back_populates="submissions")
     student = relationship("User", back_populates="submissions")

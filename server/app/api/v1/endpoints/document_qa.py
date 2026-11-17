@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.config.db import get_db
 from app.core.logger import logger
-from app.core.rate_limiter import limiter
+from app.core.rate_limiter import limiter, ai_rate_limit_key
 from app.dependencies.dependencies import get_current_user
 from app.dependencies.require_teacher_group import require_teacher_group
 from app.models.auth import User, userRole
@@ -50,7 +50,7 @@ def list_documents(group_id: str, db: Session = Depends(get_db), user: User = De
 
 
 @router.post("/documents/{document_id}/retry", response_model=IndexedDocumentOut)
-@limiter.limit("5/minute")
+@limiter.limit("5/minute", key_func=ai_rate_limit_key)
 def retry_index(request: Request, document_id: str, db: Session = Depends(get_db), user: User = Depends(require_teacher_group)):
     document = db.query(DocsUpload).filter(DocsUpload.id == document_id, DocsUpload.owner_id == user.id).first()
     if not document:
@@ -65,7 +65,7 @@ def retry_index(request: Request, document_id: str, db: Session = Depends(get_db
 
 
 @router.post("/groups/{group_id}/ask", response_model=AnswerOut)
-@limiter.limit("10/minute")
+@limiter.limit("10/minute", key_func=ai_rate_limit_key)
 async def ask_question(request: Request, group_id: str, data: QuestionRequest,
                        db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     require_classroom(db, group_id, user, require_paid=True)

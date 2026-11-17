@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
+import asyncio
 from sqlalchemy.orm import Session
 from typing import List
 from app.schemas.interviewpreparation import (
@@ -6,6 +7,7 @@ from app.schemas.interviewpreparation import (
     InterviewPrepSubmit,
     InterviewResponse,
     InterviewPreparationAsyncResponse,
+    InterviewQuizResponse, QuizReview, QuizSubmissionResult, PublicQuestion, Question, parse_stored_answers,
 )
 from app.dependencies.dependencies import get_current_user
 from app.config.db import get_db
@@ -17,7 +19,7 @@ from app.models.InterviewPreparation import InterviewPrep, Status
 from datetime import datetime
 import json
 from app.dependencies.redis_client import get_redis_client
-from fastapi.encoders import jsonable_encoder
+from pydantic import TypeAdapter, ValidationError
 from app.core.rate_limiter import limiter
 
 
@@ -48,31 +50,50 @@ async def create_interview_prep(
         status=Status.GENERATING,
     )
     db.add(new_entry)
+    db.flush()
+    entry_id = new_entry.id
     db.commit()
-    db.refresh(new_entry)
+    bind = db.get_bind()
+    db.close()
 
     # Trigger Inngest Event
-    await inngest_client.send(
-        inngest.Event(
-            name="interview/prep.create",
-            data={
-                "interview_prep_id": new_entry.id,
-                "description": interview_prep.description,
-                "user_id": current_user.id,
-            },
-        )
-    )
+    try:
+        async with asyncio.timeout(15):
+            await inngest_client.send(inngest.Event(
+                name="interview/prep.create",
+                data={"interview_prep_id": entry_id, "description": interview_prep.description},
+            ))
+    except (Exception, asyncio.CancelledError) as error:
+        with Session(bind=bind) as session:
+            session.query(InterviewPrep).filter_by(id=entry_id).update({"status": Status.ERROR})
+            session.commit()
+        if isinstance(error, asyncio.CancelledError):
+            raise
+        raise HTTPException(503, "Could not queue quiz generation. Please create it again.")
 
     return {
-        "id": new_entry.id,
-        "name": new_entry.name,
-        "description": new_entry.description,
-        "status": new_entry.status,
+        "id": entry_id,
+        "name": interview_prep.name,
+        "description": interview_prep.description,
+        "status": Status.GENERATING,
         "message": "Interview preparation started. Check back shortly.",
     }
 
 
-@router.get("/{id}")
+@router.get("/{id}/result", response_model=QuizReview)
+def get_quiz_result(id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    quiz = db.query(InterviewPrep).filter(InterviewPrep.id == id, InterviewPrep.user_id == current_user.id).first()
+    if current_user.role != userRole.STUDENT or not quiz:
+        raise HTTPException(404, "Quiz result not found.")
+    if quiz.submitted_at is None and not parse_stored_answers(quiz.user_answers):
+        raise HTTPException(409, "Submit the quiz before viewing its answers.")
+    try:
+        return QuizReview.model_validate(quiz)
+    except ValidationError:
+        raise HTTPException(409, "Stored quiz results are invalid. Please create a new quiz.")
+
+
+@router.get("/{id}", response_model=InterviewQuizResponse)
 @limiter.limit("10/minute")
 async def get_interview_question(
     id: str,
@@ -103,12 +124,14 @@ async def get_interview_question(
         "id": query.id,
         "name": query.name,
         "description": query.description,
-        "questions": query.questions,
+        "questions": [PublicQuestion.model_validate(q).model_dump() for q in (query.questions or [])],
         "status": query.status,
+        "score": query.score,
+        "submitted_at": query.submitted_at or (query.updated_at if parse_stored_answers(query.user_answers) else None),
     }
 
 
-@router.post("/submit-quiz")
+@router.post("/submit-quiz", response_model=QuizSubmissionResult)
 @limiter.limit("10/minute")
 async def submit_quiz(
     request: Request,
@@ -127,6 +150,7 @@ async def submit_quiz(
             InterviewPrep.id == submission.id,
             InterviewPrep.user_id == current_user.id,
         )
+        .with_for_update()
         .first()
     )
 
@@ -135,13 +159,19 @@ async def submit_quiz(
 
     if query.status != Status.COMPLETED or not query.questions:
         raise HTTPException(status_code=400, detail="Quiz is not ready for submission.")
+    if query.submitted_at is not None or parse_stored_answers(query.user_answers):
+        raise HTTPException(409, "This quiz has already been submitted.")
+    try:
+        questions = TypeAdapter(list[Question]).validate_python(query.questions)
+    except ValidationError:
+        raise HTTPException(409, "Stored quiz questions are invalid. Please create a new quiz.")
 
     correct_answers = 0
-    for index, question in enumerate(query.questions):
+    for index, question in enumerate(questions):
         answer = submission.user_answers.get(str(index))
-        if answer in question["options"] and (
-            answer == question["answer"]
-            or answer.partition(". ")[0] == question["answer"]
+        if answer in question.options and (
+            answer == question.answer
+            or answer.partition(". ")[0] == question.answer
         ):
             correct_answers += 1
 
@@ -152,6 +182,7 @@ async def submit_quiz(
     query.score = round(correct_answers / len(query.questions) * 100)
     query.user_answers = submission.user_answers
     query.updated_at = datetime.utcnow()
+    query.submitted_at = datetime.utcnow()
 
     db.commit()
     db.refresh(query)
@@ -160,6 +191,10 @@ async def submit_quiz(
         "message": "Quiz submitted successfully",
         "quiz_id": query.id,
         "score": query.score,
+        "id": query.id,
+        "name": query.name,
+        "questions": [question.model_dump() for question in questions],
+        "user_answers": query.user_answers,
     }
 
 
@@ -198,10 +233,10 @@ def get_interview_preps(
     )
 
     # Encode and cache result for 2 minutes
-    encoded_data = jsonable_encoder(interview_preps)
+    encoded_data = [InterviewResponse.model_validate(prep).model_dump(mode="json") for prep in interview_preps]
     redis_client.set(cache_key, json.dumps(encoded_data))
 
-    return interview_preps
+    return encoded_data
 
 
 @router.delete("/{id}")

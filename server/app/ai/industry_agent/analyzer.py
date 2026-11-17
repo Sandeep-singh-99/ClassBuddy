@@ -8,7 +8,7 @@ from app.ai.industry_agent.state import IndustryState
 load_dotenv()
 
 # Using Groq AI ChatGroq model
-llm = ChatGroq(model="groq/compound", temperature=0.3)
+llm = ChatGroq(model="groq/compound", temperature=0.3, timeout=45, max_retries=0, max_tokens=3000)
 
 
 async def analyzer_node(state: IndustryState) -> dict:

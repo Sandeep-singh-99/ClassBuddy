@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from langchain_core.messages import AIMessage
+from fastapi import Request
 
 from app.api.v1.endpoints.studentInsight import generate_industry_insight
 from app.models.studentInsight import StudentInsight
@@ -14,7 +15,7 @@ async def test_generation_runs_once_without_background_dispatch(
     db_session, student_user, existing
 ):
     insight_data = {
-        "salary_range": [],
+        "salary_range": [{"role": "Engineer", "min": 50000, "max": 90000, "median": 70000, "location": "Remote"}],
         "growth_rate": 5.4,
         "demand_level": "High",
         "top_skills": ["Python"],
@@ -39,7 +40,8 @@ async def test_generation_runs_once_without_background_dispatch(
         ) as generate,
         patch("inngest.Inngest.send", new_callable=AsyncMock) as send,
     ):
-        result = await generate_industry_insight(
+        result = await generate_industry_insight.__wrapped__(
+            request=Request({"type": "http"}),
             industry=" Technology ",
             current_user=student_user,
             db_session=db_session,

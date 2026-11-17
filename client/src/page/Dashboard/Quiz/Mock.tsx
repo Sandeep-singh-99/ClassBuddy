@@ -20,28 +20,40 @@ import { Badge } from "@/components/ui/badge";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { axiosClient } from "@/helper/axiosClient";
-import { GetInterviewQuestion } from "@/redux/slice/interviewSlice";
+import { GetInterviewQuestion, fetchInterviewReview, setQuizReview } from "@/redux/slice/interviewSlice";
+import type { PublicQuizQuestion, QuizSubmissionResult } from "@/types/quiz";
+import { isAxiosError } from "axios";
 import QuizResult from "@/components/Quiz/QuizResult";
 
 export default function Mock() {
   const dispatch = useAppDispatch();
   const { id } = useParams();
-  const { data } = useAppSelector((state) => state.interview);
+  const { data, review, reviewLoading, reviewError } = useAppSelector((state) => state.interview);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
-  const [, setScore] = useState<number | null>(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [secondsElapsed, setSecondsElapsed] = useState(0);
 
   useEffect(() => {
     if (id) {
+      dispatch(setQuizReview(null));
+      setQuizCompleted(false);
+      setCurrentQuestionIndex(0);
+      setAnswers({});
       dispatch(GetInterviewQuestion(id));
     }
   }, [dispatch, id]);
 
-  const questions = data?.questions;
+  const questions: PublicQuizQuestion[] = data?.questions ?? [];
+
+  useEffect(() => {
+    if (id && data?.id === id && data?.submitted_at) {
+      setQuizCompleted(true);
+      void dispatch(fetchInterviewReview(id));
+    }
+  }, [dispatch, id, data?.id, data?.submitted_at]);
 
   // Poll for question generation if generating
   useEffect(() => {
@@ -77,7 +89,7 @@ export default function Mock() {
   };
 
   // If questions are still generating
-  if (!data || data.status === "generating") {
+  if (!data || data.id !== id || data.status === "generating") {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center p-6">
         <div className="relative">
@@ -137,28 +149,17 @@ export default function Mock() {
 
     // Submit Quiz logic
     setSubmitting(true);
-    let correctAnswers = 0;
-
-    questions.forEach((q: any, index: number) => {
-      const ans = answers[index];
-      if (ans && ans.startsWith(q.answer)) {
-        correctAnswers++;
-      }
-    });
-
-    const finalScore = Number(((correctAnswers / questions.length) * 100).toFixed(1));
-    setScore(finalScore);
-    setQuizCompleted(true);
-
     try {
-      const response = await axiosClient.post("/interview-prep/submit-quiz", {
+      const response = await axiosClient.post<QuizSubmissionResult>("/interview-prep/submit-quiz", {
         id: data.id,
-        score: finalScore,
         user_answers: answers,
       });
+      dispatch(setQuizReview(response.data));
+      setQuizCompleted(true);
       toast.success(response.data.message || "Quiz submitted successfully!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || error.message || "Failed to submit quiz.");
+    } catch (error: unknown) {
+      const detail = isAxiosError<{ detail?: string }>(error) ? error.response?.data?.detail : null;
+      toast.error(detail || "Failed to submit quiz. Your answers are still here; please retry.");
     } finally {
       setSubmitting(false);
     }
@@ -279,13 +280,8 @@ export default function Mock() {
       ) : (
         /* Quiz Completed Result Screen */
         <Card className="border-border/60 shadow-xl bg-card text-card-foreground overflow-hidden rounded-2xl p-6 sm:p-8 space-y-6">
-          <QuizResult
-            result={{
-              name: data?.name || "Quiz Session",
-              questions,
-              user_answers: answers,
-            }}
-          />
+          {review ? <QuizResult result={review} /> : <p role="status">{reviewLoading ? "Loading results…" : reviewError || "Results are unavailable. Please try again."}</p>}
+          {!review && !reviewLoading && id && <Button onClick={() => dispatch(fetchInterviewReview(id))}>Retry loading results</Button>}
 
           <div className="pt-4 border-t border-border/60 flex justify-center">
             <Link to="/dashboard-panel/interview-prep">

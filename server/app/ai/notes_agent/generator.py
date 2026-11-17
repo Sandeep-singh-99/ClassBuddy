@@ -6,7 +6,7 @@ from app.ai.notes_agent.state import NotesState
 load_dotenv()
 
 # We configure the LLM and pass tags=["notes_generator"] during invocation to enable clean SSE token streaming.
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7, timeout=45, max_retries=0, max_output_tokens=4000)
 
 
 async def generate_notes_node(state: NotesState) -> dict:

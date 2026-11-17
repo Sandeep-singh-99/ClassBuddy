@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, status, Form, HTTPException
+from fastapi import APIRouter, Depends, status, Form, HTTPException, Request
+import asyncio
+from app.core.rate_limiter import limiter, ai_rate_limit_key
 from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from app.schemas import studentInsight as student_insight_schema
@@ -18,8 +20,10 @@ router = APIRouter()
 
 
 @router.post("/", response_model=student_insight_schema.StudentInsightResponse)
+@limiter.limit("5/minute", key_func=ai_rate_limit_key)
 async def generate_industry_insight(
-    industry: str = Form(...),
+    request: Request,
+    industry: str = Form(..., max_length=200),
     current_user: User = Depends(dependencies.get_current_user),
     db_session: Session = Depends(db.get_db),
     redis=Depends(redis_client.get_redis_client),
@@ -30,25 +34,29 @@ async def generate_industry_insight(
     clean_industry = industry.strip()
     if not clean_industry:
         raise HTTPException(400, "Industry field cannot be empty.")
+    if len(clean_industry) > 200:
+        raise HTTPException(400, "Industry field cannot exceed 200 characters.")
+    user_id = current_user.id
+    db_session.close()
 
     # 1. Run AI industry graph directly to generate real response synchronously
     try:
         state = {"industry": [HumanMessage(content=clean_industry)]}
-        result = await industry_graph.ainvoke(state)
+        async with asyncio.timeout(120):
+            result = await industry_graph.ainvoke(state)
         content = result["getIndustry"][-1].content
-        insight_data = json.loads(content)
+        insight_data = student_insight_schema.StudentInsightBase.model_validate_json(content).model_dump()
     except Exception as e:
-        print(f"AI Industry Generation Error: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate AI insights for '{clean_industry}': {str(e)}",
+            status_code=503,
+            detail="Industry insights are unavailable. Please retry shortly.",
         )
 
     # 2. Check if insight record already exists for this user and industry
     existing_insight = (
         db_session.query(StudentInsight)
         .filter(
-            StudentInsight.user_id == current_user.id,
+            StudentInsight.user_id == user_id,
             StudentInsight.industry == clean_industry,
         )
         .first()
@@ -57,8 +65,7 @@ async def generate_industry_insight(
     if existing_insight:
         # Update existing
         for key, value in insight_data.items():
-            if hasattr(existing_insight, key):
-                setattr(existing_insight, key, value)
+            setattr(existing_insight, key, value)
         existing_insight.updated_at = datetime.utcnow()
         db_session.commit()
         db_session.refresh(existing_insight)
@@ -66,7 +73,7 @@ async def generate_industry_insight(
     else:
         # Create new
         target_insight = StudentInsight(
-            user_id=current_user.id,
+            user_id=user_id,
             industry=clean_industry,
             **insight_data,
         )
@@ -75,7 +82,7 @@ async def generate_industry_insight(
         db_session.refresh(target_insight)
 
     # Clear Redis cache
-    cache_key = f"student_insights:{current_user.id}"
+    cache_key = f"student_insights:{user_id}"
     try:
         redis.delete(cache_key)
     except Exception as e:

@@ -65,7 +65,7 @@ export default function PerformanceChart() {
 
     // Filter only completed or scored quizzes
     const validQuizzes = [...data]
-      .filter((q) => typeof q.score === "number" && !isNaN(q.score))
+      .filter((q) => q.submitted_at || (q.user_answers && Object.keys(q.user_answers).length > 0))
       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
     let sliced = validQuizzes;

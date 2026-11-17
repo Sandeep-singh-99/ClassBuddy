@@ -1,6 +1,6 @@
 from langchain_core.messages import HumanMessage
 from app.ai.interview_agent.state import InterviewState
-from app.ai.interview_agent.generator import get_huggingface_llm
+from app.ai.interview_agent.generator import get_fallback_llm
 
 async def improver_node(state: InterviewState) -> dict:
     """
@@ -36,12 +36,13 @@ Please fix the error and return ONLY valid JSON matching this exact structure:
 Return ONLY valid raw JSON without markdown block formatting (` ```json `).
 """
 
-    llm = get_huggingface_llm()
+    llm = get_fallback_llm()
     response = await llm.ainvoke([HumanMessage(content=prompt)])
     content = response.content.strip()
 
     clean_content = content.replace("```json", "").replace("```", "").strip()
 
     return {
-        "raw_quiz_output": clean_content
+        "raw_quiz_output": clean_content,
+        "iteration": state.get("iteration", 0) + 1,
     }
