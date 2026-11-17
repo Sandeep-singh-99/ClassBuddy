@@ -105,17 +105,14 @@ const docsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(DocsUpload.pending, (state) => {
-      state.loading = true;
       state.error = null;
     });
     builder.addCase(DocsUpload.fulfilled, (state, action) => {
-      state.loading = false;
       state.docs = [...state.docs, action.payload];
     });
     builder.addCase(
       DocsUpload.rejected,
       (state, action: PayloadAction<any>) => {
-        state.loading = false;
         state.error = action.payload;
       }
     );
@@ -165,18 +162,15 @@ const docsSlice = createSlice({
       });
 
     builder.addCase(DocsDelete.pending, (state) => {
-      state.loading = true;
       state.error = null;
     });
     builder.addCase(DocsDelete.fulfilled, (state, action) => {
-      state.loading = false;
       state.docs = state.docs.filter((doc) => doc.id !== action.meta.arg);
     });
 
     builder.addCase(
       DocsDelete.rejected,
       (state, action: PayloadAction<any>) => {
-        state.loading = false;
         state.error = action.payload;
       }
     );

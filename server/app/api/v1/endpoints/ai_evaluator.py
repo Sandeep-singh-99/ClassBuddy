@@ -117,7 +117,7 @@ Rules:
 
     # --- 7️⃣ Invoke AI safely ---
     try:
-        response = llm.invoke([HumanMessage(content=prompt)])
+        response = await llm.ainvoke([HumanMessage(content=prompt)])
         cleaned = clean_json_output(response.content)
         result = json.loads(cleaned)
     except json.JSONDecodeError:

@@ -60,6 +60,12 @@ const MenuOptions = [
     badge: null,
   },
   {
+    title: "Document Q&A",
+    url: "/dashboard-panel/document-qa",
+    icon: MessageSquareQuote,
+    badge: "AI",
+  },
+  {
     title: "Interview Prep",
     url: "/dashboard-panel/interview-prep",
     icon: MessageSquareQuote,

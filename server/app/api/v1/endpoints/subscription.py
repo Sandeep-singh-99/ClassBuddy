@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta, timezone
 import hashlib, hmac
 
@@ -8,6 +9,7 @@ from app.config.db import get_db
 from app.models.subscription import SubscriptionPlan
 from app.models.teacherInsight import TeacherInsight
 from app.models.student_subscription import StudentSubscription
+from app.models.payment_order import PaymentOrder
 from app.schemas.subscription import (
     CreatePlanSchema,
     CreateOrderSchema,
@@ -138,9 +140,9 @@ def delete_subscription_plan(
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found or not yours")
 
-    if plan.student_subscriptions:
+    if plan.student_subscriptions or db.query(PaymentOrder).filter(PaymentOrder.plan_id == plan.id).first():
         raise HTTPException(
-            status_code=400, detail="Cannot delete plan with active subscriptions"
+            status_code=400, detail="Cannot delete plan with subscriptions or payment orders"
         )
 
     delete_plan(db, plan)
@@ -217,6 +219,9 @@ def create_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    if current_user.role != userRole.STUDENT:
+        raise HTTPException(403, "Only students can create payment orders")
+
     plan = db.get(SubscriptionPlan, data.plan_id)
     if not plan:
         raise HTTPException(404, "Plan not found")
@@ -246,6 +251,15 @@ def create_order(
         }
     )
 
+    db.add(PaymentOrder(
+        id=order["id"],
+        user_id=current_user.id,
+        plan_id=plan.id,
+        amount=plan.amount * 100,
+        validity_days=plan.validity_days,
+    ))
+    db.commit()
+
     return {
         "key": RAZORPAY_KEY_ID,
         "amount": order["amount"],
@@ -259,16 +273,36 @@ def verify_payment(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    if user.role != userRole.STUDENT:
+        raise HTTPException(403, "Only students can verify payments")
+
     body = f"{data.razorpay_order_id}|{data.razorpay_payment_id}"
 
     expected_sig = hmac.new(
         RAZORPAY_KEY_SECRET.encode(), body.encode(), hashlib.sha256
     ).hexdigest()
 
-    if expected_sig != data.razorpay_signature:
+    if not hmac.compare_digest(expected_sig.encode(), data.razorpay_signature.encode()):
         raise HTTPException(400, "Invalid payment signature")
 
-    plan = db.get(SubscriptionPlan, data.plan_id)
+    order = (
+        db.query(PaymentOrder)
+        .filter(PaymentOrder.id == data.razorpay_order_id)
+        .populate_existing()
+        .with_for_update()
+        .first()
+    )
+    if not order or order.user_id != user.id or order.plan_id != data.plan_id:
+        raise HTTPException(400, "Payment order does not match this user and plan")
+
+    used_payment = db.query(StudentSubscription).filter(or_(
+        StudentSubscription.razorpay_order_id == order.id,
+        StudentSubscription.razorpay_payment_id == data.razorpay_payment_id,
+    )).first()
+    if used_payment:
+        raise HTTPException(400, "Payment or order has already been used")
+
+    plan = db.get(SubscriptionPlan, order.plan_id)
     if not plan:
         raise HTTPException(404, "Plan not found")
 
@@ -289,20 +323,24 @@ def verify_payment(
             detail="You already have an active subscription for this group.",
         )
 
-    valid_till = datetime.utcnow() + timedelta(days=plan.validity_days)
+    valid_till = datetime.utcnow() + timedelta(days=order.validity_days)
 
     sub = StudentSubscription(
         user_id=user.id,
         group_id=plan.group_id,
         plan_id=plan.id,
-        amount=plan.amount,
+        amount=order.amount // 100,
         valid_till=valid_till,
         razorpay_order_id=data.razorpay_order_id,
         razorpay_payment_id=data.razorpay_payment_id,
     )
 
     db.add(sub)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Payment or order has already been used")
 
     return {"message": "Subscription activated"}
 

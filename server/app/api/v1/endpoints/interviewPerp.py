@@ -133,11 +133,23 @@ async def submit_quiz(
     if not query:
         raise HTTPException(status_code=404, detail="Interview preparation not found.")
 
+    if query.status != Status.COMPLETED or not query.questions:
+        raise HTTPException(status_code=400, detail="Quiz is not ready for submission.")
+
+    correct_answers = 0
+    for index, question in enumerate(query.questions):
+        answer = submission.user_answers.get(str(index))
+        if answer in question["options"] and (
+            answer == question["answer"]
+            or answer.partition(". ")[0] == question["answer"]
+        ):
+            correct_answers += 1
+
     # Invalidate cache
     cache_key = f"interview_preps:{current_user.id}"
     redis_client.delete(cache_key)
 
-    query.score = submission.score
+    query.score = round(correct_answers / len(query.questions) * 100)
     query.user_answers = submission.user_answers
     query.updated_at = datetime.utcnow()
 

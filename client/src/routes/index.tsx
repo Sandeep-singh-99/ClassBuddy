@@ -16,6 +16,7 @@ const InterviewPerPage = lazy(
 );
 const Mock = lazy(() => import("@/page/Dashboard/Quiz/Mock"));
 const DocView = lazy(() => import("@/page/Dashboard/DocView"));
+const DocumentQA = lazy(() => import("@/page/DocumentQA"));
 const CareerDashboard = lazy(() => import("@/page/Dashboard/CareerDashboard"));
 const Assignment = lazy(() => import("@/page/Dashboard/Assignment"));
 const AssignmentViewById = lazy(
@@ -91,6 +92,7 @@ export const router = createBrowserRouter([
       { path: "interview-prep", element: <InterviewPerPage /> },
       { path: "mock/:id", element: <Mock /> },
       { path: "docs", element: <DocView /> },
+      { path: "document-qa", element: <DocumentQA /> },
       { path: "dashboard", element: <CareerDashboard /> },
       { path: "assignments", element: <Assignment /> },
       { path: "assignments/:assignmentId", element: <AssignmentViewById /> },
@@ -114,6 +116,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "home", element: <THome /> },
+      { path: "document-qa", element: <DocumentQA /> },
       {
         path: "create-notes",
         element: (

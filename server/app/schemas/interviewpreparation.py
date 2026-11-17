@@ -23,8 +23,7 @@ class InterviewPreparationCreateResponse(BaseModel):
 
 class InterviewPrepSubmit(BaseModel):
     id: str
-    score: int
-    user_answers: dict
+    user_answers: dict[str, str]
 
     class Config:
         from_attributes = True

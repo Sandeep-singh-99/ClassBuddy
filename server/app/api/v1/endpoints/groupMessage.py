@@ -8,7 +8,7 @@ from fastapi import (
     Query,
 )
 from sqlalchemy.orm import Session, joinedload
-from app.config.db import get_db
+from app.config.db import get_db, SessionLocal
 from app.models.auth import User, userRole
 from app.models.groupMessage import GroupMessage
 from app.models.teacherInsight import TeacherInsight
@@ -33,8 +33,8 @@ from app.utils.socket_manager import manager
 # --- Helper for WS Auth ---
 async def get_current_user_ws(
     websocket: WebSocket,
-    token: Optional[str] = None,
-    db: Session = Depends(get_db),
+    token: Optional[str],
+    db: Session,
 ) -> Optional[User]:
     # 1. Try Query Param (Mobile often uses this)
     if not token:
@@ -237,31 +237,22 @@ async def send_message(
 async def websocket_endpoint(
     websocket: WebSocket,
     group_id: str,
-    db: Session = Depends(get_db),
     token: Optional[str] = Query(None),
 ):
-    # 1. Authenticate
-    user = await get_current_user_ws(websocket, token, db)
-    if not user:
-        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-        return
-
-    # 2. Authorization (Check group membership)
+    # Authenticate and authorize before releasing the database connection.
     is_authorized = False
-    if user.role == userRole.TEACHER:
-        # Check if own group
-        teacher_group = (
-            db.query(TeacherInsight)
-            .filter(TeacherInsight.user_id == user.id, TeacherInsight.id == group_id)
-            .first()
-        )
-        if teacher_group:
-            is_authorized = True
-    elif user.role == userRole.STUDENT:
-        # Check if member
-        is_member = any(g.id == group_id for g in user.groups)
-        if is_member:
-            is_authorized = True
+    with SessionLocal() as db:
+        user = await get_current_user_ws(websocket, token, db)
+        user_id = user.id if user else None
+        if user and user.role == userRole.TEACHER:
+            teacher_group = (
+                db.query(TeacherInsight)
+                .filter(TeacherInsight.user_id == user_id, TeacherInsight.id == group_id)
+                .first()
+            )
+            is_authorized = teacher_group is not None
+        elif user and user.role == userRole.STUDENT:
+            is_authorized = any(g.id == group_id for g in user.groups)
 
     if not is_authorized:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
@@ -279,25 +270,28 @@ async def websocket_endpoint(
 
             if content:
                 # Save to DB
-                new_msg = GroupMessage(
-                    group_id=group_id, sender_id=user.id, message=content
-                )
-                db.add(new_msg)
-                db.commit()
-                db.refresh(new_msg)
+                with SessionLocal() as db:
+                    new_msg = GroupMessage(
+                        group_id=group_id, sender_id=user_id, message=content
+                    )
+                    db.add(new_msg)
+                    db.commit()
+                    db.refresh(new_msg)
 
-                # Fetch with sender for details
-                msg_with_sender = (
-                    db.query(GroupMessage)
-                    .options(joinedload(GroupMessage.sender))
-                    .filter(GroupMessage.id == new_msg.id)
-                    .first()
-                )
+                    # Fetch with sender for details
+                    msg_with_sender = (
+                        db.query(GroupMessage)
+                        .options(joinedload(GroupMessage.sender))
+                        .filter(GroupMessage.id == new_msg.id)
+                        .first()
+                    )
 
-                if msg_with_sender:
-                    response_data = GroupMessageResponse.model_validate(
-                        msg_with_sender
-                    ).model_dump(mode="json")
+                    response_data = (
+                        GroupMessageResponse.model_validate(msg_with_sender).model_dump(mode="json")
+                        if msg_with_sender else None
+                    )
+
+                if response_data:
                     await manager.broadcast(response_data, group_id)
 
     except WebSocketDisconnect:

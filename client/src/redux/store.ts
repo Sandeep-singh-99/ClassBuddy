@@ -22,6 +22,7 @@ import assignmentSlice from "./slice/assignmentSlice";
 import submissionSlice from "./slice/submissionSlice";
 import chatSlice from "./slice/chatSlice";
 import subscriptionSlice from "./slice/subscriptionSlice";
+import documentQASlice from "./slice/documentQASlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   docs: docsSlice,
   chat: chatSlice,
   subscription: subscriptionSlice,
+  documentQA: documentQASlice,
 });
 
 // Persist config — persist only auth data

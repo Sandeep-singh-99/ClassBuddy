@@ -12,11 +12,5 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
-try:
-    redis_client.ping()
-except redis.exceptions.ConnectionError:
-    raise Exception("Redis server is not reachable")
-
-
 def get_redis_client():
     return redis_client

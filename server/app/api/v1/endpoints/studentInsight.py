@@ -11,8 +11,6 @@ from app.ai.industry_graph import industry_graph
 from app.dependencies import redis_client
 import json
 from datetime import datetime
-from app.core import inngest
-from inngest import Event
 
 load_dotenv()
 
@@ -82,22 +80,6 @@ async def generate_industry_insight(
         redis.delete(cache_key)
     except Exception as e:
         print(f"Redis delete warning: {e}")
-
-    # Trigger background event for logging/audit
-    try:
-        await inngest.inngest_client.send(
-            [
-                Event(
-                    name="student/industry.generate",
-                    data={
-                        "industry": clean_industry,
-                        "user_id": str(current_user.id),
-                    },
-                )
-            ]
-        )
-    except Exception as e:
-        print(f"Inngest send warning: {e}")
 
     return target_insight
 

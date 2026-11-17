@@ -19,6 +19,9 @@ services:
       - ./server/.env
     environment:
       - PYTHONUNBUFFERED=1
+      - INNGEST_DEV=1
+      - INNGEST_API_BASE_URL=http://host.docker.internal:8288
+      - INNGEST_EVENT_API_BASE_URL=http://host.docker.internal:8288
       - WATCHFILES_FORCE_POLLING=true
       - WATCHFILES_POLL_INTERVAL=0.5
     extra_hosts:

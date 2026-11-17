@@ -221,6 +221,8 @@ pygments==2.20.0
     # via pytest
 pyjwt==2.13.0
     # via server
+pypdf==7.1.0
+    # via server
 pytest==9.1.1
     # via
     #   pytest-asyncio
